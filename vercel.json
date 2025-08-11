@@ -1,14 +1,22 @@
 {
   "builds": [
     {
-      "src": "vetlms/wsgi.py",
+      "src": "api/index.py",
       "use": "@vercel/python"
     }
   ],
   "routes": [
     {
+      "src": "/static/(.*)",
+      "dest": "/static/$1"
+    },
+    {
+      "src": "/media/(.*)",
+      "dest": "/media/$1"
+    },
+    {
       "src": "/(.*)",
-      "dest": "vetlms/wsgi.py"
+      "dest": "/api/index.py"
     }
   ],
   "env": {
