@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تست اپلیکیشن دامپزشکی</title>
+    <style>
+        body {
+            font-family: 'Tahoma', sans-serif;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+        .test-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 10px 0;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .test-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+        .console {
+            background: #000;
+            color: #0f0;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            margin-top: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>تست اپلیکیشن دامپزشکی</h1>
+    
+    <div class="test-card" data-category="internal">
+        <h3>بیماری‌های داخلی</h3>
+        <p>کلیک کنید تا تست شود</p>
+    </div>
+    
+    <div class="test-card" data-category="surgery">
+        <h3>جراحی</h3>
+        <p>کلیک کنید تا تست شود</p>
+    </div>
+    
+    <div class="console" id="console">
+        <div>Console Output:</div>
+    </div>
+
+    <script>
+        // تابع برای نمایش پیام در console
+        function log(message) {
+            const consoleDiv = document.getElementById('console');
+            const time = new Date().toLocaleTimeString();
+            consoleDiv.innerHTML += `<div>[${time}] ${message}</div>`;
+            consoleDiv.scrollTop = consoleDiv.scrollHeight;
+        }
+
+        // Override console.log
+        const originalLog = console.log;
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            log(args.join(' '));
+        };
+
+        // Override console.error
+        const originalError = console.error;
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            log('ERROR: ' + args.join(' '));
+        };
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            log('DOM loaded successfully');
+            
+            const cards = document.querySelectorAll('.test-card');
+            log(`Found ${cards.length} test cards`);
+            
+            cards.forEach(card => {
+                card.addEventListener('click', function() {
+                    const category = this.dataset.category;
+                    log(`Card clicked: ${category}`);
+                    
+                    // تست داده‌ها
+                    const appData = {
+                        internal: { name: "بیماری‌های داخلی" },
+                        surgery: { name: "جراحی" }
+                    };
+                    
+                    if (appData[category]) {
+                        log(`Category found: ${appData[category].name}`);
+                    } else {
+                        log(`Category not found: ${category}`);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html> 

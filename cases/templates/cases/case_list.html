@@ -1,0 +1,136 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مطالعات موردی - Dadash</title>
+    <link rel="stylesheet" href="{% static 'dadash/styles.css' %}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-stethoscope"></i>
+                    <h1>دامپزشکی آنلاین - Dadash</h1>
+                </div>
+                <nav class="nav">
+                    <ul>
+                        <li><a href="{% url 'dadash:dadash_home' %}">خانه</a></li>
+                        <li><a href="{% url 'case_list' %}" class="active">مطالعات موردی</a></li>
+                        <li><a href="{% url 'dadash:internal_diseases' %}">بیماری‌های داخلی</a></li>
+                        <li><a href="{% url 'dadash:surgery' %}">جراحی</a></li>
+                        <li><a href="{% url 'dadash:emergency' %}">اورژانس</a></li>
+                        <li><a href="{% url 'dadash:dermatology' %}">پوست‌شناسی</a></li>
+                        <li><a href="{% url 'dadash:radiology' %}">رادیولوژی</a></li>
+                        <li><a href="{% url 'dadash:cardiology' %}">قلب‌شناسی</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <!-- Section Header -->
+            <div class="section-header">
+                <a href="{% url 'dadash:dadash_home' %}" class="back-btn">
+                    <i class="fas fa-arrow-right"></i>
+                    بازگشت به خانه
+                </a>
+                <h2 class="section-title">مطالعات موردی</h2>
+            </div>
+
+            <!-- Category Filter -->
+            <div class="category-filter">
+                <button onclick="window.location.href='{% url 'case_list' %}'" class="filter-btn {% if not selected_category %}active{% endif %}">
+                    <span>📚</span>
+                    همه موارد
+                </button>
+                {% for cat in categories %}
+                    <button onclick="window.location.href='{% url 'case_list_by_category' cat.slug %}'" class="filter-btn {% if selected_category and selected_category.id == cat.id %}active{% endif %}">
+                        <span>{{ cat.icon|default:'📂' }}</span>
+                        {{ cat.name }}
+                    </button>
+                {% endfor %}
+            </div>
+
+            <!-- Cases Grid -->
+            {% if cases %}
+            <div class="cases-grid">
+                {% for case in cases %}
+                <div class="case-card">
+                    <div class="case-header">
+                        <h4>{{ case.title }}</h4>
+                        <div class="case-meta">
+                            <span><i class="fas fa-clock"></i> {{ case.created_at|date:"Y/m/d" }}</span>
+                            <span><i class="fas fa-tag"></i> {{ case.category.name|default:"بدون دسته" }}</span>
+                        </div>
+                    </div>
+                    <div class="case-content">
+                        <p class="case-description">{{ case.history|truncatewords:30 }}</p>
+                        <div class="case-stats">
+                            <span><i class="fas fa-microscope"></i> {{ case.lab_tests.count }} تست</span>
+                            <span><i class="fas fa-image"></i> {{ case.slides.count }} اسلاید</span>
+                        </div>
+                    </div>
+                    <div class="case-actions">
+                        <a href="{% url 'case_detail' case.id %}" class="view-case-btn">
+                            <i class="fas fa-eye"></i>
+                            مشاهده مورد
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <h3>هیچ موردی یافت نشد</h3>
+                <p>در حال حاضر هیچ مطالعه موردی در این دسته‌بندی موجود نیست.</p>
+                <a href="{% url 'dadash:dadash_home' %}" class="back-home-btn">
+                    <i class="fas fa-home"></i>
+                    بازگشت به خانه
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>درباره ما</h4>
+                    <p>اپلیکیشن مطالعه مورد دامپزشکی برای آموزش و ارتقای مهارت‌های تشخیصی</p>
+                </div>
+                <div class="footer-section">
+                    <h4>تماس با ما</h4>
+                    <p><i class="fas fa-envelope"></i> info@vetcases.com</p>
+                    <p><i class="fas fa-phone"></i> 021-12345678</p>
+                </div>
+                <div class="footer-section">
+                    <h4>شبکه‌های اجتماعی</h4>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-telegram"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 اپلیکیشن دامپزشکی. تمامی حقوق محفوظ است.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{% static 'dadash/script.js' %}"></script>
+</body>
+</html>

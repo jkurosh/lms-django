@@ -1,0 +1,75 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}دامپزشکی آنلاین - Dadash{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'dadash/styles.css' %}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-stethoscope"></i>
+                    <h1>دامپزشکی آنلاین - Dadash</h1>
+                </div>
+                <nav class="nav">
+                    <ul>
+                        <li><a href="{% url 'dadash:dadash_home' %}" {% if request.resolver_match.url_name == 'dadash_home' %}class="active"{% endif %}>خانه</a></li>
+                        <li><a href="{% url 'case_list' %}" {% if request.resolver_match.url_name == 'case_list' %}class="active"{% endif %}>مطالعات موردی</a></li>
+                        <li><a href="{% url 'dadash:internal_diseases' %}" {% if request.resolver_match.url_name == 'internal_diseases' %}class="active"{% endif %}>بیماری‌های داخلی</a></li>
+                        <li><a href="{% url 'dadash:surgery' %}" {% if request.resolver_match.url_name == 'surgery' %}class="active"{% endif %}>جراحی</a></li>
+                        <li><a href="{% url 'dadash:emergency' %}" {% if request.resolver_match.url_name == 'emergency' %}class="active"{% endif %}>اورژانس</a></li>
+                        <li><a href="{% url 'dadash:dermatology' %}" {% if request.resolver_match.url_name == 'dermatology' %}class="active"{% endif %}>پوست‌شناسی</a></li>
+                        <li><a href="{% url 'dadash:radiology' %}" {% if request.resolver_match.url_name == 'radiology' %}class="active"{% endif %}>رادیولوژی</a></li>
+                        <li><a href="{% url 'dadash:cardiology' %}" {% if request.resolver_match.url_name == 'cardiology' %}class="active"{% endif %}>قلب‌شناسی</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>درباره ما</h4>
+                    <p>اپلیکیشن مطالعه مورد دامپزشکی برای آموزش و ارتقای مهارت‌های تشخیصی</p>
+                </div>
+                <div class="footer-section">
+                    <h4>تماس با ما</h4>
+                    <p><i class="fas fa-envelope"></i> info@vetcases.com</p>
+                    <p><i class="fas fa-phone"></i> 021-12345678</p>
+                </div>
+                <div class="footer-section">
+                    <h4>شبکه‌های اجتماعی</h4>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-telegram"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 اپلیکیشن دامپزشکی. تمامی حقوق محفوظ است.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{% static 'dadash/script.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html> 

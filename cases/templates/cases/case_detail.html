@@ -1,0 +1,820 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ case.title }} - مطالعات موردی</title>
+    <link rel="stylesheet" href="{% static 'dadash/styles.css' %}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-stethoscope"></i>
+                    <h1>دامپزشکی آنلاین - Dadash</h1>
+                </div>
+                <nav class="nav">
+                    <ul>
+                        <li><a href="{% url 'dadash:dadash_home' %}">خانه</a></li>
+                        <li><a href="{% url 'case_list' %}">مطالعات موردی</a></li>
+                        <li><a href="{% url 'dadash:internal_diseases' %}">بیماری‌های داخلی</a></li>
+                        <li><a href="#">درباره ما</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <!-- Section Header -->
+            <div class="section-header">
+                <a href="{% url 'case_list' %}" class="back-btn">
+                    <i class="fas fa-arrow-right"></i>
+                    بازگشت به مطالعات موردی
+                </a>
+                <h2 class="section-title">{{ case.title }}</h2>
+            </div>
+
+            <!-- Case Info -->
+            <div class="case-info">
+                <div class="case-description">
+                    <h3>پیشینه کیس:</h3>
+                    <p>{{ case.history }}</p>
+                </div>
+            </div>
+
+            <!-- Test Selection -->
+            <div class="test-selection">
+                <h3>انتخاب آزمایش:</h3>
+                <div class="test-buttons">
+                    <button onclick="showTest('cbc', this)" class="test-btn">
+                        <span>🩸</span>
+                        CBC
+                    </button>
+                    <button onclick="showTest('chem', this)" class="test-btn">
+                        <span>🧪</span>
+                        CLIN.CHEMISTRY
+                    </button>
+                    <button onclick="showTest('other', this)" class="test-btn">
+                        <span>🔬</span>
+                        OTHER TESTS
+                    </button>
+                    <button onclick="showTest('slide', this)" class="test-btn">
+                        <span>🔍</span>
+                        SLIDES
+                    </button>
+                </div>
+            </div>
+
+            <!-- Main Layout -->
+            <div class="main-layout">
+                <div class="left-panel">
+                    <h3>مشاهدات:</h3>
+                    <div id="observations" class="observations-container">
+                        <p>یکی از آزمایش‌ها را انتخاب کنید تا مشاهدات نمایش داده شود.</p>
+                    </div>
+                </div>
+                
+                <div class="right-panel">
+                    <h3>گزارش آزمایش:</h3>
+                    <div id="test-report" class="test-report-container">
+                        <p>یکی از آزمایش‌ها را انتخاب کنید.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Diagnosis Section -->
+            <div id="diagnosis-section" class="diagnosis-section">
+                <h3>تشخیص شما:</h3>
+                <textarea id="diagnosis-input" placeholder="تشخیص خود را وارد کنید..."></textarea>
+                <button onclick="submitDiagnosis()" class="diagnosis-btn">
+                    <span>✅</span>
+                    اتمام تشخیص
+                </button>
+            </div>
+
+            <!-- Result Section -->
+            <div id="result" class="result-section hidden">
+                <h3>نتیجه نهایی:</h3>
+                <div class="result-content">
+                    <p><strong>تشخیص صحیح:</strong> {{ case.correct_diagnosis }}</p>
+                    <p><strong>پاسخ تشریحی:</strong> {{ case.explanation }}</p>
+                </div>
+                <div class="navigation-buttons">
+                    {% if prev_case_id %}
+                        <a href="/case/{{ prev_case_id }}/" class="nav-btn">
+                            <span>⬅️</span>
+                            کیس قبلی
+                        </a>
+                    {% endif %}
+                    {% if next_case_id %}
+                        <a href="/case/{{ next_case_id }}/" class="nav-btn">
+                            <span>➡️</span>
+                            کیس بعدی
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- ارسال داده از سرور به JS -->
+            {{ tests|json_script:"test-data" }}
+            {% csrf_token %}
+            
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>درباره ما</h4>
+                    <p>اپلیکیشن مطالعه مورد دامپزشکی برای آموزش و ارتقای مهارت‌های تشخیصی</p>
+                </div>
+                <div class="footer-section">
+                    <h4>تماس با ما</h4>
+                    <p><i class="fas fa-envelope"></i> info@vetcases.com</p>
+                    <p><i class="fas fa-phone"></i> 021-12345678</p>
+                </div>
+                <div class="footer-section">
+                    <h4>شبکه‌های اجتماعی</h4>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-telegram"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 اپلیکیشن دامپزشکی. تمامی حقوق محفوظ است.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // تعریف متغیرهای مورد نیاز
+        let attempts = 0;
+        const maxAttempts = 3;
+        let currentTestType = '';
+        let selectedObservations = [];
+        let correctObservations = 0;
+        let totalObservations = 0;
+
+        // دریافت داده‌های تست از سرور
+        const testDataElement = document.getElementById('test-data');
+        let testData = [];
+        
+        if (testDataElement && testDataElement.textContent) {
+            try {
+                testData = JSON.parse(testDataElement.textContent);
+                console.log('Test data loaded successfully:', testData);
+            } catch (e) {
+                console.error('Error parsing test data:', e);
+                testData = [];
+            }
+        } else {
+            console.error('Test data element not found');
+        }
+        
+        // Debug: نمایش داده‌های تست
+        console.log('Test Data:', testData);
+
+        function showTest(testType, buttonElement) {
+            console.log('showTest called with:', testType);
+            console.log('Current testData:', testData);
+            
+            try {
+                // حذف کلاس active از همه دکمه‌ها
+                document.querySelectorAll('.test-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                
+                // اضافه کردن کلاس active به دکمه انتخاب شده
+                if (buttonElement) {
+                    buttonElement.classList.add('active');
+                }
+                
+                currentTestType = testType;
+                
+                // تبدیل نام دکمه به کلید مورد نظر
+                let searchKey = '';
+                switch(testType.toLowerCase()) {
+                    case 'cbc':
+                        searchKey = 'cbc';
+                        break;
+                    case 'chem':
+                        searchKey = 'chem';
+                        break;
+                    case 'other':
+                        searchKey = 'other';
+                        break;
+                    case 'slide':
+                        searchKey = 'slide';
+                        break;
+                    default:
+                        searchKey = testType.toLowerCase();
+                }
+                
+                console.log('Searching for key:', searchKey);
+                console.log('Available test titles:', testData.map(t => t.title));
+                
+                const test = testData.find(t => t.title === searchKey);
+                
+                console.log('Search key:', searchKey);
+                console.log('Found test:', test);
+                console.log('Available tests:', testData.map(t => t.title));
+                
+                if (!test) {
+                    console.error('Test not found for key:', searchKey);
+                    console.error('Available tests:', testData.map(t => t.title));
+                    
+                    // نمایش پیام خطا
+                    document.getElementById("test-report").innerHTML = `
+                        <div style="color: red; padding: 20px; text-align: center; background: #fee; border: 1px solid #fcc; border-radius: 8px;">
+                            <h4>آزمایش یافت نشد!</h4>
+                            <p>کلید جستجو: <strong>${searchKey}</strong></p>
+                            <p>تست‌های موجود: <strong>${testData.map(t => t.title).join(', ')}</strong></p>
+                            <p>لطفاً ابتدا تست‌ها را در Admin Panel اضافه کنید.</p>
+                        </div>
+                    `;
+                    document.getElementById("observations").innerHTML = `
+                        <div style="color: red; padding: 20px; text-align: center; background: #fee; border: 1px solid #fcc; border-radius: 8px;">
+                            <h4>مشاهده‌ای یافت نشد!</h4>
+                            <p>کلید جستجو: <strong>${searchKey}</strong></p>
+                            <p>تست‌های موجود: <strong>${testData.map(t => t.title).join(', ')}</strong></p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // برای اسلایدها از innerHTML استفاده کن
+                if (testType.toLowerCase() === 'slide') {
+                    document.getElementById("test-report").innerHTML = test.report;
+                } else {
+                    let html = '<table style="width:100%; border-collapse:collapse; text-align:center; border: 1px solid #e5e7eb;">';
+                    html += '<thead><tr style="background: #f3f4f6;"><th style="border:1px solid #e5e7eb; padding:8px;">پارامتر</th><th style="border:1px solid #e5e7eb; padding:8px;">مقدار</th><th style="border:1px solid #e5e7eb; padding:8px;">رنج مرجع</th></tr></thead><tbody>';
+                    
+                    if (test.rows && test.rows.length > 0) {
+                        test.rows.forEach(r => {
+                            html += '<tr><td style="border:1px solid #e5e7eb; padding:8px;">' + r.name + '</td>' +
+                                    '<td style="border:1px solid #e5e7eb; padding:8px;">' + r.value + '</td>' +
+                                    '<td style="border:1px solid #e5e7eb; padding:8px;">' + r.reference + '</td></tr>';
+                        });
+                    } else {
+                        html += '<tr><td colspan="3" style="border:1px solid #e5e7eb; padding:8px; color: #6b7280;">هیچ داده‌ای موجود نیست</td></tr>';
+                    }
+                    
+                    html += '</tbody></table>';
+                    document.getElementById("test-report").innerHTML = html;
+                }
+
+                const obsDiv = document.getElementById("observations");
+                obsDiv.innerHTML = "";
+                selectedObservations = [];
+                
+                if (test.observations && test.observations.length > 0) {
+                    totalObservations = test.observations.length;
+                    
+                    test.observations.forEach(obs => {
+                        const btn = document.createElement("button");
+                        btn.innerHTML = '<span>🔹</span> ' + obs;
+                        btn.onclick = () => selectObservation(btn, test.correct_observations, obs);
+                        obsDiv.appendChild(btn);
+                    });
+                } else {
+                    totalObservations = 0;
+                    obsDiv.innerHTML = '<p style="color: red; padding: 20px; text-align: center;">هیچ مشاهده‌ای موجود نیست. لطفاً ابتدا مشاهدات را در Admin Panel اضافه کنید.</p>';
+                }
+
+                attempts = 0;
+                
+                console.log('Test displayed successfully');
+            } catch (error) {
+                console.error('Error in showTest function:', error);
+                alert('خطا در نمایش تست. لطفاً صفحه را refresh کنید.');
+            }
+        }
+
+        function selectObservation(btn, correctObsList, observationText) {
+            try {
+                if (btn.classList.contains("selected")) return;
+
+                const isCorrect = correctObsList.includes(observationText);
+                
+                if (isCorrect) {
+                    correctObservations++;
+                    selectedObservations.push(observationText);
+                }
+
+                if (!isCorrect) {
+                    attempts++;
+                    btn.style.animation = 'shake 0.5s ease-in-out';
+                    setTimeout(() => btn.style.animation = '', 500);
+                    
+                    if (attempts >= maxAttempts) {
+                        alert("به حداکثر تلاش مجاز رسیدی. حالا می‌توانی تشخیص خود را بنویسی.");
+                    } else {
+                        alert("اشتباه! شما " + attempts + " بار تلاش کردید.");
+                    }
+                } else {
+                    btn.style.animation = 'success 0.5s ease-in-out';
+                    setTimeout(() => btn.style.animation = '', 500);
+                }
+                
+                btn.classList.add("selected");
+                
+                // ذخیره پیشرفت در دیتابیس (اگر کاربر لاگین کرده)
+                {% if user.is_authenticated %}
+                saveProgress(observationText, isCorrect);
+                {% endif %}
+            } catch (error) {
+                console.error('Error in selectObservation function:', error);
+                alert('خطا در انتخاب مشاهده. لطفاً دوباره تلاش کنید.');
+            }
+        }
+
+        function saveProgress(observationText, isCorrect) {
+            try {
+                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
+                if (!csrfToken) {
+                    console.error('CSRF token not found');
+                    return;
+                }
+                
+                fetch('{% url "save_progress" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRFToken': csrfToken.value
+                    },
+                    body: 'case_id={{ case.id }}&observation_text=' + encodeURIComponent(observationText) + '&is_correct=' + isCorrect
+                }).catch(error => {
+                    console.error('Error saving progress:', error);
+                });
+            } catch (error) {
+                console.error('Error in saveProgress function:', error);
+            }
+        }
+
+        function submitDiagnosis() {
+            try {
+                const diagnosis = document.getElementById("diagnosis-input").value.trim();
+                if (!diagnosis) {
+                    alert("لطفاً تشخیص خود را وارد کنید.");
+                    return;
+                }
+                
+                // نمایش لودینگ
+                const submitBtn = document.querySelector('.diagnosis-btn');
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<span class="loading"></span> در حال پردازش...';
+                submitBtn.disabled = true;
+                
+                // ذخیره نتیجه در دیتابیس (اگر کاربر لاگین کرده)
+                {% if user.is_authenticated %}
+                submitResult(diagnosis, correctObservations, totalObservations, attempts);
+                {% else %}
+                // نمایش نتیجه بدون ذخیره در دیتابیس
+                document.getElementById("diagnosis-section").style.display = "none";
+                document.getElementById("result").classList.remove("hidden");
+                document.getElementById("result").style.animation = "fadeIn 0.6s ease-out";
+                {% endif %}
+            } catch (error) {
+                console.error('Error in submitDiagnosis function:', error);
+                alert('خطا در ارسال تشخیص. لطفاً دوباره تلاش کنید.');
+            }
+        }
+
+        function submitResult(diagnosis, correctObs, totalObs, attemptsCount) {
+            try {
+                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
+                if (!csrfToken) {
+                    console.error('CSRF token not found');
+                    return;
+                }
+                
+                fetch('{% url "submit_case_result" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRFToken': csrfToken.value
+                    },
+                    body: 'case_id={{ case.id }}&user_diagnosis=' + encodeURIComponent(diagnosis) + '&correct_observations=' + correctObs + '&total_observations=' + totalObs + '&attempts_count=' + attemptsCount
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        document.getElementById("diagnosis-section").style.display = "none";
+                        document.getElementById("result").classList.remove("hidden");
+                        document.getElementById("result").style.animation = "fadeIn 0.6s ease-out";
+                        
+                        // نمایش پیام موفقیت
+                        if (data.is_diagnosis_correct) {
+                            alert("🎉 تشخیص شما صحیح بود!");
+                        } else {
+                            alert("❌ تشخیص شما اشتباه بود. پاسخ صحیح را در بالا مشاهده کنید.");
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error submitting result:', error);
+                    alert('خطا در ارسال نتیجه. لطفاً دوباره تلاش کنید.');
+                })
+                .finally(() => {
+                    // بازگرداندن دکمه به حالت عادی
+                    const submitBtn = document.querySelector('.diagnosis-btn');
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                });
+            } catch (error) {
+                console.error('Error in submitResult function:', error);
+                alert('خطا در ارسال نتیجه. لطفاً دوباره تلاش کنید.');
+            }
+        }
+
+        // بار اول خودکار CBC نمایش بده
+        window.addEventListener('load', () => {
+            try {
+                console.log('Page loaded, showing CBC test...');
+                console.log('Available test data:', testData);
+                
+                // بررسی اینکه آیا تست CBC موجود است
+                const cbcTest = testData.find(t => t.title === 'cbc');
+                if (cbcTest) {
+                    showTest('cbc');
+                    const firstBtn = document.querySelector('.test-btn');
+                    if (firstBtn) {
+                        firstBtn.classList.add('active');
+                    }
+                } else {
+                    console.log('CBC test not found, showing first available test...');
+                    if (testData.length > 0) {
+                        const firstTest = testData[0];
+                        showTest(firstTest.title);
+                        const firstBtn = document.querySelector('.test-btn');
+                        if (firstBtn) {
+                            firstBtn.classList.add('active');
+                        }
+                    } else {
+                        console.error('No tests available!');
+                        document.getElementById("test-report").innerHTML = '<p style="color: red; padding: 20px; text-align: center;">هیچ تستی موجود نیست. لطفاً ابتدا تست‌ها را در Admin Panel اضافه کنید.</p>';
+                        document.getElementById("observations").innerHTML = '<p style="color: red; padding: 20px; text-align: center;">هیچ تستی موجود نیست. لطفاً ابتدا تست‌ها را در Admin Panel اضافه کنید.</p>';
+                    }
+                }
+            } catch (error) {
+                console.error('Error in page load event:', error);
+                alert('خطا در بارگذاری صفحه. لطفاً صفحه را refresh کنید.');
+            }
+        });
+    </script>
+
+    <style>
+        /* Override background to remove purple */
+        body {
+            background: #f8fafc !important;
+        }
+        
+        .main {
+            background: #f8fafc !important;
+        }
+
+        /* Custom styles */
+        .case-info {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 2rem;
+        }
+
+        .case-info h3 {
+            font-size: 1.5rem;
+            color: #1f2937;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .case-info p {
+            color: #6b7280;
+            line-height: 1.6;
+            font-size: 1.125rem;
+        }
+
+        .test-selection {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 2rem;
+        }
+
+        .test-selection h3 {
+            font-size: 1.5rem;
+            color: #1f2937;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+
+        .test-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .test-btn {
+            background: rgba(255, 255, 255, 0.9);
+            color: #6b7280;
+            border: 2px solid #e5e7eb;
+            padding: 1rem 2rem;
+            border-radius: 9999px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            font-size: 1rem;
+            min-width: 140px;
+            justify-content: center;
+        }
+
+        .test-btn:hover {
+            border-color: #667eea;
+            color: #667eea;
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .test-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .test-btn span {
+            font-size: 1.5rem;
+        }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .left-panel,
+        .right-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .left-panel h3,
+        .right-panel h3 {
+            font-size: 1.375rem;
+            color: #1f2937;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .observations-container button {
+            background: rgba(255, 255, 255, 0.9);
+            color: #374151;
+            border: 2px solid #e5e7eb;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            backdrop-filter: blur(10px);
+            font-size: 0.95rem;
+            margin-bottom: 0.75rem;
+            width: 100%;
+            text-align: right;
+            justify-content: flex-start;
+        }
+
+        .observations-container button:hover {
+            border-color: #667eea;
+            color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .observations-container button.selected {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .diagnosis-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 2rem;
+        }
+
+        .diagnosis-section h3 {
+            font-size: 1.5rem;
+            color: #1f2937;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+
+        .diagnosis-section textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.75rem;
+            font-family: inherit;
+            font-size: 1rem;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+            background: white;
+            margin-bottom: 1.5rem;
+        }
+
+        .diagnosis-section textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .diagnosis-btn {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .diagnosis-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .result-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 2rem;
+        }
+
+        .result-section h3 {
+            font-size: 1.5rem;
+            color: #1f2937;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+
+        .result-content {
+            margin-bottom: 1.5rem;
+        }
+
+        .result-content p {
+            color: #6b7280;
+            line-height: 1.6;
+            font-size: 1.125rem;
+            margin-bottom: 1rem;
+        }
+
+        .navigation-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 2rem;
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            min-height: 56px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            color: white;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #e5e7eb;
+            border-radius: 50%;
+            border-top-color: #667eea;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        @keyframes success {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .test-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .test-btn {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .navigation-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .nav-btn {
+                width: 100%;
+                max-width: 300px;
+                justify-content: center;
+            }
+        }
+    </style>
+</body>
+</html>

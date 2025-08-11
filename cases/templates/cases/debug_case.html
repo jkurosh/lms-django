@@ -1,0 +1,145 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug: {{ case.title }}</title>
+    <link rel="stylesheet" href="{% static 'dadash/styles.css' %}">
+    <style>
+        .debug-section {
+            background: white;
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+        .debug-item {
+            margin: 10px 0;
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 4px;
+        }
+        .debug-label {
+            font-weight: bold;
+            color: #333;
+        }
+        .debug-value {
+            color: #666;
+            margin-top: 5px;
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+        .success {
+            color: green;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 20px;">
+        <h1>Debug: {{ case.title }}</h1>
+        
+        <div class="debug-section">
+            <h2>اطلاعات کلی کیس</h2>
+            <div class="debug-item">
+                <div class="debug-label">عنوان:</div>
+                <div class="debug-value">{{ case.title }}</div>
+            </div>
+            <div class="debug-item">
+                <div class="debug-label">دسته‌بندی:</div>
+                <div class="debug-value">{{ case.category.name|default:"بدون دسته" }}</div>
+            </div>
+            <div class="debug-item">
+                <div class="debug-label">تاریخ ایجاد:</div>
+                <div class="debug-value">{{ case.created_at }}</div>
+            </div>
+        </div>
+        
+        <div class="debug-section">
+            <h2>آمار</h2>
+            <div class="debug-item">
+                <div class="debug-label">تعداد تست‌های آزمایشگاهی:</div>
+                <div class="debug-value {% if lab_tests_count > 0 %}success{% else %}error{% endif %}">
+                    {{ lab_tests_count }}
+                </div>
+            </div>
+            <div class="debug-item">
+                <div class="debug-label">تعداد اسلایدها:</div>
+                <div class="debug-value {% if slides_count > 0 %}success{% else %}error{% endif %}">
+                    {{ slides_count }}
+                </div>
+            </div>
+            <div class="debug-item">
+                <div class="debug-label">تعداد مشاهدات:</div>
+                <div class="debug-value {% if tests_count > 0 %}success{% else %}error{% endif %}">
+                    {{ tests_count }}
+                </div>
+            </div>
+        </div>
+        
+        <div class="debug-section">
+            <h2>تست‌های آزمایشگاهی (LabTest)</h2>
+            {% if lab_tests %}
+                {% for test in lab_tests %}
+                <div class="debug-item">
+                    <div class="debug-label">{{ test.test_type }} - {{ test.name }}</div>
+                    <div class="debug-value">
+                        مقدار: {{ test.value }} | رنج مرجع: {{ test.reference_range }}<br>
+                        گزارش: {{ test.report }}
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="debug-item error">هیچ تست آزمایشگاهی موجود نیست!</div>
+            {% endif %}
+        </div>
+        
+        <div class="debug-section">
+            <h2>مشاهدات (Test)</h2>
+            {% if tests %}
+                {% for test in tests %}
+                <div class="debug-item">
+                    <div class="debug-label">{{ test.title }}</div>
+                    <div class="debug-value">
+                        گزارش: {{ test.report }}<br>
+                        مشاهدات: {{ test.observations|join:", " }}<br>
+                        پاسخ‌های صحیح: {{ test.correct_observations|join:", " }}
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="debug-item error">هیچ مشاهده‌ای موجود نیست!</div>
+            {% endif %}
+        </div>
+        
+        <div class="debug-section">
+            <h2>اسلایدها</h2>
+            {% if slides %}
+                {% for slide in slides %}
+                <div class="debug-item">
+                    <div class="debug-label">اسلاید</div>
+                    <div class="debug-value">
+                        تصویر: {{ slide.image.url }}<br>
+                        توضیحات: {{ slide.description }}
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="debug-item error">هیچ اسلایدی موجود نیست!</div>
+            {% endif %}
+        </div>
+        
+        <div class="debug-section">
+            <h2>لینک‌های مفید</h2>
+            <div class="debug-item">
+                <a href="{% url 'case_detail' case.id %}" style="color: blue;">مشاهده صفحه تست</a> |
+                <a href="{% url 'case_list' %}" style="color: blue;">بازگشت به لیست</a> |
+                <a href="/adlog/cases/case/{{ case.id }}/change/" style="color: blue;">ویرایش در Admin</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

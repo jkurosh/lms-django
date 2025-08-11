@@ -1,0 +1,127 @@
+{% extends 'dadash/base.html' %}
+
+{% block title %}اپلیکیشن مطالعه مورد دامپزشکی - Dadash{% endblock %}
+
+{% block content %}
+<!-- Categories Section -->
+<section class="categories-section" id="categories-section">
+    <h2 class="section-title">دسته‌بندی‌های مطالعات موردی</h2>
+    <div class="categories-grid">
+        <div class="category-card" data-category="cases">
+            <div class="category-icon">
+                <i class="fas fa-stethoscope"></i>
+            </div>
+            <h3>مطالعات موردی</h3>
+            <p>مطالعات موردی مربوط به همه دسته‌بندی‌ها و تخصص‌های دامپزشکی</p>
+            <div class="category-stats">
+                <span><i class="fas fa-file-medical"></i> {{ total_cases }} مورد</span>
+                <span><i class="fas fa-clock"></i> همه سطوح</span>
+            </div>
+            <a href="{% url 'case_list' %}" class="category-link">مشاهده موارد</a>
+        </div>
+
+        <div class="category-card" data-category="internal">
+            <div class="category-icon">
+                <i class="fas fa-heartbeat"></i>
+            </div>
+            <h3>بیماری‌های داخلی</h3>
+            <p>مطالعات موردی مربوط به بیماری‌های داخلی و سیستمیک</p>
+            <div class="category-stats">
+                <span><i class="fas fa-file-medical"></i> {{ categories|length }} دسته</span>
+                <span><i class="fas fa-clock"></i> متوسط</span>
+            </div>
+            <a href="{% url 'dadash:internal_diseases' %}" class="category-link">مشاهده موارد</a>
+        </div>
+
+        <div class="category-card" data-category="surgery">
+            <div class="category-icon">
+                <i class="fas fa-cut"></i>
+            </div>
+            <h3>جراحی</h3>
+            <p>مطالعات موردی مربوط به جراحی و پروسه‌های جراحی</p>
+            <div class="category-stats">
+                <span><i class="fas fa-file-medical"></i> {{ categories|length }} دسته</span>
+                <span><i class="fas fa-clock"></i> پیشرفته</span>
+            </div>
+            <a href="{% url 'dadash:surgery' %}" class="category-link">مشاهده موارد</a>
+        </div>
+
+        <div class="category-card" data-category="emergency">
+            <div class="category-icon">
+                <i class="fas fa-ambulance"></i>
+            </div>
+            <h3>پزشکی اورژانس</h3>
+            <p>مطالعات موردی مربوط به اورژانس و مراقبت‌های بحرانی</p>
+            <div class="category-stats">
+                <span><i class="fas fa-file-medical"></i> {{ categories|length }} دسته</span>
+                <span><i class="fas fa-clock"></i> پیشرفته</span>
+            </div>
+            <a href="{% url 'dadash:emergency' %}" class="category-link">مشاهده موارد</a>
+        </div>
+
+        <div class="category-card" data-category="dermatology">
+            <div class="category-icon">
+                <i class="fas fa-allergies"></i>
+            </div>
+            <h3>پوست‌شناسی</h3>
+            <p>مطالعات موردی مربوط به بیماری‌های پوست و مو</p>
+            <div class="category-stats">
+                <span><i class="fas fa-file-medical"></i> {{ categories|length }} دسته</span>
+                <span><i class="fas fa-clock"></i> متوسط</span>
+            </div>
+            <a href="{% url 'dadash:dermatology' %}" class="category-link">مشاهده موارد</a>
+        </div>
+
+        <div class="category-card" data-category="radiology">
+            <div class="category-icon">
+                <i class="fas fa-x-ray"></i>
+            </div>
+            <h3>رادیولوژی</h3>
+            <p>مطالعات موردی مربوط به تصویربرداری و تشخیص</p>
+            <div class="category-stats">
+                <span><i class="fas fa-file-medical"></i> {{ categories|length }} دسته</span>
+                <span><i class="fas fa-clock"></i> متوسط</span>
+            </div>
+            <a href="{% url 'dadash:radiology' %}" class="category-link">مشاهده موارد</a>
+        </div>
+
+        <div class="category-card" data-category="cardiology">
+            <div class="category-icon">
+                <i class="fas fa-heart"></i>
+            </div>
+            <h3>قلب و عروق</h3>
+            <p>مطالعات موردی مربوط به بیماری‌های قلبی و عروقی</p>
+            <div class="category-stats">
+                <span><i class="fas fa-file-medical"></i> {{ categories|length }} دسته</span>
+                <span><i class="fas fa-clock"></i> پیشرفته</span>
+            </div>
+            <a href="{% url 'dadash:cardiology' %}" class="category-link">مشاهده موارد</a>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats-section">
+    <h2 class="section-title">آمار کلی</h2>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-file-medical"></i>
+            </div>
+            <div class="stat-info">
+                <h3>کل مطالعات موردی</h3>
+                <p class="stat-number">{{ total_cases }}</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-layer-group"></i>
+            </div>
+            <div class="stat-info">
+                <h3>دسته‌بندی‌ها</h3>
+                <p class="stat-number">{{ categories|length }}</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %} 

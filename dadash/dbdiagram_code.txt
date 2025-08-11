@@ -1,0 +1,93 @@
+Table category {
+  id int [pk, increment]
+  name varchar(100) [not null, unique]
+  description text
+  is_active boolean [default: true]
+  sort_order int [default: 0]
+  created_at timestamp [default: `now()`]
+  updated_at timestamp [default: `now()`]
+}
+
+Table sub_category {
+  id int [pk, increment]
+  category_id int [ref: > category.id]
+  name varchar(100) [not null]
+  description text
+  is_active boolean [default: true]
+  sort_order int [default: 0]
+  created_at timestamp [default: `now()`]
+  updated_at timestamp [default: `now()`]
+}
+
+Table case_study {
+  id int [pk, increment]
+  sub_category_id int [ref: > sub_category.id]
+  title varchar(255) [not null]
+  patient_history text [not null]
+  difficulty_level enum('beginner', 'intermediate', 'advanced') [default: 'intermediate']
+  estimated_time_minutes int [default: 15]
+  is_active boolean [default: true]
+  created_at timestamp [default: `now()`]
+  updated_at timestamp [default: `now()`]
+}
+
+Table case_test {
+  id int [pk, increment]
+  case_study_id int [ref: > case_study.id]
+  test_name varchar(255) [not null]
+  test_description text
+  test_result text
+  image_url varchar(500)
+  image_alt_text varchar(255)
+  sort_order int [default: 0]
+  is_required boolean [default: true]
+  created_at timestamp [default: `now()`]
+  updated_at timestamp [default: `now()`]
+}
+
+Table case_option {
+  id int [pk, increment]
+  case_study_id int [ref: > case_study.id]
+  option_text text [not null]
+  is_correct boolean [default: false]
+  sort_order int [default: 0]
+  explanation_hint varchar(255)
+  created_at timestamp [default: `now()`]
+  updated_at timestamp [default: `now()`]
+}
+
+Table case_explanation {
+  id int [pk, increment]
+  case_study_id int [ref: > case_study.id, unique]
+  explanation_text text [not null]
+  key_learning_points text
+  references text
+  created_at timestamp [default: `now()`]
+  updated_at timestamp [default: `now()`]
+}
+
+Table user {
+  id int [pk, increment]
+  username varchar(50) [unique]
+  email varchar(255) [unique]
+  password_hash varchar(255)
+  first_name varchar(100)
+  last_name varchar(100)
+  role enum('student', 'instructor', 'admin') [default: 'student']
+  is_active boolean [default: true]
+  last_login timestamp
+  created_at timestamp [default: `now()`]
+  updated_at timestamp [default: `now()`]
+}
+
+Table user_progress {
+  id int [pk, increment]
+  user_id int [ref: > user.id]
+  case_study_id int [ref: > case_study.id]
+  selected_option_id int [ref: > case_option.id]
+  is_correct boolean
+  time_spent_seconds int
+  completed_at timestamp [default: `now()`]
+  created_at timestamp [default: `now()`]
+  updated_at timestamp [default: `now()`]
+} 

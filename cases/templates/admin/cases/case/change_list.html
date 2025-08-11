@@ -1,0 +1,55 @@
+{% extends "admin/change_list.html" %}
+{% load i18n admin_urls static admin_list %}
+
+{% block object-tools-items %}
+    <li>
+        <a href="{% url 'admin:cases_case_add_simple' %}" class="addlink">
+            افزودن کیس جدید
+        </a>
+    </li>
+    <li>
+        <a href="{% url 'admin:cases_case_import_excel' %}" class="addlink">
+            ورود از اکسل
+        </a>
+    </li>
+    {{ block.super }}
+{% endblock %}
+
+{% block content %}
+    <div class="module filtered">
+        <h2>راهنمای استفاده</h2>
+        <div style="padding: 15px; background: #f9f9f9; border-radius: 5px; margin-bottom: 20px;">
+            <p><strong>برای افزودن کیس جدید:</strong></p>
+            <ul style="margin-left: 20px;">
+                <li>روی "افزودن کیس جدید" کلیک کنید</li>
+                <li>اطلاعات اصلی کیس را وارد کنید</li>
+                <li>تست‌های نمونه به صورت خودکار اضافه می‌شوند</li>
+            </ul>
+            
+            <p><strong>برای ورود دسته‌ای:</strong></p>
+            <ul style="margin-left: 20px;">
+                <li>روی "ورود از اکسل" کلیک کنید</li>
+                <li>فایل اکسل با ستون‌های: title, history, correct_diagnosis, explanation</li>
+            </ul>
+            
+            <p><strong>برای کیس‌های موجود:</strong></p>
+            <ul style="margin-left: 20px;">
+                <li>کیس‌های مورد نظر را انتخاب کنید (checkbox)</li>
+                <li>از منوی Actions گزینه "اضافه کردن تست‌ها و مشاهدات به کیس‌های انتخاب‌شده" را انتخاب کنید</li>
+                <li>تست‌ها و مشاهدات نمونه اضافه می‌شوند</li>
+            </ul>
+            
+            <p><strong>نکته:</strong> هر کیس باید شامل تست‌های آزمایشگاهی و مشاهدات باشد تا در صفحه تست نمایش داده شود.</p>
+            
+            <p><strong>تست‌های اضافه شده:</strong></p>
+            <ul style="margin-left: 20px;">
+                <li><strong>CBC:</strong> Hemoglobin, WBC</li>
+                <li><strong>Chemistry:</strong> Glucose</li>
+                <li><strong>Other:</strong> Urinalysis</li>
+                <li><strong>مشاهدات:</strong> CBC, CHEM, OTHER, SLIDE</li>
+            </ul>
+        </div>
+    </div>
+    
+    {{ block.super }}
+{% endblock %} 

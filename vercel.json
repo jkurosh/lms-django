@@ -1,0 +1,17 @@
+{
+  "builds": [
+    {
+      "src": "vetlms/wsgi.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "vetlms/wsgi.py"
+    }
+  ],
+  "env": {
+    "DJANGO_SETTINGS_MODULE": "vetlms.settings"
+  }
+}
