@@ -6,7 +6,17 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.http import JsonResponse
 from django.utils import timezone
-from .models import Case, LabTest, UserProgress, UserObservation, UserProfile, CaseCategory
+from .models import (
+    Case,
+    LabTest,
+    UserProgress,
+    UserObservation,
+    UserProfile,
+    CaseCategory,
+    CBC_DEFAULT_OPTIONS,
+    CHEM_DEFAULT_OPTIONS,
+    MORPHO_DEFAULT_OPTIONS,
+)
 
 def case_list(request, category_slug=None):
     categories = CaseCategory.objects.all()
@@ -45,58 +55,96 @@ def case_detail(request, case_id):
     # دریافت مشاهدات (Test model)
     test_observations = case.tests.all()
     
-    # ساخت داده‌های جدول آزمایش به‌صورت گروهی
-    tests_data = []
+    # ساخت داده‌های جدول آزمایش به‌صورت گروهی (نمایش حتی بدون Test مرتبط)
+    tests_map = {}
     for lt in lab_tests:
         key = lt.test_type.lower()
-        
-        # پیدا کردن مشاهدات مربوط به این تست
-        related_test = test_observations.filter(title__iexact=key).first()
-        
-        if related_test:
-            # فقط اگر مشاهدات در پنل ادمین موجود باشد
-            observations = related_test.observations
-            correct_observations = related_test.correct_observations
-            
-            tests_data.append({
+        # تلاش برای یافتن تست مرتبط با تطبیق انعطاف‌پذیر
+        related_test = (
+            test_observations.filter(title__iexact=key).first()
+            or (test_observations.filter(title__icontains='chem').first() if key in ['chem', 'clinical chemistry'] else None)
+            or (test_observations.filter(title__icontains='cbc').first() if key in ['cbc'] else None)
+            or (test_observations.filter(title__icontains='slide').first() if key in ['slide'] else None)
+        )
+
+        if key not in tests_map:
+            tests_map[key] = {
                 'title': key,
-                'rows': [{
-                    'name': lt.name,
-                    'value': lt.value,
-                    'reference': lt.reference_range,
-                    'report': lt.report,
-                }],
-                'observations': observations,
-                'correct_observations': correct_observations,
-            })
+                'rows': [],
+                'observations': (
+                    [opt.text for opt in related_test.options.all()] if related_test and hasattr(related_test, 'options') and related_test.options.exists()
+                    else (
+                        related_test.observations if related_test and related_test.observations else (
+                            CBC_DEFAULT_OPTIONS if key == 'cbc' else (
+                                CHEM_DEFAULT_OPTIONS if key == 'chem' else (
+                                    MORPHO_DEFAULT_OPTIONS if key == 'other' else []
+                                )
+                            )
+                        )
+                    )
+                ),
+                'correct_observations': (
+                    [opt.text for opt in related_test.options.filter(is_correct=True)] if related_test and hasattr(related_test, 'options') and related_test.options.exists()
+                    else (related_test.correct_observations if related_test and related_test.correct_observations else [])
+                ),
+            }
+
+        tests_map[key]['rows'].append({
+            'name': lt.name,
+            'value': lt.value,
+            'reference': lt.reference_range,
+            'report': lt.report,
+        })
+
+    tests_data = list(tests_map.values())
+
+    # اگر هیچ داده‌ای برای CBC/CHEM/OTHER وجود ندارد، ورودی‌های پیش‌فرض اضافه کن
+    if not any(t.get('title') == 'cbc' for t in tests_data):
+        tests_data.append({
+            'title': 'cbc',
+            'rows': [],
+            'observations': CBC_DEFAULT_OPTIONS,
+            'correct_observations': [],
+        })
+    if not any(t.get('title') == 'chem' for t in tests_data):
+        tests_data.append({
+            'title': 'chem',
+            'rows': [],
+            'observations': CHEM_DEFAULT_OPTIONS,
+            'correct_observations': [],
+        })
+    if not any(t.get('title') == 'other' for t in tests_data):
+        tests_data.append({
+            'title': 'other',
+            'rows': [],
+            'observations': MORPHO_DEFAULT_OPTIONS,
+            'correct_observations': [],
+        })
     
-    # اضافه کردن اسلایدها به داده‌ها
+    # اضافه کردن اسلایدها به داده‌ها (نمایش حتی بدون Test مرتبط)
     slides_data = []
     for slide in slides:
-        # پیدا کردن مشاهدات مربوط به اسلاید
         slide_test = test_observations.filter(title__iexact='slide').first()
-        
-        if slide_test:
-            # فقط اگر مشاهدات در پنل ادمین موجود باشد
-            observations = slide_test.observations
-            correct_observations = slide_test.correct_observations
-            
-            # بررسی اینکه آیا اسلاید تصویر دارد یا نه
-            try:
-                if slide.image and slide.image.name:
-                    report_html = f"<img src='{slide.image.url}' style='max-width:100%; height:auto; border-radius:8px;' /><br><br><strong>توضیحات:</strong> {slide.description}"
-                else:
-                    report_html = f"<div style='background: #f0f0f0; padding: 20px; text-align: center; border-radius:8px;'><i class='fas fa-image' style='font-size: 48px; color: #ccc;'></i><br><br><strong>توضیحات:</strong> {slide.description}</div>"
-            except Exception as e:
-                print(f"Error processing slide image: {e}")
+
+        try:
+            if slide.image and slide.image.name:
+                report_html = f"<img src='{slide.image.url}' style='max-width:100%; height:auto; border-radius:8px;' /><br><br><strong>توضیحات:</strong> {slide.description}"
+            else:
                 report_html = f"<div style='background: #f0f0f0; padding: 20px; text-align: center; border-radius:8px;'><i class='fas fa-image' style='font-size: 48px; color: #ccc;'></i><br><br><strong>توضیحات:</strong> {slide.description}</div>"
-            
-            slides_data.append({
-                'title': 'slide',
-                'report': report_html,
-                'observations': observations,
-                'correct_observations': correct_observations
-            })
+        except Exception as e:
+            print(f"Error processing slide image: {e}")
+            report_html = f"<div style='background: #f0f0f0; padding: 20px; text-align: center; border-radius:8px;'><i class='fas fa-image' style='font-size: 48px; color: #ccc;'></i><br><br><strong>توضیحات:</strong> {slide.description}</div>"
+
+        slides_data.append({
+            'title': 'slide',
+            'report': report_html,
+            'observations': (
+                [opt.text for opt in slide_test.options.all()] if slide_test and hasattr(slide_test, 'options') and slide_test.options.exists() else (slide_test.observations if slide_test and slide_test.observations else [])
+            ),
+            'correct_observations': (
+                [opt.text for opt in slide_test.options.filter(is_correct=True)] if slide_test and hasattr(slide_test, 'options') and slide_test.options.exists() else (slide_test.correct_observations if slide_test and slide_test.correct_observations else [])
+            ),
+        })
     
     # ترکیب تست‌ها و اسلایدها
     all_tests = tests_data + slides_data

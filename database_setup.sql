@@ -1,10 +1,12 @@
+-- =====================================================
+-- Veterinary Cases Database Setup
+-- =====================================================
 
-CREATE DATABASE IF NOT EXISTS veterinary_cases
-CHARACTER SET utf8mb4
-COLLATE utf8mb4_unicode_ci;
-
+-- Create database
+CREATE DATABASE IF NOT EXISTS veterinary_cases CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE veterinary_cases;
 
+-- Categories table (e.g., "Internal Diseases", "Surgery")
 CREATE TABLE category (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL UNIQUE,
@@ -18,7 +20,7 @@ CREATE TABLE category (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Subcategories table (e.g., "Gastrointestinal", "Cardiovascular")
-CREATE TABLE sub_category (
+CREATE TABLE IF NOT EXISTS sub_category (
     id INT AUTO_INCREMENT PRIMARY KEY,
     category_id INT NOT NULL,
     name VARCHAR(100) NOT NULL,
@@ -34,7 +36,7 @@ CREATE TABLE sub_category (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Cases table (individual case studies)
-CREATE TABLE case_study (
+CREATE TABLE IF NOT EXISTS case_study (
     id INT AUTO_INCREMENT PRIMARY KEY,
     sub_category_id INT NOT NULL,
     title VARCHAR(255) NOT NULL,
@@ -51,7 +53,7 @@ CREATE TABLE case_study (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Diagnostic tests for each case
-CREATE TABLE case_test (
+CREATE TABLE IF NOT EXISTS case_test (
     id INT AUTO_INCREMENT PRIMARY KEY,
     case_study_id INT NOT NULL,
     test_name VARCHAR(255) NOT NULL,
@@ -69,7 +71,7 @@ CREATE TABLE case_test (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Answer options for each case
-CREATE TABLE case_option (
+CREATE TABLE IF NOT EXISTS case_option (
     id INT AUTO_INCREMENT PRIMARY KEY,
     case_study_id INT NOT NULL,
     option_text TEXT NOT NULL,
@@ -85,12 +87,12 @@ CREATE TABLE case_option (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Explanatory answer for each case
-CREATE TABLE case_explanation (
+CREATE TABLE IF NOT EXISTS case_explanation (
     id INT AUTO_INCREMENT PRIMARY KEY,
     case_study_id INT NOT NULL UNIQUE,
     explanation_text TEXT NOT NULL,
     key_learning_points TEXT,
-    references TEXT,
+    `references` TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (case_study_id) REFERENCES case_study(id) ON DELETE CASCADE
@@ -101,7 +103,7 @@ CREATE TABLE case_explanation (
 -- =====================================================
 
 -- Users table for future authentication and progress tracking
-CREATE TABLE user (
+CREATE TABLE IF NOT EXISTS user (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) UNIQUE,
     email VARCHAR(255) UNIQUE,
@@ -119,7 +121,7 @@ CREATE TABLE user (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- User progress tracking (optional for future use)
-CREATE TABLE user_progress (
+CREATE TABLE IF NOT EXISTS user_progress (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
     case_study_id INT NOT NULL,
@@ -162,9 +164,7 @@ INSERT INTO sub_category (category_id, name, description, sort_order) VALUES
 
 -- Insert sample case
 INSERT INTO case_study (sub_category_id, title, patient_history, difficulty_level, estimated_time_minutes) VALUES
-(1, 'Acute Vomiting in a 3-year-old Golden Retriever', 
-'Max is a 3-year-old male Golden Retriever presenting with acute onset vomiting for the past 12 hours. The owner reports that Max has been lethargic and has not eaten since yesterday morning. There is no known history of dietary indiscretion or toxin exposure. Physical examination reveals mild dehydration and abdominal discomfort.', 
-'intermediate', 20);
+(1, 'Acute Vomiting in a 3-year-old Golden Retriever', 'Max is a 3-year-old male Golden Retriever presenting with acute onset vomiting for the past 12 hours. The owner reports that Max has been lethargic and has not eaten since yesterday morning. There is no known history of dietary indiscretion or toxin exposure. Physical examination reveals mild dehydration and abdominal discomfort.', 'intermediate', 20);
 
 -- Insert sample tests for the case
 INSERT INTO case_test (case_study_id, test_name, test_description, test_result, sort_order) VALUES
@@ -181,15 +181,7 @@ INSERT INTO case_option (case_study_id, option_text, is_correct, sort_order) VAL
 
 -- Insert sample explanation
 INSERT INTO case_explanation (case_study_id, explanation_text, key_learning_points) VALUES
-(1, 
-'This case represents acute pancreatitis in a dog. The elevated WBC count with neutrophilia indicates inflammation, while the elevated BUN and creatinine suggest dehydration and potential kidney involvement. The elevated ALT indicates liver enzyme leakage, which is common in pancreatitis due to the close anatomical relationship between the pancreas and liver. The abdominal discomfort and vomiting are classic signs of pancreatitis.
-
-Treatment would include fluid therapy, anti-emetics, pain management, and withholding food for 24-48 hours followed by a low-fat diet.',
-'Key learning points:
-1. Pancreatitis should be considered in any dog with acute vomiting and abdominal pain
-2. Elevated liver enzymes can occur secondary to pancreatitis
-3. Dehydration is common and requires aggressive fluid therapy
-4. Early diagnosis and treatment improve prognosis');
+(1, 'This case represents acute pancreatitis in a dog. The elevated WBC count with neutrophilia indicates inflammation, while the elevated BUN and creatinine suggest dehydration and potential kidney involvement. The elevated ALT indicates liver enzyme leakage, which is common in pancreatitis due to the close anatomical relationship between the pancreas and liver. The abdominal discomfort and vomiting are classic signs of pancreatitis. Treatment would include fluid therapy, anti-emetics, pain management, and withholding food for 24-48 hours followed by a low-fat diet.', 'Key learning points: 1. Pancreatitis should be considered in any dog with acute vomiting and abdominal pain 2. Elevated liver enzymes can occur secondary to pancreatitis 3. Dehydration is common and requires aggressive fluid therapy 4. Early diagnosis and treatment improve prognosis');
 
 -- =====================================================
 -- Additional Indexes for Performance
@@ -208,14 +200,8 @@ CREATE INDEX idx_user_progress_user_completed ON user_progress(user_id, complete
 -- View for case details with category hierarchy
 CREATE VIEW case_details AS
 SELECT 
-    c.id,
-    c.title,
-    c.patient_history,
-    c.difficulty_level,
-    c.estimated_time_minutes,
-    sc.name AS subcategory_name,
-    cat.name AS category_name,
-    c.created_at
+    c.id, c.title, c.patient_history, c.difficulty_level, c.estimated_time_minutes,
+    sc.name AS subcategory_name, cat.name AS category_name, c.created_at
 FROM case_study c
 JOIN sub_category sc ON c.sub_category_id = sc.id
 JOIN category cat ON sc.category_id = cat.id
@@ -224,8 +210,7 @@ WHERE c.is_active = TRUE;
 -- View for case statistics
 CREATE VIEW case_statistics AS
 SELECT 
-    c.id,
-    c.title,
+    c.id, c.title,
     COUNT(ct.id) AS test_count,
     COUNT(co.id) AS option_count,
     SUM(CASE WHEN co.is_correct = TRUE THEN 1 ELSE 0 END) AS correct_options
@@ -244,10 +229,7 @@ DELIMITER //
 -- Procedure to get complete case with all related data
 CREATE PROCEDURE GetCaseWithDetails(IN case_id INT)
 BEGIN
-    SELECT 
-        c.*,
-        sc.name AS subcategory_name,
-        cat.name AS category_name
+    SELECT c.*, sc.name AS subcategory_name, cat.name AS category_name
     FROM case_study c
     JOIN sub_category sc ON c.sub_category_id = sc.id
     JOIN category cat ON sc.category_id = cat.id
@@ -261,9 +243,7 @@ END //
 -- Procedure to get cases by category
 CREATE PROCEDURE GetCasesByCategory(IN category_id INT)
 BEGIN
-    SELECT 
-        c.*,
-        sc.name AS subcategory_name
+    SELECT c.*, sc.name AS subcategory_name
     FROM case_study c
     JOIN sub_category sc ON c.sub_category_id = sc.id
     WHERE sc.category_id = category_id AND c.is_active = TRUE
@@ -271,61 +251,3 @@ BEGIN
 END //
 
 DELIMITER ;
-
--- =====================================================
--- Database Documentation
--- =====================================================
-
-/*
-DATABASE SCHEMA DOCUMENTATION
-
-This database is designed for a veterinary case study application with the following features:
-
-1. HIERARCHICAL STRUCTURE:
-   - Categories (e.g., Internal Diseases)
-   - Subcategories (e.g., Gastrointestinal)
-   - Cases (individual case studies)
-
-2. CASE COMPONENTS:
-   - Patient history
-   - Multiple diagnostic tests (with optional images)
-   - Multiple choice options (typically 4, one correct)
-   - Detailed explanation
-
-3. NORMALIZATION:
-   - All tables are in 3NF
-   - Proper foreign key relationships
-   - No redundant data
-
-4. PERFORMANCE FEATURES:
-   - Appropriate indexes on foreign keys and frequently queried columns
-   - Composite indexes for common query patterns
-   - Views for complex queries
-   - Stored procedures for common operations
-
-5. SCALABILITY:
-   - Soft deletes (is_active flags)
-   - Timestamp tracking
-   - Extensible user management system
-   - Progress tracking capabilities
-
-6. BEST PRACTICES:
-   - Consistent naming conventions (snake_case)
-   - UTF8MB4 character set for full Unicode support
-   - InnoDB engine for ACID compliance
-   - Proper constraint definitions
-
-USAGE EXAMPLES:
-
-1. Get all active cases in a category:
-   CALL GetCasesByCategory(1);
-
-2. Get complete case details:
-   CALL GetCaseWithDetails(1);
-
-3. Get case statistics:
-   SELECT * FROM case_statistics;
-
-4. Get case details with hierarchy:
-   SELECT * FROM case_details WHERE id = 1;
-*/ 

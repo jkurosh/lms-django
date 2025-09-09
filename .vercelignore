@@ -40,7 +40,15 @@ Thumbs.db
 README*
 DEPLOYMENT_README.md
 SECURITY_README.md
+PROJECT_STRUCTURE.md
 
 # Development files
 sample_cases.xlsx
 security_check.py
+
+# Static files (will be served by Vercel CDN)
+staticfiles/
+static/
+
+# Templates (will be included in deployment)
+# templates/

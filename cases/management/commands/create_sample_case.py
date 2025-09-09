@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from cases.models import Case, LabTest, Test, Slide, CaseCategory
+from cases.models import Case, LabTest, Test, Slide, CaseCategory, TestOption
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 class Command(BaseCommand):
@@ -89,40 +89,48 @@ class Command(BaseCommand):
             )
         
         # ایجاد مشاهدات CBC
-        Test.objects.create(
+        cbc_test = Test.objects.create(
             case=case,
             title='cbc',
             report='نتایج CBC نشان‌دهنده کم‌خونی و افزایش تعداد گلبول‌های سفید است',
             observations=['کم‌خونی', 'افزایش WBC', 'کاهش RBC', 'کاهش HGB', 'کاهش HCT'],
             correct_observations=['کم‌خونی', 'افزایش WBC', 'کاهش RBC', 'کاهش HGB', 'کاهش HCT']
         )
+        for idx, text in enumerate(cbc_test.observations or []):
+            TestOption.objects.create(test=cbc_test, text=text, is_correct=(text in (cbc_test.correct_observations or [])), order_index=idx)
         
         # ایجاد مشاهدات شیمی بالینی
-        Test.objects.create(
+        chem_test = Test.objects.create(
             case=case,
             title='chem',
             report='نتایج شیمی بالینی نشان‌دهنده آسیب کبدی است',
             observations=['افزایش ALT', 'افزایش AST', 'افزایش ALP', 'افزایش بیلی‌روبین', 'افزایش BUN'],
             correct_observations=['افزایش ALT', 'افزایش AST', 'افزایش ALP', 'افزایش بیلی‌روبین', 'افزایش BUN']
         )
+        for idx, text in enumerate(chem_test.observations or []):
+            TestOption.objects.create(test=chem_test, text=text, is_correct=(text in (chem_test.correct_observations or [])), order_index=idx)
         
         # ایجاد مشاهدات تست‌های دیگر
-        Test.objects.create(
+        other_test = Test.objects.create(
             case=case,
             title='other',
             report='سایر تست‌ها نشان‌دهنده اختلالات متابولیک است',
             observations=['افزایش BUN', 'افزایش کراتینین', 'قند خون طبیعی', 'اختلال عملکرد کلیه'],
             correct_observations=['افزایش BUN', 'افزایش کراتینین', 'قند خون طبیعی', 'اختلال عملکرد کلیه']
         )
+        for idx, text in enumerate(other_test.observations or []):
+            TestOption.objects.create(test=other_test, text=text, is_correct=(text in (other_test.correct_observations or [])), order_index=idx)
         
         # ایجاد مشاهدات اسلاید
-        Test.objects.create(
+        slide_test = Test.objects.create(
             case=case,
             title='slide',
             report='اسلایدهای بافت کبد نشان‌دهنده التهاب و تخریب سلولی است',
             observations=['التهاب کبد', 'تخریب سلولی', 'فیبروز', 'نکروز', 'تجمع سلول‌های التهابی'],
             correct_observations=['التهاب کبد', 'تخریب سلولی', 'فیبروز', 'نکروز', 'تجمع سلول‌های التهابی']
         )
+        for idx, text in enumerate(slide_test.observations or []):
+            TestOption.objects.create(test=slide_test, text=text, is_correct=(text in (slide_test.correct_observations or [])), order_index=idx)
         
         # ایجاد اسلاید نمونه (بدون تصویر)
         Slide.objects.create(

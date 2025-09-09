@@ -1,33 +1,11 @@
+{% extends 'dadash/base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="fa" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>بیماری‌های داخلی - Dadash</title>
-    <link rel="stylesheet" href="{% static 'dadash/styles.css' %}">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-</head>
-<body>
-    <!-- Header -->
-    <header class="header">
-        <div class="container">
-            <div class="header-content">
-                <div class="logo">
-                    <i class="fas fa-stethoscope"></i>
-                    <h1>دامپزشکی آنلاین - Dadash</h1>
-                </div>
-                <nav class="nav">
-                    <ul>
-                        <li><a href="{% url 'dadash:dadash_home' %}">خانه</a></li>
-                        <li><a href="{% url 'case_list' %}">مطالعات موردی</a></li>
-                        <li><a href="{% url 'dadash:internal_diseases' %}" class="active">بیماری‌های داخلی</a></li>
-                        <li><a href="#">درباره ما</a></li>
-                    </ul>
-                </nav>
-            </div>
-        </div>
-    </header>
+
+{% block title %}بیماری‌های داخلی - Dadash{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'dadash_app/internal-diseases.js' %}"></script>
+{% endblock %}
 
     <!-- Main Content -->
     <main class="main">
@@ -85,34 +63,5 @@
         </div>
     </main>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h4>درباره ما</h4>
-                    <p>اپلیکیشن مطالعه مورد دامپزشکی برای آموزش و ارتقای مهارت‌های تشخیصی</p>
-                </div>
-                <div class="footer-section">
-                    <h4>تماس با ما</h4>
-                    <p><i class="fas fa-envelope"></i> info@vetcases.com</p>
-                    <p><i class="fas fa-phone"></i> 021-12345678</p>
-                </div>
-                <div class="footer-section">
-                    <h4>شبکه‌های اجتماعی</h4>
-                    <div class="social-links">
-                        <a href="#"><i class="fab fa-telegram"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-linkedin"></i></a>
-                    </div>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2024 اپلیکیشن دامپزشکی. تمامی حقوق محفوظ است.</p>
-            </div>
-        </div>
-    </footer>
 
-    <script src="{% static 'dadash/script.js' %}"></script>
-</body>
-</html> 
+{% endblock %} 

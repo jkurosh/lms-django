@@ -12,6 +12,10 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 import os
 from pathlib import Path
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -32,12 +36,16 @@ ALLOWED_HOSTS = [
     '127.0.0.1', 
     '::1',
     '.vercel.app',
-    '.now.sh'
+    '.now.sh',
+    'dadash-project.vercel.app'  # Your specific domain
 ]
 
 # Add your Vercel domain
 if os.environ.get('VERCEL_DOMAIN'):
     ALLOWED_HOSTS.append(os.environ.get('VERCEL_DOMAIN'))
+
+# Vercel environment detection
+IS_VERCEL = os.environ.get('VERCEL', False)
 
 
 # Application definition
@@ -94,12 +102,52 @@ WSGI_APPLICATION = 'vetlms.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# Database Configuration
+# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
+
+# Database selection via environment
+DB_ENGINE = os.environ.get('DB_ENGINE', 'django.db.backends.mysql')
+
+if DB_ENGINE == 'django.db.backends.postgresql':
+    # PostgreSQL (e.g., Supabase)
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.environ.get('DB_NAME', 'postgres'),
+            'USER': os.environ.get('DB_USER', 'postgres'),
+            'PASSWORD': os.environ.get('DB_PASSWORD', 'DOHqCHoTRQMIPIOm'),
+            'HOST': os.environ.get('DB_HOST', 'db.nbqolrbepqcesypulsea.supabase.co'),
+            'PORT': os.environ.get('DB_PORT', '5432'),
+            'OPTIONS': {
+                # psycopg2 will pass this through; required by Supabase
+                'sslmode': os.environ.get('DB_SSLMODE', 'require'),
+            },
+        }
     }
-}
+elif os.environ.get('USE_SQLITE', 'False').lower() == 'true':
+    # SQLite (development)
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+else:
+    # MySQL (default)
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': os.environ.get('DB_NAME', 'veterinary_cases'),
+            'USER': os.environ.get('DB_USER', 'root'),
+            'PASSWORD': os.environ.get('DB_PASSWORD', ''),
+            'HOST': os.environ.get('DB_HOST', 'localhost'),
+            'PORT': os.environ.get('DB_PORT', '3306'),
+            'OPTIONS': {
+                'charset': 'utf8mb4',
+                'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+            },
+        }
+    }
 
 
 # Password validation

@@ -6,7 +6,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django import forms
 import pandas as pd
-from .models import Case, LabTest, Slide, Test, UserProgress, UserObservation, UserProfile, CaseCategory
+from .models import Case, LabTest, Slide, Test, TestOption, UserProgress, UserObservation, UserProfile, CaseCategory
 
 
 class ExcelImportForm(forms.Form):
@@ -438,32 +438,26 @@ class SlideAdmin(admin.ModelAdmin):
     thumbnail.short_description = "پیش‌نمایش"
 
 
+class TestOptionInline(admin.TabularInline):
+    model = TestOption
+    extra = 1
+    fields = ('text', 'is_correct', 'order_index')
+    ordering = ('order_index', 'id')
+
 class TestAdmin(admin.ModelAdmin):
-    list_display = ('case', 'title', 'observations_count', 'correct_observations_count')
-    search_fields = ('title', 'report', 'case__title')
-    list_filter = ('title', 'case__category')
-    
-    fieldsets = (
-        ('اطلاعات اصلی', {
-            'fields': ('case', 'title', 'report')
-        }),
-        ('مشاهدات', {
-            'fields': ('observations', 'correct_observations'),
-            'description': 'گزینه‌های مشاهدات و پاسخ‌های صحیح را به صورت JSON وارد کنید'
-        }),
-    )
-    
-    def observations_count(self, obj):
-        if obj.observations:
-            return len(obj.observations)
-        return 0
-    observations_count.short_description = "تعداد گزینه‌ها"
-    
-    def correct_observations_count(self, obj):
-        if obj.correct_observations:
-            return len(obj.correct_observations)
-        return 0
-    correct_observations_count.short_description = "تعداد پاسخ‌های صحیح"
+    list_display = ('case', 'title', 'options_count', 'correct_options_count')
+    list_filter = ('case',)
+    search_fields = ('case__title', 'title')
+    fields = ('case', 'title', 'report')
+    inlines = [TestOptionInline]
+
+    def options_count(self, obj):
+        return obj.options.count()
+    options_count.short_description = "تعداد گزینه‌ها"
+
+    def correct_options_count(self, obj):
+        return obj.options.filter(is_correct=True).count()
+    correct_options_count.short_description = "تعداد پاسخ‌های صحیح"
 
 
 class UserProgressAdmin(admin.ModelAdmin):
@@ -478,9 +472,93 @@ class UserObservationAdmin(admin.ModelAdmin):
     search_fields = ('user__username', 'case__title', 'observation_text')
 
 class UserProfileAdmin(admin.ModelAdmin):
-    list_display = ('user', 'overall_accuracy', 'diagnosis_accuracy', 'total_cases_completed', 'last_activity')
-    search_fields = ('user__username',)
-    readonly_fields = ('overall_accuracy', 'diagnosis_accuracy', 'total_cases_completed', 'total_observations', 'total_correct_observations', 'total_diagnoses', 'total_correct_diagnoses', 'average_attempts_per_case')
+    list_display = (
+        'user',
+        'subscription_start',
+        'subscription_end',
+        'is_subscription_active_admin',
+        'overall_accuracy',
+        'diagnosis_accuracy',
+        'total_cases_completed',
+        'last_activity',
+    )
+    list_filter = (
+        'subscription_start',
+        'subscription_end',
+    )
+    search_fields = ('user__username', 'user__email')
+    readonly_fields = (
+        'overall_accuracy',
+        'diagnosis_accuracy',
+        'total_cases_completed',
+        'total_observations',
+        'total_correct_observations',
+        'total_diagnoses',
+        'total_correct_diagnoses',
+        'average_attempts_per_case',
+        'is_subscription_active_admin',
+    )
+    fieldsets = (
+        ('کاربر', {
+            'fields': ('user',)
+        }),
+        ('اشتراک', {
+            'fields': ('subscription_start', 'subscription_end', 'is_subscription_active_admin'),
+        }),
+        ('آمار', {
+            'fields': (
+                'overall_accuracy', 'diagnosis_accuracy', 'total_cases_completed', 'total_observations',
+                'total_correct_observations', 'total_diagnoses', 'total_correct_diagnoses', 'average_attempts_per_case'
+            )
+        }),
+        ('سیستمی', {
+            'fields': ('last_activity', 'created_at'),
+        })
+    )
+
+    actions = ['activate_30_days', 'extend_30_days', 'clear_subscription']
+
+    def is_subscription_active_admin(self, obj):
+        return obj.is_subscription_active
+    is_subscription_active_admin.boolean = True
+    is_subscription_active_admin.short_description = 'اشتراک فعال'
+
+    def activate_30_days(self, request, queryset):
+        from django.utils import timezone
+        from datetime import timedelta
+        now = timezone.now()
+        updated = 0
+        for profile in queryset:
+            profile.subscription_start = now
+            profile.subscription_end = now + timedelta(days=30)
+            profile.save(update_fields=['subscription_start', 'subscription_end'])
+            updated += 1
+        self.message_user(request, f"{updated} اشتراک برای ۳۰ روز فعال شد.")
+    activate_30_days.short_description = 'فعال‌سازی اشتراک ۳۰ روزه'
+
+    def extend_30_days(self, request, queryset):
+        from django.utils import timezone
+        from datetime import timedelta
+        now = timezone.now()
+        updated = 0
+        for profile in queryset:
+            start = profile.subscription_start or now
+            end = profile.subscription_end or now
+            if end < now:
+                # اگر منقضی شده بود از حالا محاسبه شود
+                end = now
+                start = now
+            profile.subscription_start = start
+            profile.subscription_end = end + timedelta(days=30)
+            profile.save(update_fields=['subscription_start', 'subscription_end'])
+            updated += 1
+        self.message_user(request, f"{updated} اشتراک ۳۰ روز تمدید شد.")
+    extend_30_days.short_description = 'تمدید ۳۰ روزه اشتراک'
+
+    def clear_subscription(self, request, queryset):
+        updated = queryset.update(subscription_start=None, subscription_end=None)
+        self.message_user(request, f"اشتراک {updated} کاربر پاک شد.")
+    clear_subscription.short_description = 'حذف اشتراک'
 
 admin.site.register(Case, CaseAdmin)
 admin.site.register(LabTest, LabTestAdmin)
