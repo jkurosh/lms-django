@@ -37,7 +37,7 @@ ALLOWED_HOSTS = [
     '::1',
     '.vercel.app',
     '.now.sh',
-    'dadash-project.vercel.app'  # Your specific domain
+    'heyvoonak-project.vercel.app'  # Your specific domain
 ]
 
 # Add your Vercel domain
@@ -59,15 +59,21 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    # Third party apps
+    'rest_framework',
+    'corsheaders',
+    'django_filters',
+
     # اپ خودت
     'cases',   # اسم اپت
-    'dadash_app',   # اپ dadash
+    'dadash_app',   # اپ heyvoonak
 ]
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -106,24 +112,24 @@ WSGI_APPLICATION = 'vetlms.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 # Database selection via environment
-DB_ENGINE = os.environ.get('DB_ENGINE', 'django.db.backends.mysql')
+DB_ENGINE = os.environ.get('DB_ENGINE', 'django.db.backends.postgresql')
 
 if DB_ENGINE == 'django.db.backends.postgresql':
-    # PostgreSQL (e.g., Supabase)
-    DATABASES = {
+     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.environ.get('DB_NAME', 'postgres'),
-            'USER': os.environ.get('DB_USER', 'postgres'),
-            'PASSWORD': os.environ.get('DB_PASSWORD', 'DOHqCHoTRQMIPIOm'),
-            'HOST': os.environ.get('DB_HOST', 'db.nbqolrbepqcesypulsea.supabase.co'),
-            'PORT': os.environ.get('DB_PORT', '5432'),
+            'NAME': 'postgres',
+            'USER': 'postgres.nbqolrbepqcesypulsea',
+            'PASSWORD': 'DOHqCHoTRQMIPIOm',
+            'HOST': 'aws-1-us-east-2.pooler.supabase.com',
+            'PORT': '6543',
             'OPTIONS': {
-                # psycopg2 will pass this through; required by Supabase
-                'sslmode': os.environ.get('DB_SSLMODE', 'require'),
+                'sslmode': 'require',
             },
         }
     }
+
+
 elif os.environ.get('USE_SQLITE', 'False').lower() == 'true':
     # SQLite (development)
     DATABASES = {
@@ -174,7 +180,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Tehran'
 
 USE_I18N = True
 
@@ -242,5 +248,25 @@ LOGGING = {
         'handlers': ['console'],
         'level': 'WARNING',
     },
+}
+
+# CORS settings for Next.js frontend
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
+
+CORS_ALLOW_CREDENTIALS = True
+
+# REST Framework settings
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',
+    ],
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 20
 }
 

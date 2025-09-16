@@ -1,6 +1,73 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+# گزینه‌های پیش‌فرض برای تست CBC
+CBC_DEFAULT_OPTIONS = [
+    'Polycythemia',
+    'No abnormalities',
+    'Mild nonregenerative anemia',
+    'Mild regenerative anemia',
+    'Neutrophilia',
+    'Neutropenia',
+    'Lymphopenia',
+    'Lymphocytosis',
+    'Eosinophilia',
+    'Eosinopenia',
+    'Monocytosis',
+]
+
+# گزینه‌های پیش‌فرض برای شیمی بالینی (CHEM)
+CHEM_DEFAULT_OPTIONS = [
+    'No abnormalities',
+    'Physiological hypoglycemia',
+    'Physiological hyperglycemia',
+    'Significative hyperglycemia',
+    'Artifactual hypoglycemia',
+    'Uremia',
+    'Low urea',
+    'High liver enzymes',
+    'Hyperproteinemia',
+    'Hypoproteinemia',
+    'Hypoalbuminemia',
+    'Hyperglobulinemia',
+    'Physiological hypercalcemia',
+    'Significant hypercalcemia',
+    'Hypocalcemia (hypoalbuminemia)',
+    'Significant hypocalcemia',
+    'Hyperphosphatemia',
+    'Hyperkalemia',
+    'Hypokalemia',
+    'Hypernatremia',
+    'Hyponatremia',
+    'Hyperchloremia',
+    'Hypochloremia',
+    'High anion gap metabolic acidosis',
+    'Hyperchloremic metabolic acidosis',
+    'Metabolic alkalosis',
+    'Mixed acid-base disorder',
+]
+
+# گزینه‌های پیش‌فرض تغییرات مورفولوژیک (MORPHO)
+MORPHO_DEFAULT_OPTIONS = [
+    'No abnormalities',
+    'Reactive lymphocytes',
+    'Circulating blasts',
+    'Spherocytes',
+    'Acanthocytes',
+    'Keratocytes',
+    'Schizocytes',
+    'Heinz bodies',
+    'Howell-Joly bodies',
+    'Autoagglutination',
+    'Microcytosis',
+    'Megaloblasts',
+    'Nucleated red blood cells',
+    'Toxic neutrophils',
+    'Immature neutrophils',
+]
 
 TEST_TYPES = [
     ('CBC', 'CBC'),
@@ -75,25 +142,48 @@ CHEM_DEFAULT_OPTIONS = [
 ]
 
 class CaseCategory(models.Model):
-    name = models.CharField(max_length=100, unique=True)
-    slug = models.SlugField(max_length=120, unique=True)
-    description = models.TextField(blank=True)
-    icon = models.CharField(max_length=10, blank=True, help_text="اختیاری؛ ایموجی یا آیکن کوتاه")
+    name = models.TextField(unique=True)
+    slug = models.TextField(unique=True, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name = "دسته‌بندی کیس"
         verbose_name_plural = "دسته‌بندی‌ها"
         ordering = ['name']
+        db_table = 'cases_casecategory'
+
+    def __str__(self):
+        return self.name
+
+class SubCategory(models.Model):
+    category = models.ForeignKey(CaseCategory, on_delete=models.CASCADE, related_name='subcategories')
+    name = models.TextField()
+    slug = models.TextField(blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "زیردسته‌بندی"
+        verbose_name_plural = "زیردسته‌بندی‌ها"
+        ordering = ['name']
+        db_table = 'cases_subcategory'
 
     def __str__(self):
         return self.name
 
 class Case(models.Model):
     category = models.ForeignKey(CaseCategory, on_delete=models.SET_NULL, null=True, blank=True, related_name='cases')
-    title = models.CharField(max_length=200)
-    history = models.TextField()
-    correct_diagnosis = models.TextField()
-    explanation = models.TextField()
+    sub_category = models.ForeignKey('SubCategory', on_delete=models.SET_NULL, null=True, blank=True, related_name='cases')
+    title = models.TextField()
+    slug = models.TextField(unique=True, blank=True, null=True)
+    summary = models.TextField(blank=True, null=True)
+    history = models.TextField(blank=True, null=True, verbose_name="پیشینه")
+    correct_diagnosis = models.TextField(blank=True, null=True, verbose_name="تشخیص صحیح")
+    explanation = models.TextField(blank=True, null=True, verbose_name="توضیحات")
+    is_published = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -102,131 +192,109 @@ class Case(models.Model):
 
     class Meta:
         ordering = ['id']
+        db_table = 'cases_case'
 
 class LabTest(models.Model):
-    case = models.ForeignKey(Case, on_delete=models.CASCADE, related_name='lab_tests')
-    test_type = models.CharField(max_length=10, choices=TEST_TYPES)
-    name = models.CharField(max_length=100)  # مثل Hematocrit
-    reference_range = models.CharField(max_length=100)
-    value = models.CharField(max_length=100)
-    report = models.TextField(blank=True)
-
-    def __str__(self):
-        return f"{self.name} ({self.test_type})"
-
-class Slide(models.Model):
-    case = models.ForeignKey(Case, on_delete=models.CASCADE, related_name='slides')
-    image = models.ImageField(upload_to='slides/')
-    description = models.TextField(blank=True)
-
-    def __str__(self):
-        return f"Slide for {self.case.title}"
-
-class Test(models.Model):
-    case = models.ForeignKey(Case, on_delete=models.CASCADE, related_name='tests')
-    title = models.CharField(max_length=100)  # مثلاً CBC, CLIN.CHEMISTRY
-    report = models.TextField()
-    observations = models.JSONField(blank=True, null=True)  # برای سازگاری قدیمی
-    correct_observations = models.JSONField(blank=True, null=True)
-
-    def __str__(self):
-        return f"{self.title} for {self.case.title}"
-
-    def save(self, *args, **kwargs):
-        is_new = self.pk is None
-        super().save(*args, **kwargs)
-        # اگر تست CBC / CHEM / OTHER است و تازه ایجاد شده و هنوز گزینه‌ای ندارد، گزینه‌های پیش‌فرض را بساز
-        title_normalized = (self.title or '').strip().lower()
-        if is_new and title_normalized in ('cbc', 'chem', 'other') and not self.options.exists():
-            if title_normalized == 'cbc':
-                defaults = CBC_DEFAULT_OPTIONS
-            elif title_normalized == 'chem':
-                defaults = CHEM_DEFAULT_OPTIONS
-            else:
-                defaults = MORPHO_DEFAULT_OPTIONS
-            if not self.observations:
-                self.observations = defaults
-            if not self.correct_observations:
-                self.correct_observations = []
-            super().save(update_fields=['observations', 'correct_observations'])
-
-            for idx, text in enumerate(defaults):
-                TestOption.objects.create(test=self, text=text, is_correct=False, order_index=idx)
-
-class TestOption(models.Model):
-    test = models.ForeignKey(Test, on_delete=models.CASCADE, related_name='options')
-    text = models.CharField(max_length=255)
-    is_correct = models.BooleanField(default=False)
-    order_index = models.PositiveIntegerField(default=0)
-
-    class Meta:
-        ordering = ['order_index', 'id']
-
-    def __str__(self):
-        return f"{self.text} ({'✓' if self.is_correct else '✗'})"
-
-# ایجاد خودکار تست‌های پیش‌فرض برای هر کیس جدید
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-
-@receiver(post_save, sender=Case)
-def create_default_tests_for_case(sender, instance: Case, created: bool, **kwargs):
-    if not created:
-        return
-    # اگر تستی موجود نیست، تست‌های پیش‌فرض بساز
-    if instance.tests.exists():
-        return
-    defaults_map = {
-        'cbc': CBC_DEFAULT_OPTIONS,
-        'chem': CHEM_DEFAULT_OPTIONS,
-        'other': MORPHO_DEFAULT_OPTIONS,
-    }
-    for title, options in defaults_map.items():
-        test = Test.objects.create(case=instance, title=title, report='')
-        # پر کردن JSON برای سازگاری
-        test.observations = options
-        test.correct_observations = []
-        test.save(update_fields=['observations', 'correct_observations'])
-        # ایجاد TestOption ها
-        for idx, text in enumerate(options):
-            TestOption.objects.create(test=test, text=text, is_correct=False, order_index=idx)
-
-# مدل‌های جدید برای پیگیری عملکرد کاربران
-class UserProgress(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='case_progress')
-    case = models.ForeignKey(Case, on_delete=models.CASCADE, related_name='user_progress')
-    completed = models.BooleanField(default=False)
-    correct_observations = models.IntegerField(default=0)
-    total_observations = models.IntegerField(default=0)
-    attempts_count = models.IntegerField(default=0)
-    user_diagnosis = models.TextField(blank=True)
-    is_diagnosis_correct = models.BooleanField(null=True)
-    completed_at = models.DateTimeField(null=True, blank=True)
+    case = models.ForeignKey(Case, on_delete=models.CASCADE, related_name='lab_tests', db_column='case_study_id')
+    lab_name = models.TextField(blank=True, null=True)
+    normal_range = models.TextField(blank=True, null=True)
+    lab_result = models.TextField(blank=True, null=True)
+    lab_type = models.CharField(max_length=50)
+    order_index = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        unique_together = ['user', 'case']
-        ordering = ['-completed_at']
+        db_table = 'case_tests'
+
+    def __str__(self):
+        return f"{self.lab_name} ({self.lab_type})"
+
+class Slide(models.Model):
+    case = models.ForeignKey(Case, on_delete=models.CASCADE, related_name='slides', db_column='case_id')
+    image = models.CharField(max_length=100)
+    title = models.TextField(blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+    order_index = models.IntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'cases_slide'
+
+    def __str__(self):
+        return f"Slide for {self.case.title}"
+
+# Test model حذف شد چون با LabTest تداخل داشت
+
+# TestOption model حذف شد چون به Test وابسته بود
+
+# Signal حذف شد چون Test model حذف شد
+
+# مدل‌های جدید برای پیگیری عملکرد کاربران - بر اساس اسکیما دیتابیس
+class UserProgress(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='case_progress', db_column='user_id')
+    case = models.ForeignKey(Case, on_delete=models.CASCADE, related_name='user_progress', db_column='case_study_id')
+    completed = models.BooleanField(default=False)
+    score = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+    attempts = models.IntegerField(default=0)
+    started_at = models.DateTimeField(null=True, blank=True)
+    completed_at = models.DateTimeField(null=True, blank=True)
+    last_test = models.ForeignKey(LabTest, on_delete=models.SET_NULL, null=True, blank=True, db_column='last_test_id')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'user_progress'
 
     def __str__(self):
         return f"{self.user.username} - {self.case.title}"
 
     @property
     def accuracy_percentage(self):
-        if self.total_observations == 0:
+        if self.score is None:
             return 0
-        return round((self.correct_observations / self.total_observations) * 100, 1)
+        return float(self.score)
 
-class UserObservation(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='observations')
-    case = models.ForeignKey(Case, on_delete=models.CASCADE, related_name='user_observations')
-    observation_text = models.CharField(max_length=200)
-    is_correct = models.BooleanField()
-    selected_at = models.DateTimeField(auto_now_add=True)
+class Test(models.Model):
+    case = models.ForeignKey(Case, on_delete=models.CASCADE, related_name='tests')
+    title = models.CharField(max_length=100, choices=[
+        ('cbc', 'CBC'),
+        ('chem', 'Clinical Chemistry'),
+        ('morpho', 'Morphological Changes'),
+        ('other', 'Other Tests'),
+        ('slide', 'Slides')
+    ])
+    report = models.TextField(blank=True, null=True)
+    observations = models.JSONField(default=list, blank=True)
+    correct_observations = models.JSONField(default=list, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'tests'
+        unique_together = ('case', 'title')
 
     def __str__(self):
-        return f"{self.user.username} - {self.observation_text}"
+        return f"{self.case.title} - {self.get_title_display()}"
+
+# TestOption model حذف شد چون با UserObservation تداخل داشت
+
+class UserObservation(models.Model):
+    case = models.ForeignKey(Case, on_delete=models.CASCADE, related_name='user_observations', null=True, blank=True)
+    case_test = models.ForeignKey(LabTest, on_delete=models.CASCADE, related_name='options', db_column='case_test_id', null=True, blank=True)
+    observation_text = models.TextField(db_column='option_text', null=True, blank=True)
+    is_correct = models.BooleanField(default=False)
+    explanation = models.TextField(null=True, blank=True)
+    order_index = models.IntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'case_options'
+
+    def __str__(self):
+        return f"{self.observation_text or 'Unknown'} - {self.is_correct or False}"
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
@@ -282,3 +350,78 @@ class UserProfile(models.Model):
             self.average_attempts_per_case = sum(p.attempts_count for p in progress_records) / self.total_cases_completed
         
         self.save()
+
+
+@receiver(post_save, sender=Case)
+def create_default_lab_tests_for_case(sender, instance, created, **kwargs):
+    """ایجاد تست‌های پیش‌فرض برای کیس جدید"""
+    if created:
+        # ایجاد تست CBC
+        cbc_test = LabTest.objects.create(
+            case=instance,
+            lab_type='CBC',
+            lab_name='Complete Blood Count',
+            normal_range='Normal ranges vary by species',
+            lab_result='',
+            order_index=1
+        )
+        
+        # ایجاد تست CHEM
+        chem_test = LabTest.objects.create(
+            case=instance,
+            lab_type='CHEM',
+            lab_name='Clinical Chemistry Panel',
+            normal_range='Normal ranges vary by species',
+            lab_result='',
+            order_index=2
+        )
+        
+        # ایجاد تست MORPHO
+        morpho_test = LabTest.objects.create(
+            case=instance,
+            lab_type='MORPHO',
+            lab_name='Morphological Changes',
+            normal_range='No abnormalities expected',
+            lab_result='',
+            order_index=3
+        )
+        
+        # ایجاد گزینه‌های پیش‌فرض برای UserObservation
+        create_default_user_observations(instance, cbc_test, chem_test, morpho_test)
+
+
+def create_default_user_observations(case, cbc_test, chem_test, morpho_test):
+    """ایجاد گزینه‌های پیش‌فرض UserObservation برای تست‌های مختلف"""
+    
+    # ایجاد UserObservation برای CBC
+    for i, option in enumerate(CBC_DEFAULT_OPTIONS):
+        UserObservation.objects.create(
+            case=case,
+            case_test=cbc_test,
+            observation_text=option,
+            is_correct=False,  # به صورت پیش‌فرض غلط
+            explanation="",
+            order_index=i
+        )
+    
+    # ایجاد UserObservation برای CHEM
+    for i, option in enumerate(CHEM_DEFAULT_OPTIONS):
+        UserObservation.objects.create(
+            case=case,
+            case_test=chem_test,
+            observation_text=option,
+            is_correct=False,  # به صورت پیش‌فرض غلط
+            explanation="",
+            order_index=i
+        )
+    
+    # ایجاد UserObservation برای MORPHO
+    for i, option in enumerate(MORPHO_DEFAULT_OPTIONS):
+        UserObservation.objects.create(
+            case=case,
+            case_test=morpho_test,
+            observation_text=option,
+            is_correct=False,  # به صورت پیش‌فرض غلط
+            explanation="",
+            order_index=i
+        )

@@ -61,6 +61,10 @@
                         <span>🧪</span>
                         CLIN.CHEMISTRY
                     </button>
+                    <button onclick="showTest('morpho', this)" class="test-btn">
+                        <span>🔬</span>
+                        MORPHOLOGICAL
+                    </button>
                     <button onclick="showTest('other', this)" class="test-btn">
                         <span>🔬</span>
                         OTHER TESTS
@@ -185,9 +189,6 @@
         const maxAttempts = 3;
         let currentTestType = '';
         let userProgress = null;
-        let selectedObservations = [];
-        let correctObservations = 0;
-        let totalObservations = 0;
 
         // دریافت داده‌های تست از سرور
         const testDataElement = document.getElementById('test-data');
@@ -217,7 +218,7 @@
             currentTestType = testType;
             
             // پیدا کردن تست مربوطه
-            const test = testData.find(t => t.title === testType.toLowerCase());
+            const test = testData.find(t => t.test_category === testType.toUpperCase());
             
             if (!test) {
                 document.getElementById("test-report").innerHTML = `
@@ -243,109 +244,28 @@
             const testForm = document.getElementById('test-form');
             const testQuestions = document.getElementById('test-questions');
             
-            // پاک کردن مشاهدات قبلی
-            const obsDiv = document.getElementById("observations");
-            obsDiv.innerHTML = "";
-            selectedObservations = [];
-            
-            // ایجاد مشاهدات
-            if (test.observations && test.observations.length > 0) {
-                totalObservations = test.observations.length;
-                
-                test.observations.forEach(obs => {
-                    const btn = document.createElement("button");
-                    btn.innerHTML = '<span>🔹</span> ' + obs;
-                    btn.onclick = () => selectObservation(btn, test.correct_observations, obs);
-                    obsDiv.appendChild(btn);
-                });
-            } else {
-                totalObservations = 0;
-                obsDiv.innerHTML = '<p style="color: red; padding: 20px; text-align: center;">هیچ مشاهده‌ای موجود نیست. لطفاً ابتدا مشاهدات را در Admin Panel اضافه کنید.</p>';
-            }
-            
             // پاک کردن سوالات قبلی
             testQuestions.innerHTML = '';
             
             // ایجاد فرم تست
-            if (test.questions && test.questions.length > 0) {
-                test.questions.forEach((question, index) => {
-                    const questionDiv = document.createElement('div');
-                    questionDiv.className = 'question-item';
-                    questionDiv.innerHTML = `
-                        <h4>سوال ${index + 1}: ${question.question}</h4>
-                        <div class="options">
-                            ${question.options.map((option, optIndex) => `
-                                <label class="option-label">
-                                    <input type="radio" name="test_${question.id}" value="${option.id}">
-                                    <span class="option-text">${option.option_text}</span>
-                                </label>
-                            `).join('')}
-                        </div>
-                    `;
-                    testQuestions.appendChild(questionDiv);
-                });
-            }
+            test.questions.forEach((question, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question-item';
+                questionDiv.innerHTML = `
+                    <h4>سوال ${index + 1}: ${question.question}</h4>
+                    <div class="options">
+                        ${question.options.map((option, optIndex) => `
+                            <label class="option-label">
+                                <input type="radio" name="test_${question.id}" value="${option.id}">
+                                <span class="option-text">${option.option_text}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                `;
+                testQuestions.appendChild(questionDiv);
+            });
             
             testForm.classList.remove('hidden');
-        }
-        
-        function selectObservation(btn, correctObsList, observationText) {
-            try {
-                if (btn.classList.contains("selected")) return;
-                const isCorrect = correctObsList.includes(observationText);
-                
-                if (isCorrect) {
-                    correctObservations++;
-                    selectedObservations.push(observationText);
-                }
-                if (!isCorrect) {
-                    attempts++;
-                    btn.style.animation = 'shake 0.5s ease-in-out';
-                    setTimeout(() => btn.style.animation = '', 500);
-                    
-                    if (attempts >= maxAttempts) {
-                        alert("به حداکثر تلاش مجاز رسیدی. حالا می‌توانی تشخیص خود را بنویسی.");
-                    } else {
-                        alert("اشتباه! شما " + attempts + " بار تلاش کردید.");
-                    }
-                } else {
-                    btn.style.animation = 'success 0.5s ease-in-out';
-                    setTimeout(() => btn.style.animation = '', 500);
-                }
-                
-                btn.classList.add("selected");
-                
-                // ذخیره پیشرفت در دیتابیس (اگر کاربر لاگین کرده)
-                {% if user.is_authenticated %}
-                saveProgress(observationText, isCorrect);
-                {% endif %}
-            } catch (error) {
-                console.error('Error in selectObservation function:', error);
-                alert('خطا در انتخاب مشاهده. لطفاً دوباره تلاش کنید.');
-            }
-        }
-        
-        function saveProgress(observationText, isCorrect) {
-            try {
-                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
-                if (!csrfToken) {
-                    console.error('CSRF token not found');
-                    return;
-                }
-                
-                fetch('{% url "save_progress" %}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        'X-CSRFToken': csrfToken.value
-                    },
-                    body: 'case_id={{ case.id }}&observation_text=' + encodeURIComponent(observationText) + '&is_correct=' + isCorrect
-                }).catch(error => {
-                    console.error('Error saving progress:', error);
-                });
-            } catch (error) {
-                console.error('Error in saveProgress function:', error);
-            }
         }
         
         function submitTest() {
@@ -365,7 +285,7 @@
             // ارسال پاسخ‌ها به سرور
             const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
             
-            fetch('{% url "submit_case_result" %}', {
+            fetch('{% url "cases:submit_test" case.id %}', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
@@ -392,7 +312,7 @@
             })
             .catch(error => {
                 console.error('Error submitting test:', error);
-                // خطا در ارسال تست - بدون نمایش پاپ آپ
+                alert('خطا در ارسال تست. لطفاً دوباره تلاش کنید.');
             });
         }
         
@@ -450,7 +370,7 @@
             
             const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
             
-            fetch('{% url "submit_case_result" %}', {
+            fetch('{% url "cases:submit_diagnosis" case.id %}', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
@@ -468,7 +388,7 @@
             })
             .catch(error => {
                 console.error('Error submitting diagnosis:', error);
-                // خطا در ارسال تشخیص - بدون نمایش پاپ آپ
+                alert('خطا در ارسال تشخیص. لطفاً دوباره تلاش کنید.');
             });
         }
         
@@ -491,7 +411,7 @@
                 console.log('Available test data:', testData);
                 
                 // بررسی اینکه آیا تست CBC موجود است
-                const cbcTest = testData.find(t => t.title === 'cbc');
+                const cbcTest = testData.find(t => t.test_category === 'CBC');
                 if (cbcTest) {
                     showTest('cbc');
                     const firstBtn = document.querySelector('.test-btn');
@@ -515,7 +435,7 @@
                 }
             } catch (error) {
                 console.error('Error in page load event:', error);
-                // خطا در بارگذاری صفحه - بدون نمایش پاپ آپ
+                alert('خطا در بارگذاری صفحه. لطفاً صفحه را refresh کنید.');
             }
         });
     </script>
@@ -876,87 +796,6 @@
             
             .test-buttons {
                 grid-template-columns: 1fr;
-            }
-        }
-        
-        .main-layout {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-        
-        .left-panel,
-        .right-panel {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 1rem;
-            padding: 2rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        
-        .left-panel h3,
-        .right-panel h3 {
-            font-size: 1.375rem;
-            color: #1f2937;
-            margin-bottom: 1.5rem;
-            font-weight: 700;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid #e5e7eb;
-        }
-        
-        .observations-container button {
-            background: rgba(255, 255, 255, 0.9);
-            color: #374151;
-            border: 2px solid #e5e7eb;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.75rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            backdrop-filter: blur(10px);
-            font-size: 0.95rem;
-            margin-bottom: 0.75rem;
-            width: 100%;
-            text-align: right;
-            justify-content: flex-start;
-        }
-        
-        .observations-container button:hover {
-            border-color: #667eea;
-            color: #667eea;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-        
-        .observations-container button.selected {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: white;
-            border-color: transparent;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-        
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
-        }
-        
-        @keyframes success {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-        
-        @media (max-width: 768px) {
-            .main-layout {
-                grid-template-columns: 1fr;
-                gap: 1.5rem;
             }
         }
     </style>

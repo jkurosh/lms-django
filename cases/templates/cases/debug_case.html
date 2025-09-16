@@ -135,8 +135,8 @@
         <div class="debug-section">
             <h2>لینک‌های مفید</h2>
             <div class="debug-item">
-                <a href="{% url 'case_detail' case.id %}" style="color: blue;">مشاهده صفحه تست</a> |
-                <a href="{% url 'case_list' %}" style="color: blue;">بازگشت به لیست</a> |
+                <a href="{% url 'cases:case_detail' case.id %}" style="color: blue;">مشاهده صفحه تست</a> |
+                <a href="{% url 'cases:case_list' %}" style="color: blue;">بازگشت به لیست</a> |
                 <a href="/adlog/cases/case/{{ case.id }}/change/" style="color: blue;">ویرایش در Admin</a>
             </div>
         </div>

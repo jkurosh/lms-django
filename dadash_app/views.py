@@ -1,12 +1,12 @@
 from django.shortcuts import render
-from django. http import JsonResponse
-from cases.models import Case, CaseCategory, LabTest, Slide, Test
+from django.http import JsonResponse
+from cases.models import Case, CaseCategory, Slide
 from django.db.models import Count
 
 # Create your views here.
 
 def dadash_home(request):
-    """صفحه اصلی dadash"""
+    """صفحه اصلی heyvoonak"""
     categories = CaseCategory.objects.annotate(case_count=Count('cases'))
     
     context = {
@@ -17,7 +17,7 @@ def dadash_home(request):
 
 def internal_diseases(request):
     """صفحه بیماری‌های داخلی"""
-    cases = Case.objects.filter(category__name__icontains='داخلی').prefetch_related('lab_tests', 'slides')
+    cases = Case.objects.filter(category__name__icontains='داخلی').prefetch_related('slides')
     
     context = {
         'cases': cases,
@@ -27,7 +27,7 @@ def internal_diseases(request):
 
 def surgery(request):
     """صفحه جراحی"""
-    cases = Case.objects.filter(category__name__icontains='جراحی').prefetch_related('lab_tests', 'slides')
+    cases = Case.objects.filter(category__name__icontains='جراحی').prefetch_related('slides')
     
     context = {
         'cases': cases,
@@ -37,7 +37,7 @@ def surgery(request):
 
 def emergency(request):
     """صفحه اورژانس"""
-    cases = Case.objects.filter(category__name__icontains='اورژانس').prefetch_related('lab_tests', 'slides')
+    cases = Case.objects.filter(category__name__icontains='اورژانس').prefetch_related('slides')
     
     context = {
         'cases': cases,
@@ -47,7 +47,7 @@ def emergency(request):
 
 def dermatology(request):
     """صفحه پوست‌شناسی"""
-    cases = Case.objects.filter(category__name__icontains='پوست').prefetch_related('lab_tests', 'slides')
+    cases = Case.objects.filter(category__name__icontains='پوست').prefetch_related('slides')
     
     context = {
         'cases': cases,
@@ -57,7 +57,7 @@ def dermatology(request):
 
 def radiology(request):
     """صفحه رادیولوژی"""
-    cases = Case.objects.filter(category__name__icontains='رادیولوژی').prefetch_related('lab_tests', 'slides')
+    cases = Case.objects.filter(category__name__icontains='رادیولوژی').prefetch_related('slides')
     
     context = {
         'cases': cases,
@@ -67,7 +67,7 @@ def radiology(request):
 
 def cardiology(request):
     """صفحه قلب‌شناسی"""
-    cases = Case.objects.filter(category__name__icontains='قلب').prefetch_related('lab_tests', 'slides')
+    cases = Case.objects.filter(category__name__icontains='قلب').prefetch_related('slides')
     
     context = {
         'cases': cases,

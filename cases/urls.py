@@ -1,6 +1,8 @@
 from django.urls import path
 from . import views
 
+app_name = 'cases'
+
 urlpatterns = [
     path('', views.case_list, name='case_list'),
     path('case/<int:case_id>/', views.case_detail, name='case_detail'),
@@ -15,7 +17,8 @@ urlpatterns = [
     # پروفایل کاربر
     path('profile/', views.profile_view, name='profile'),
     
-    # API برای ذخیره پیشرفت
-    path('api/save-progress/', views.save_progress, name='save_progress'),
-    path('api/submit-result/', views.submit_case_result, name='submit_case_result'),
+    # API endpoints
+    path('save-progress/', views.save_progress, name='save_progress'),
+    path('submit-result/', views.submit_case_result, name='submit_case_result'),
+    path('api/default-options/', views.get_default_options, name='get_default_options'),
 ]

@@ -1,18 +1,19 @@
 {% extends 'dadash/base.html' %}
 {% load static %}
 
-{% block title %}بیماری‌های داخلی - Dadash{% endblock %}
+{% block title %}بیماری‌های داخلی - Heyvoonak{% endblock %}
 
 {% block extra_js %}
 <script src="{% static 'dadash_app/internal-diseases.js' %}"></script>
 {% endblock %}
 
+{% block content %}
     <!-- Main Content -->
     <main class="main">
         <div class="container">
             <!-- Section Header -->
             <div class="section-header">
-                <a href="{% url 'dadash:dadash_home' %}" class="back-btn">
+                <a href="{% url 'heyvoonak:dadash_home' %}" class="back-btn">
                     <i class="fas fa-arrow-right"></i>
                     بازگشت به خانه
                 </a>
@@ -54,7 +55,7 @@
                 </div>
                 <h3>هیچ موردی یافت نشد</h3>
                 <p>در حال حاضر هیچ مطالعه موردی در این دسته‌بندی موجود نیست.</p>
-                <a href="{% url 'dadash:dadash_home' %}" class="back-home-btn">
+                <a href="{% url 'heyvoonak:dadash_home' %}" class="back-home-btn">
                     <i class="fas fa-home"></i>
                     بازگشت به خانه
                 </a>

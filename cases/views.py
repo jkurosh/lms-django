@@ -13,6 +13,7 @@ from .models import (
     UserObservation,
     UserProfile,
     CaseCategory,
+    SubCategory,
     CBC_DEFAULT_OPTIONS,
     CHEM_DEFAULT_OPTIONS,
     MORPHO_DEFAULT_OPTIONS,
@@ -52,19 +53,19 @@ def case_detail(request, case_id):
     # دریافت اسلایدها
     slides = case.slides.all()
     
-    # دریافت مشاهدات (Test model)
-    test_observations = case.tests.all()
+    # دریافت مشاهدات (LabTest model)
+    test_observations = case.lab_tests.all()
     
     # ساخت داده‌های جدول آزمایش به‌صورت گروهی (نمایش حتی بدون Test مرتبط)
     tests_map = {}
     for lt in lab_tests:
-        key = lt.test_type.lower()
+        key = lt.lab_type.lower()
         # تلاش برای یافتن تست مرتبط با تطبیق انعطاف‌پذیر
         related_test = (
-            test_observations.filter(title__iexact=key).first()
-            or (test_observations.filter(title__icontains='chem').first() if key in ['chem', 'clinical chemistry'] else None)
-            or (test_observations.filter(title__icontains='cbc').first() if key in ['cbc'] else None)
-            or (test_observations.filter(title__icontains='slide').first() if key in ['slide'] else None)
+            test_observations.filter(lab_type__iexact=key.upper()).first()
+            or (test_observations.filter(lab_type__iexact='CHEM').first() if key in ['chem', 'clinical chemistry'] else None)
+            or (test_observations.filter(lab_type__iexact='CBC').first() if key in ['cbc'] else None)
+            or (test_observations.filter(lab_type__iexact='MORPHO').first() if key in ['morpho'] else None)
         )
 
         if key not in tests_map:
@@ -72,33 +73,31 @@ def case_detail(request, case_id):
                 'title': key,
                 'rows': [],
                 'observations': (
-                    [opt.text for opt in related_test.options.all()] if related_test and hasattr(related_test, 'options') and related_test.options.exists()
+                    [opt.observation_text for opt in related_test.options.all()] if related_test and hasattr(related_test, 'options') and related_test.options.exists()
                     else (
-                        related_test.observations if related_test and related_test.observations else (
-                            CBC_DEFAULT_OPTIONS if key == 'cbc' else (
-                                CHEM_DEFAULT_OPTIONS if key == 'chem' else (
-                                    MORPHO_DEFAULT_OPTIONS if key == 'other' else []
-                                )
+                        CBC_DEFAULT_OPTIONS if key == 'cbc' else (
+                            CHEM_DEFAULT_OPTIONS if key == 'chem' else (
+                                MORPHO_DEFAULT_OPTIONS if key == 'morpho' else []
                             )
                         )
                     )
                 ),
                 'correct_observations': (
-                    [opt.text for opt in related_test.options.filter(is_correct=True)] if related_test and hasattr(related_test, 'options') and related_test.options.exists()
-                    else (related_test.correct_observations if related_test and related_test.correct_observations else [])
+                    [opt.observation_text for opt in related_test.options.filter(is_correct=True)] if related_test and hasattr(related_test, 'options') and related_test.options.exists()
+                    else []
                 ),
             }
 
         tests_map[key]['rows'].append({
-            'name': lt.name,
-            'value': lt.value,
-            'reference': lt.reference_range,
-            'report': lt.report,
+            'name': lt.lab_name,
+            'value': lt.lab_result,
+            'reference': lt.normal_range,
+            'report': lt.lab_result,
         })
 
     tests_data = list(tests_map.values())
 
-    # اگر هیچ داده‌ای برای CBC/CHEM/OTHER وجود ندارد، ورودی‌های پیش‌فرض اضافه کن
+    # اگر هیچ داده‌ای برای CBC/CHEM/MORPHO وجود ندارد، ورودی‌های پیش‌فرض اضافه کن
     if not any(t.get('title') == 'cbc' for t in tests_data):
         tests_data.append({
             'title': 'cbc',
@@ -113,7 +112,13 @@ def case_detail(request, case_id):
             'observations': CHEM_DEFAULT_OPTIONS,
             'correct_observations': [],
         })
-    if not any(t.get('title') == 'other' for t in tests_data):
+    # اضافه کردن گزینه‌های morpho به other
+    other_test = next((t for t in tests_data if t.get('title') == 'other'), None)
+    if other_test:
+        # اگر other وجود دارد، گزینه‌های morpho را اضافه کن
+        other_test['observations'].extend(MORPHO_DEFAULT_OPTIONS)
+    else:
+        # اگر other وجود ندارد، آن را ایجاد کن
         tests_data.append({
             'title': 'other',
             'rows': [],
@@ -160,11 +165,15 @@ def case_detail(request, case_id):
     # اگر کاربر لاگین کرده، پیشرفت او را دریافت کن
     user_progress = None
     if request.user.is_authenticated:
-        user_progress, created = UserProgress.objects.get_or_create(
-            user=request.user,
-            case=case,
-            defaults={'completed': False}
-        )
+        try:
+            user_progress, created = UserProgress.objects.get_or_create(
+                user=request.user,
+                case=case,
+                defaults={'completed': False}
+            )
+        except Exception as e:
+            print(f"Error creating user progress: {e}")
+            user_progress = None
     
     return render(request, 'cases/case_detail.html', {
         'case': case,
@@ -182,10 +191,10 @@ def debug_case(request, case_id):
         'case': case,
         'lab_tests': case.lab_tests.all(),
         'slides': case.slides.all(),
-        'tests': case.tests.all(),
+        'tests': case.lab_tests.all(),
         'lab_tests_count': case.lab_tests.count(),
         'slides_count': case.slides.count(),
-        'tests_count': case.tests.count(),
+        'tests_count': case.lab_tests.count(),
     }
     
     return render(request, 'cases/debug_case.html', context)
@@ -199,7 +208,7 @@ def login_view(request):
         if user is not None:
             login(request, user)
             messages.success(request, f'خوش آمدید {user.username}!')
-            return redirect('case_list')
+            return redirect('cases:case_list')
         else:
             messages.error(request, 'نام کاربری یا رمز عبور اشتباه است.')
     
@@ -225,7 +234,7 @@ def register_view(request):
         
         login(request, user)
         messages.success(request, f'حساب کاربری {username} با موفقیت ایجاد شد!')
-        return redirect('case_list')
+        return redirect('cases:case_list')
     
     return render(request, 'cases/register.html')
 
@@ -233,7 +242,7 @@ def register_view(request):
 def logout_view(request):
     logout(request)
     messages.success(request, 'با موفقیت خارج شدید.')
-    return redirect('case_list')
+    return redirect('cases:case_list')
 
 @login_required
 def profile_view(request):
@@ -329,3 +338,22 @@ def submit_case_result(request):
         })
     
     return JsonResponse({'status': 'error'})
+
+
+def get_default_options(request):
+    """دریافت گزینه‌های پیش‌فرض برای تست‌های آزمایشگاهی"""
+    test_type = request.GET.get('type', 'CBC')
+    
+    if test_type == 'CBC':
+        options = CBC_DEFAULT_OPTIONS
+    elif test_type == 'CHEM':
+        options = CHEM_DEFAULT_OPTIONS
+    elif test_type == 'MORPHO':
+        options = MORPHO_DEFAULT_OPTIONS
+    else:
+        options = []
+    
+    return JsonResponse({
+        'options': options,
+        'type': test_type
+    })

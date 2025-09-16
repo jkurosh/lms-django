@@ -4,9 +4,346 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}دامپزشکی آنلاین - Dadash{% endblock %}</title>
+    <title>{% block title %}دامپزشکی آنلاین - Heyvoonak{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'dadash_app/styles.css' %}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Custom Styles for Index Page -->
+    <style>
+        /* Hero Section */
+        .hero-section {
+            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+            color: white;
+            padding: 80px 0;
+            min-height: 70vh;
+            display: flex;
+            align-items: center;
+        }
+
+        .hero-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .hero-text h1 {
+            font-size: 3rem;
+            font-weight: bold;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-text p {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: white;
+            color: #f97316;
+        }
+
+        .btn-primary:hover {
+            background: #f3f4f6;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-secondary:hover {
+            background: white;
+            color: #f97316;
+        }
+
+        .btn-large {
+            padding: 16px 32px;
+            font-size: 1.1rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #fbbf24;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .hero-visual {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .hero-icon {
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        /* Services Section */
+        .services-section {
+            padding: 80px 0;
+            background: #f9fafb;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-header h2 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: #1f2937;
+        }
+
+        .section-header p {
+            font-size: 1.2rem;
+            color: #6b7280;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .service-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .service-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .service-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .service-card h3 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: #1f2937;
+        }
+
+        .service-card p {
+            color: #6b7280;
+            line-height: 1.6;
+        }
+
+        /* Categories Section */
+        .categories-section {
+            padding: 80px 0;
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .category-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            border: 1px solid #e5e7eb;
+        }
+
+        .category-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+            border-color: #f97316;
+        }
+
+        .category-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .category-card h3 {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #1f2937;
+        }
+
+        .category-card p {
+            color: #6b7280;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .category-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+        }
+
+        .category-count {
+            color: #6b7280;
+        }
+
+        .category-level {
+            background: #fef3c7;
+            color: #d97706;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(135deg, #f97316 0%, #dc2626 100%);
+            color: white;
+            padding: 80px 0;
+            text-align: center;
+        }
+
+        .cta-content h2 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .cta-content p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        /* About Section */
+        .about-section {
+            padding: 80px 0;
+            background: #f9fafb;
+        }
+
+        .about-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .about-text h2 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+            color: #1f2937;
+            text-align: center;
+        }
+
+        .about-text p {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            color: #4b5563;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .about-features {
+            margin-top: 2rem;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .feature-icon {
+            color: #10b981;
+            font-weight: bold;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            
+            .hero-text h1 {
+                font-size: 2rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 1rem;
+            }
+            
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .categories-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+    
     {% block extra_css %}{% endblock %}
 </head>
 <body>
@@ -16,18 +353,18 @@
             <div class="header-content">
                 <div class="logo">
                     <i class="fas fa-stethoscope"></i>
-                    <h1>دامپزشکی آنلاین - Dadash</h1>
+                    <h1>دامپزشکی آنلاین - Heyvoonak</h1>
                 </div>
                 <nav class="nav">
                     <ul>
-                        <li><a href="{% url 'dadash:dadash_home' %}" {% if request.resolver_match.url_name == 'dadash_home' %}class="active"{% endif %}>خانه</a></li>
-                        <li><a href="{% url 'case_list' %}" {% if request.resolver_match.url_name == 'case_list' %}class="active"{% endif %}>مطالعات موردی</a></li>
-                        <li><a href="{% url 'dadash:internal_diseases' %}" {% if request.resolver_match.url_name == 'internal_diseases' %}class="active"{% endif %}>بیماری‌های داخلی</a></li>
-                        <li><a href="{% url 'dadash:surgery' %}" {% if request.resolver_match.url_name == 'surgery' %}class="active"{% endif %}>جراحی</a></li>
-                        <li><a href="{% url 'dadash:emergency' %}" {% if request.resolver_match.url_name == 'emergency' %}class="active"{% endif %}>اورژانس</a></li>
-                        <li><a href="{% url 'dadash:dermatology' %}" {% if request.resolver_match.url_name == 'dermatology' %}class="active"{% endif %}>پوست‌شناسی</a></li>
-                        <li><a href="{% url 'dadash:radiology' %}" {% if request.resolver_match.url_name == 'radiology' %}class="active"{% endif %}>رادیولوژی</a></li>
-                        <li><a href="{% url 'dadash:cardiology' %}" {% if request.resolver_match.url_name == 'cardiology' %}class="active"{% endif %}>قلب‌شناسی</a></li>
+                        <li><a href="{% url 'heyvoonak:dadash_home' %}" {% if request.resolver_match.url_name == 'dadash_home' %}class="active"{% endif %}>خانه</a></li>
+                        <li><a href="{% url 'cases:case_list' %}" {% if request.resolver_match.url_name == 'case_list' %}class="active"{% endif %}>مطالعات موردی</a></li>
+                        <li><a href="{% url 'heyvoonak:internal_diseases' %}" {% if request.resolver_match.url_name == 'internal_diseases' %}class="active"{% endif %}>بیماری‌های داخلی</a></li>
+                        <li><a href="{% url 'heyvoonak:surgery' %}" {% if request.resolver_match.url_name == 'surgery' %}class="active"{% endif %}>جراحی</a></li>
+                        <li><a href="{% url 'heyvoonak:emergency' %}" {% if request.resolver_match.url_name == 'emergency' %}class="active"{% endif %}>اورژانس</a></li>
+                        <li><a href="{% url 'heyvoonak:dermatology' %}" {% if request.resolver_match.url_name == 'dermatology' %}class="active"{% endif %}>پوست‌شناسی</a></li>
+                        <li><a href="{% url 'heyvoonak:radiology' %}" {% if request.resolver_match.url_name == 'radiology' %}class="active"{% endif %}>رادیولوژی</a></li>
+                        <li><a href="{% url 'heyvoonak:cardiology' %}" {% if request.resolver_match.url_name == 'cardiology' %}class="active"{% endif %}>قلب‌شناسی</a></li>
                     </ul>
                 </nav>
             </div>
