@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.conf import settings
 from django.utils import timezone
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -233,7 +233,7 @@ class Slide(models.Model):
 
 # مدل‌های جدید برای پیگیری عملکرد کاربران - بر اساس اسکیما دیتابیس
 class UserProgress(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='case_progress', db_column='user_id')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='case_progress', db_column='user_id')
     case = models.ForeignKey(Case, on_delete=models.CASCADE, related_name='user_progress', db_column='case_study_id')
     completed = models.BooleanField(default=False)
     score = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
@@ -281,6 +281,7 @@ class Test(models.Model):
 # TestOption model حذف شد چون با UserObservation تداخل داشت
 
 class UserObservation(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='user_observations')
     case = models.ForeignKey(Case, on_delete=models.CASCADE, related_name='user_observations', null=True, blank=True)
     case_test = models.ForeignKey(LabTest, on_delete=models.CASCADE, related_name='options', db_column='case_test_id', null=True, blank=True)
     observation_text = models.TextField(db_column='option_text', null=True, blank=True)
@@ -297,7 +298,7 @@ class UserObservation(models.Model):
         return f"{self.observation_text or 'Unknown'} - {self.is_correct or False}"
 
 class UserProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='profile')
     subscription_start = models.DateTimeField(null=True, blank=True)
     subscription_end = models.DateTimeField(null=True, blank=True)
     total_cases_completed = models.IntegerField(default=0)
@@ -350,6 +351,23 @@ class UserProfile(models.Model):
             self.average_attempts_per_case = sum(p.attempts_count for p in progress_records) / self.total_cases_completed
         
         self.save()
+
+
+class Bookmark(models.Model):
+    """مدل برای bookmark کردن case ها"""
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='bookmarks')
+    case = models.ForeignKey(Case, on_delete=models.CASCADE, related_name='bookmarks')
+    created_at = models.DateTimeField(auto_now_add=True)
+    notes = models.TextField(blank=True, help_text="یادداشت‌های شخصی برای این case")
+    
+    class Meta:
+        unique_together = ('user', 'case')
+        ordering = ['-created_at']
+        verbose_name = 'Bookmark'
+        verbose_name_plural = 'Bookmarks'
+    
+    def __str__(self):
+        return f"{self.user.username} bookmarked {self.case.title}"
 
 
 @receiver(post_save, sender=Case)

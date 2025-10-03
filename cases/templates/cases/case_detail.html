@@ -7,24 +7,752 @@
     <title>{{ case.title }} - مطالعات موردی</title>
     <link rel="stylesheet" href="{% static 'dadash/styles.css' %}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3EA66B;
+            --primary-dark: #2d8a54;
+            --secondary: #4B6A9D;
+            --accent: #f59e0b;
+            --background: #f8fafc;
+            --foreground: #0f172a;
+            --muted: #e2e8f0;
+            --muted-foreground: #64748b;
+            --border: #e2e8f0;
+            --card: #ffffff;
+            --card-foreground: #0f172a;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --info: #3b82f6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            background: var(--background);
+            color: var(--foreground);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .header .container {
+            margin: 0;
+            padding: 0;
+            max-width: none;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 0.5rem 0;
+            box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            max-width: 100%;
+            width: 100%;
+            padding: 0 1rem;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .logo i {
+            font-size: 1rem;
+        }
+
+        .header-nav {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header-nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: background-color 0.2s ease;
+        }
+
+        .header-nav a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .header-left .user-profile-header {
+            margin-left: 0;
+            padding-left: 0;
+        }
+
+
+        /* Main Content */
+        .main {
+            padding: 2rem 0;
+            min-height: calc(100vh - 200px);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--muted);
+            color: var(--foreground);
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .back-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--foreground);
+            margin: 0;
+        }
+
+        /* Case Info Card */
+        .case-info {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border);
+        }
+
+        .case-description h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .case-description p {
+            font-size: 1rem;
+            line-height: 1.8;
+            color: var(--foreground);
+        }
+
+        .case-meta {
+            display: flex;
+            gap: 2rem;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--muted-foreground);
+            font-size: 0.875rem;
+        }
+
+        .meta-item i {
+            color: var(--primary);
+        }
+
+        .test-selection-desc {
+            color: var(--muted-foreground);
+            margin-bottom: 1.5rem;
+            font-size: 0.875rem;
+        }
+
+        /* Test Selection */
+        .test-selection {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border);
+        }
+
+        .test-selection h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--foreground);
+        }
+
+        .test-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .test-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 1rem;
+            background: var(--muted);
+            border: 2px solid transparent;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .test-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(62, 166, 107, 0.3);
+        }
+
+        .test-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(62, 166, 107, 0.2);
+        }
+
+        .test-btn span {
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .test-btn strong {
+            display: block;
+            font-size: 0.875rem;
+            margin-bottom: 0.125rem;
+        }
+
+        .test-btn small {
+            display: block;
+            font-size: 0.75rem;
+            opacity: 0.8;
+            font-weight: 400;
+        }
+
+        /* Main Layout */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .left-panel, .right-panel {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border);
+        }
+
+        .left-panel h3, .right-panel h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--foreground);
+        }
+
+        /* Test Form */
+        .test-form {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border);
+        }
+
+        .test-form.hidden {
+            display: none;
+        }
+
+        .test-form h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--foreground);
+        }
+
+        /* Results Section */
+        .test-results-section, .diagnosis-section, .result-section {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border);
+        }
+
+        .test-results-section.hidden, .diagnosis-section.hidden, .result-section.hidden {
+            display: none;
+        }
+
+        .test-results-section h3, .diagnosis-section h3, .result-section h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--foreground);
+        }
+
+        /* Form Actions */
+        .form-actions {
+            display: flex;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        /* Buttons */
+        .submit-test-btn, .retry-btn, .diagnosis-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .submit-test-btn:hover, .retry-btn:hover, .diagnosis-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        /* Retry Section */
+        .retry-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 8px;
+            color: var(--info);
+        }
+
+        /* Diagnosis Section */
+        .diagnosis-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .diagnosis-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem;
+            background: rgba(245, 158, 11, 0.1);
+            border-radius: 8px;
+            color: var(--warning);
+        }
+
+        .diagnosis-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        #diagnosis-input {
+            width: 100%;
+            min-height: 120px;
+            padding: 1rem;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: inherit;
+            resize: vertical;
+            transition: border-color 0.2s ease;
+        }
+
+        #diagnosis-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        /* Result Section */
+        .user-diagnosis, .explanations {
+            background: var(--muted);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .user-diagnosis h4, .explanations h4 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--foreground);
+        }
+
+        .explanations h4 i {
+            color: var(--warning);
+        }
+
+        .explanation-item {
+            background: var(--card);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border: 1px solid var(--border);
+        }
+
+        .explanation-item h5 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+        }
+
+        .explanation-item p {
+            color: var(--foreground);
+            line-height: 1.6;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--foreground);
+            color: white;
+            padding: 3rem 0 1rem;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h4 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .footer-section p {
+            color: #94a3b8;
+            margin-bottom: 0.5rem;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .social-links a {
+            color: #94a3b8;
+            font-size: 1.25rem;
+            transition: color 0.2s ease;
+        }
+
+        .social-links a:hover {
+            color: var(--primary);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid #334155;
+            padding-top: 1rem;
+            text-align: center;
+            color: #94a3b8;
+        }
+
+        /* User Profile Styles */
+        .user-dropdown {
+            position: relative;
+        }
+
+        .user-profile-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.375rem 0.75rem;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .user-profile-header:hover {
+            background: rgba(255, 255, 255, 0.9);
+            transform: translateY(-1px);
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #3EA66B;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border: none;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #0f172a;
+        }
+
+        .user-role {
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            min-width: 200px;
+            z-index: 1000;
+            display: none;
+            margin-top: 0.5rem;
+        }
+
+        .dropdown-header {
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .dropdown-header .user-info .user-name {
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 0.25rem;
+        }
+
+        .dropdown-header .user-info .user-email {
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+
+        .dropdown-menu.show {
+            display: block !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+
+        .dropdown-menu {
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: #0f172a;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            font-size: 0.875rem;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f1f5f9;
+        }
+
+        .dropdown-item.logout {
+            color: #ef4444;
+        }
+
+        .dropdown-item.logout:hover {
+            background-color: rgba(239, 68, 68, 0.1);
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background-color: #e2e8f0;
+            margin: 0.5rem 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .nav ul {
+                gap: 1rem;
+            }
+
+            .section-title {
+                font-size: 1.5rem;
+            }
+
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .test-buttons {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .container {
+                padding: 0 0.5rem;
+            }
+
+            .user-profile-header .user-info {
+                display: none;
+            }
+            
+            .user-avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 0.75rem;
+            }
+            
+            .user-profile-header {
+                padding: 0.25rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .test-buttons {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
+    {% csrf_token %}
     <!-- Header -->
     <header class="header">
         <div class="container">
             <div class="header-content">
-                <div class="logo">
-                    <i class="fas fa-stethoscope"></i>
-                    <h1>دامپزشکی آنلاین - Heyvoonak</h1>
+                <!-- Left side - User Profile -->
+                <div class="header-left">
+                    {% if user.is_authenticated %}
+                        <div class="user-dropdown">
+                            <div class="user-profile-header" id="profileBtn">
+                                <div class="user-avatar">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div class="user-info">
+                                    <div class="user-name">{{ user.first_name|default:user.username }}</div>
+                                    <div class="user-role">دانشجوی دامپزشکی</div>
+                                </div>
+                            </div>
+                            <div class="dropdown-menu" id="userMenu">
+                                <div class="dropdown-header">
+                                    <div class="user-info">
+                                        <div class="user-name">{{ user.first_name|default:user.username }}</div>
+                                        <div class="user-email">{{ user.phone_number|default:user.email }}</div>
+                                    </div>
+                                </div>
+                                <div class="dropdown-divider"></div>
+                                <a href="{% url 'heyvoonak:designali_dashboard' %}" class="dropdown-item">
+                                    <i class="fas fa-tachometer-alt"></i>
+                                    داشبورد
+                                </a>
+                                <a href="#" class="dropdown-item">
+                                    <i class="fas fa-user"></i>
+                                    پروفایل
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a href="{% url 'heyvoonak:logout' %}" class="dropdown-item">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    خروج
+                                </a>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="auth-buttons">
+                            <a href="{% url 'heyvoonak:login' %}" class="btn btn-outline">ورود</a>
+                            <a href="{% url 'heyvoonak:register' %}" class="btn btn-primary">ثبت نام</a>
+                        </div>
+                    {% endif %}
                 </div>
-                <nav class="nav">
-                    <ul>
-                        <li><a href="{% url 'heyvoonak:dadash_home' %}">خانه</a></li>
-                        <li><a href="{% url 'cases:case_list' %}">مطالعات موردی</a></li>
-                        <li><a href="{% url 'heyvoonak:internal_diseases' %}">بیماری‌های داخلی</a></li>
-                        <li><a href="#">درباره ما</a></li>
-                    </ul>
-                </nav>
+                
+                <!-- Right side - Home button and Logo -->
+                <div class="header-right">
+                    <div class="header-nav">
+                        <a href="{% url 'heyvoonak:dashboard' %}">خانه</a>
+                    </div>
+                <div class="logo">
+                        <i class="fas fa-paw"></i>
+                        <span>HeyVoonak</span>
+                </div>
+                </div>
             </div>
         </div>
     </header>
@@ -44,30 +772,43 @@
             <!-- Case Info -->
             <div class="case-info">
                 <div class="case-description">
-                    <h3>پیشینه کیس:</h3>
+                    <h3><i class="fas fa-clipboard-list"></i> پیشینه کیس</h3>
                     <p>{{ case.history }}</p>
                 </div>
             </div>
 
             <!-- Test Selection -->
             <div class="test-selection">
-                <h3>انتخاب آزمایش:</h3>
+                <h3><i class="fas fa-stethoscope"></i> آزمایش ها</h3>
+                <p class="test-selection-desc">یکی از گزینه‌های زیر را انتخاب کنید:</p>
                 <div class="test-buttons">
                     <button onclick="showTest('cbc', this)" class="test-btn">
-                        <span>🩸</span>
-                        CBC
+                        <span><i class="fas fa-tint"></i></span>
+                        <div>
+                            <strong> CBC</strong>
+                            <small>آزمایش خون</small>
+                        </div>
                     </button>
                     <button onclick="showTest('chem', this)" class="test-btn">
-                        <span>🧪</span>
-                        CLIN.CHEMISTRY
+                        <span><i class="fas fa-vial"></i></span>
+                        <div>
+                            <strong> clinical chemistry</strong>
+                            <small> آزمایش شیمیایی</small>
+                        </div>
                     </button>
-                    <button onclick="showTest('other', this)" class="test-btn">
-                        <span>🔬</span>
-                        OTHER TESTS
+                    <button onclick="showTest('morpho', this)" class="test-btn">
+                        <span><i class="fas fa-microscope"></i></span>
+                        <div>
+                            <strong>Morphological Changes</strong>
+                            <small>آزمایش مورفولوژیکی</small>
+                        </div>
                     </button>
-                    <button onclick="showTest('slide', this)" class="test-btn">
-                        <span>🔍</span>
-                        SLIDES
+                    <button onclick="showSlideTest(this)" class="test-btn">
+                        <span><i class="fas fa-search"></i></span>
+                        <div>
+                            <strong> تصاویر</strong>
+                            <small>بررسی تصاویر</small>
+                        </div>
                     </button>
                 </div>
             </div>
@@ -75,9 +816,9 @@
             <!-- Main Layout -->
             <div class="main-layout">
                 <div class="left-panel">
-                    <h3>مشاهدات:</h3>
+                    <h3>گزینه‌های تشخیص:</h3>
                     <div id="observations" class="observations-container">
-                        <p>یکی از آزمایش‌ها را انتخاب کنید تا مشاهدات نمایش داده شود.</p>
+                        <p>یکی از گزینه‌های تشخیص را انتخاب کنید تا گزینه‌ها نمایش داده شود.</p>
                     </div>
                 </div>
                 
@@ -91,24 +832,147 @@
 
             <!-- Test Form -->
             <div id="test-form" class="test-form hidden">
-                <h3>تست‌ها:</h3>
                 <form id="test-form-element">
                     <div id="test-questions"></div>
-                    <button type="button" onclick="submitTest()" class="submit-test-btn">
-                        <span>📝</span>
-                        ارسال پاسخ‌ها
-                    </button>
+                    
+                    <!-- باکس تشخیص -->
+                    <div id="diagnosis-container" style="display: none; margin: 20px 0;">
+                        <div style="
+                            background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+                            border: 2px solid #3b82f6;
+                            border-radius: 12px;
+                            padding: 25px;
+                            color: white;
+                            margin-bottom: 20px;
+                        ">
+                            <h4 style="color: #3b82f6; margin: 0 0 15px 0; font-size: 1.2rem;">
+                                <i class="fas fa-stethoscope" style="margin-left: 8px;"></i>
+                                تشخیص خود را وارد کنید
+                            </h4>
+                            <textarea id="diagnosis-text-inline" placeholder="تشخیص خود را اینجا بنویسید..." 
+                                style="
+                                    width: 100%;
+                                    height: 100px;
+                                    padding: 15px;
+                                    border: 2px solid #374151;
+                                    border-radius: 8px;
+                                    background: #1f2937;
+                                    color: white;
+                                    font-size: 1rem;
+                                    resize: vertical;
+                                    margin-bottom: 15px;
+                                    font-family: inherit;
+                                    box-sizing: border-box;
+                                "></textarea>
+                            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                                <button id="submit-diagnosis-inline" style="
+                                    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                                    color: white;
+                                    border: none;
+                                    padding: 10px 25px;
+                                    border-radius: 8px;
+                                    font-size: 0.9rem;
+                                    font-weight: 600;
+                                    cursor: pointer;
+                                    transition: all 0.3s ease;
+                                ">
+                                    <i class="fas fa-paper-plane" style="margin-left: 6px;"></i>
+                                    ارسال تشخیص
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- پاسخ تشریحی -->
+                        <div id="diagnostic-explanation-inline" style="display: none;">
+                            <div style="
+                                background: linear-gradient(135deg, #065f46 0%, #047857 100%);
+                                border: 2px solid #10b981;
+                                border-radius: 12px;
+                                padding: 25px;
+                                color: white;
+                            ">
+                                <h4 style="color: #10b981; margin: 0 0 20px 0; font-size: 1.2rem;">
+                                    <i class="fas fa-clipboard-check" style="margin-left: 8px;"></i>
+                                    پاسخ تشریحی
+                                </h4>
+                                
+                                <div id="user-diagnosis-display" style="
+                                    background: rgba(255, 255, 255, 0.1);
+                                    padding: 15px;
+                                    border-radius: 8px;
+                                    margin-bottom: 20px;
+                                    border-right: 4px solid #3b82f6;
+                                ">
+                                    <h5 style="color: #60a5fa; margin: 0 0 8px 0; font-size: 1rem;">تشخیص شما:</h5>
+                                    <p id="user-diagnosis-text" style="margin: 0; color: #e5e7eb; font-style: italic;"></p>
+                                </div>
+                                
+                                <div style="
+                                    background: rgba(255, 255, 255, 0.1);
+                                    padding: 15px;
+                                    border-radius: 8px;
+                                    margin-bottom: 20px;
+                                    border-right: 4px solid #10b981;
+                                ">
+                                    <h5 style="color: #10b981; margin: 0 0 8px 0; font-size: 1rem;">
+                                        <i class="fas fa-check-circle" style="margin-left: 6px;"></i>
+                                        پاسخ صحیح:
+                                    </h5>
+                                    <p style="margin: 0; color: #d1fae5;">
+                                        بر اساس علائم و نتایج آزمایش‌ها، تشخیص نهایی این کیس عبارت است از:
+                                        <strong>{{ correct_diagnosis }}</strong>
+                                    </p>
+                                </div>
+                                
+                                <div style="
+                                    background: rgba(255, 255, 255, 0.1);
+                                    padding: 15px;
+                                    border-radius: 8px;
+                                    border-right: 4px solid #60a5fa;
+                                ">
+                                    <h5 style="color: #60a5fa; margin: 0 0 8px 0; font-size: 1rem;">
+                                        <i class="fas fa-info-circle" style="margin-left: 6px;"></i>
+                                        توضیحات تکمیلی:
+                                    </h5>
+                                    <p style="margin: 0; color: #dbeafe;">
+                                        {{ diagnosis_explanation }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    
+                    <!-- Navigation Buttons -->
+                    <div class="case-navigation">
+                        {% if prev_case_id %}
+                        <a href="{% url 'cases:case_detail' prev_case_id %}" class="nav-btn prev-btn">
+                            <i class="fas fa-arrow-right"></i>
+                            کیس قبلی
+                        </a>
+                        {% endif %}
+                        
+                        {% if next_case_id %}
+                        <a href="{% url 'cases:case_detail' next_case_id %}" class="nav-btn next-btn">
+                            کیس بعدی
+                            <i class="fas fa-arrow-left"></i>
+                        </a>
+                        {% endif %}
+                    </div>
                 </form>
             </div>
 
             <!-- Test Results Section -->
             <div id="test-results" class="test-results-section hidden">
-                <h3>نتایج تست:</h3>
+                <h3><i class="fas fa-chart-line"></i> نتایج تست</h3>
                 <div id="test-score" class="test-score"></div>
                 <div id="retry-section" class="retry-section hidden">
+                    <div class="retry-info">
+                        <i class="fas fa-info-circle"></i>
                     <p>شما <span id="attempts-count">0</span> از <span id="max-attempts">3</span> تلاش خود را استفاده کرده‌اید.</p>
+                    </div>
                     <button onclick="retryTest()" class="retry-btn">
-                        <span>🔄</span>
+                        <i class="fas fa-redo"></i>
                         تلاش مجدد
                     </button>
                 </div>
@@ -116,25 +980,32 @@
 
             <!-- Diagnosis Section -->
             <div id="diagnosis-section" class="diagnosis-section hidden">
-                <h3>تشخیص نهایی شما:</h3>
+                <h3><i class="fas fa-stethoscope"></i> تشخیص نهایی</h3>
+                <div class="diagnosis-content">
+                    <div class="diagnosis-info">
+                        <i class="fas fa-exclamation-triangle"></i>
                 <p>شما 3 بار تلاش کردید. حالا تشخیص نهایی خود را وارد کنید:</p>
+                    </div>
+                    <div class="diagnosis-form">
                 <textarea id="diagnosis-input" placeholder="تشخیص خود را وارد کنید..."></textarea>
                 <button onclick="submitDiagnosis()" class="diagnosis-btn">
-                    <span>✅</span>
+                            <i class="fas fa-check"></i>
                     اتمام تشخیص
                 </button>
+                    </div>
+                </div>
             </div>
 
             <!-- Result Section -->
             <div id="result" class="result-section hidden">
-                <h3>نتیجه نهایی:</h3>
+                <h3><i class="fas fa-trophy"></i> نتیجه نهایی</h3>
                 <div class="result-content">
                     <div id="user-diagnosis" class="user-diagnosis">
-                        <h4>تشخیص شما:</h4>
+                        <h4><i class="fas fa-user-md"></i> تشخیص شما</h4>
                         <p id="user-diagnosis-text"></p>
                     </div>
                     <div class="explanations">
-                        <h4>پاسخ‌های تشریحی:</h4>
+                        <h4><i class="fas fa-lightbulb"></i> پاسخ‌های تشریحی</h4>
                         {% for explanation in explanations %}
                         <div class="explanation-item">
                             <h5>{{ explanation.title }}</h5>
@@ -180,6 +1051,53 @@
     </footer>
 
     <script>
+        // User menu toggle function
+        function toggleUserMenu() {
+            console.log('toggleUserMenu called');
+            const menu = document.getElementById('userMenu');
+            console.log('Menu element:', menu);
+            if (menu) {
+                menu.classList.toggle('show');
+                console.log('Menu classes:', menu.className);
+            }
+        }
+
+        // DOM Content Loaded Event
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, setting up event listeners');
+            
+            // Event listener برای دکمه ارسال تشخیص inline
+            const submitDiagnosisBtn = document.getElementById('submit-diagnosis-inline');
+            if (submitDiagnosisBtn) {
+                submitDiagnosisBtn.addEventListener('click', submitDiagnosisInline);
+            }
+            
+            // Desktop profile button
+            const profileBtn = document.getElementById('profileBtn');
+            if (profileBtn) {
+                console.log('Profile button found');
+                profileBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Profile button clicked');
+                    toggleUserMenu();
+                });
+            } else {
+                console.log('Profile button NOT found');
+            }
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(event) {
+                const menu = document.getElementById('userMenu');
+                const profileBtn = document.getElementById('profileBtn');
+                
+                if (menu && profileBtn && !menu.contains(event.target) && !profileBtn.contains(event.target)) {
+                    menu.classList.remove('show');
+                    console.log('Closed menu');
+                }
+            });
+        });
+
         // تعریف متغیرهای مورد نیاز
         let attempts = 0;
         const maxAttempts = 3;
@@ -188,6 +1106,7 @@
         let selectedObservations = [];
         let correctObservations = 0;
         let totalObservations = 0;
+        let selectionCount = 0; // شمارنده انتخاب‌ها
 
         // دریافت داده‌های تست از سرور
         const testDataElement = document.getElementById('test-data');
@@ -197,6 +1116,16 @@
             try {
                 testData = JSON.parse(testDataElement.textContent);
                 console.log('Test data loaded successfully:', testData);
+                console.log('Test data details:');
+                testData.forEach((test, index) => {
+                    console.log(`  Test ${index}: ${test.title}`);
+                    console.log(`    Rows: ${test.rows ? test.rows.length : 0}`);
+                    console.log(`    Observations: ${test.observations ? test.observations.length : 0}`);
+                    console.log(`    Correct: ${test.correct_observations ? test.correct_observations.length : 0}`);
+                    if (test.correct_observations && test.correct_observations.length > 0) {
+                        console.log(`    Correct list:`, test.correct_observations);
+                    }
+                });
             } catch (e) {
                 console.error('Error parsing test data:', e);
                 testData = [];
@@ -204,6 +1133,9 @@
         }
 
         function showTest(testType, buttonElement) {
+            console.log('showTest called with:', testType);
+            console.log('Available testData:', testData);
+            
             // حذف کلاس active از همه دکمه‌ها
             document.querySelectorAll('.test-btn').forEach(btn => {
                 btn.classList.remove('active');
@@ -218,6 +1150,7 @@
             
             // پیدا کردن تست مربوطه
             const test = testData.find(t => t.title === testType.toLowerCase());
+            console.log('Found test:', test);
             
             if (!test) {
                 document.getElementById("test-report").innerHTML = `
@@ -236,10 +1169,15 @@
             }
             
             // نمایش تست‌ها
+            console.log('Calling displayTests with:', test);
             displayTests(test);
         }
         
         function displayTests(test) {
+            console.log('displayTests called with:', test);
+            console.log('test.observations:', test.observations);
+            console.log('test.observations.length:', test.observations ? test.observations.length : 'undefined');
+            
             const testForm = document.getElementById('test-form');
             const testQuestions = document.getElementById('test-questions');
             
@@ -247,20 +1185,136 @@
             const obsDiv = document.getElementById("observations");
             obsDiv.innerHTML = "";
             selectedObservations = [];
+            selectionCount = 0; // ریست شمارنده انتخاب‌ها
             
-            // ایجاد مشاهدات
+            // مخفی کردن باکس تشخیص
+            const diagnosisContainer = document.getElementById('diagnosis-container');
+            if (diagnosisContainer) {
+                diagnosisContainer.style.display = 'none';
+            }
+            
+            // ایجاد لیست مشاهدات با اسکرول بار
             if (test.observations && test.observations.length > 0) {
+                console.log('Creating observations list with', test.observations.length, 'items');
                 totalObservations = test.observations.length;
                 
-                test.observations.forEach(obs => {
-                    const btn = document.createElement("button");
-                    btn.innerHTML = '<span>🔹</span> ' + obs;
-                    btn.onclick = () => selectObservation(btn, test.correct_observations, obs);
-                    obsDiv.appendChild(btn);
+                // ایجاد container برای لیست مشاهدات
+                const observationsList = document.createElement("div");
+                observationsList.style.cssText = `
+                    max-height: 300px;
+                    overflow-y: auto;
+                    border: 2px solid #e5e7eb;
+                    border-radius: 12px;
+                    background: white;
+                    padding: 0.5rem;
+                `;
+                
+                // اضافه کردن استایل اسکرول بار
+                observationsList.style.cssText += `
+                    scrollbar-width: thin;
+                    scrollbar-color: #3ea66b #f3f4f6;
+                `;
+                
+                // ایجاد مشاهدات
+                console.log('Starting to create observations...');
+                test.observations.forEach((obs, index) => {
+                    console.log(`Creating observation ${index + 1}: ${obs}`);
+                    const obsItem = document.createElement("div");
+                    obsItem.style.cssText = `
+                        padding: 0.75rem;
+                        margin-bottom: 0.5rem;
+                        background: #f9fafb;
+                        border-radius: 8px;
+                        border: 1px solid #e5e7eb;
+                        font-size: 0.875rem;
+                        color: #374151;
+                        display: flex;
+                        align-items: center;
+                        gap: 0.5rem;
+                        transition: all 0.2s ease;
+                        cursor: pointer;
+                    `;
+                    
+                    obsItem.innerHTML = `
+                        <span style="color: #3ea66b; font-weight: bold;">${index + 1}.</span>
+                        <span>${obs}</span>
+                    `;
+                    
+                    // اضافه کردن انیمیشن hover
+                    obsItem.addEventListener('mouseenter', function() {
+                        this.style.background = '#f3f4f6';
+                        this.style.borderColor = '#3ea66b';
+                        this.style.transform = 'translateX(4px)';
+                    });
+                    
+                    obsItem.addEventListener('mouseleave', function() {
+                        this.style.background = '#f9fafb';
+                        this.style.borderColor = '#e5e7eb';
+                        this.style.transform = 'translateX(0)';
+                    });
+                    
+                    // اضافه کردن کلیک برای انتخاب
+                    obsItem.addEventListener('click', function() {
+                        // حذف انتخاب قبلی
+                        document.querySelectorAll('.observation-item').forEach(item => {
+                            item.classList.remove('selected');
+                        });
+                        
+                        // انتخاب مشاهده جدید
+                        this.classList.add('selected');
+                        
+                        // بررسی صحیح بودن مشاهده
+                        console.log('Checking observation:', obs);
+                        console.log('Correct observations:', test.correct_observations);
+                        const isCorrect = test.correct_observations.includes(obs);
+                        console.log('Is correct:', isCorrect);
+                        if (isCorrect) {
+                            this.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+                            this.style.color = '#ffffff';
+                        } else {
+                            this.style.background = 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)';
+                            this.style.color = '#ffffff';
+                        }
+                        this.style.borderColor = isCorrect ? '#10b981' : '#ef4444';
+                        
+                        // ذخیره انتخاب
+                        selectedObservations = [obs];
+                        selectionCount++; // افزایش شمارنده انتخاب‌ها
+                        
+                        // بررسی آیا 3 انتخاب انجام شده یا نه
+                        if (selectionCount >= 3) {
+                            showDiagnosisInput();
+                        }
+                        
+                        // ذخیره در دیتابیس (اگر کاربر لاگین کرده)
+                        {% if user.is_authenticated %}
+                        saveProgress(obs, test.correct_observations.includes(obs));
+                        {% endif %}
+                    });
+                    
+                    obsItem.classList.add('observation-item');
+                    observationsList.appendChild(obsItem);
                 });
+                
+                obsDiv.appendChild(observationsList);
+                
+                // اضافه کردن راهنمای مشاهدات
+                const guide = document.createElement("div");
+                guide.style.cssText = `
+                    margin-top: 1rem;
+                    padding: 1rem;
+                    background: #f3f4f6;
+                    border-radius: 8px;
+                    font-size: 0.875rem;
+                    color: #6b7280;
+                `;
+                guide.innerHTML = `
+                    <strong>راهنما:</strong> روی هر گزینه تشخیصی کلیک کنید تا انتخاب شود
+                `;
+                obsDiv.appendChild(guide);
             } else {
                 totalObservations = 0;
-                obsDiv.innerHTML = '<p style="color: red; padding: 20px; text-align: center;">هیچ مشاهده‌ای موجود نیست. لطفاً ابتدا مشاهدات را در Admin Panel اضافه کنید.</p>';
+                obsDiv.innerHTML = '<p style="color: red; padding: 20px; text-align: center;">هیچ گزینه تشخیصی موجود نیست. لطفاً ابتدا گزینه‌ها را در Admin Panel اضافه کنید.</p>';
             }
             
             // پاک کردن سوالات قبلی
@@ -287,65 +1341,426 @@
             }
             
             testForm.classList.remove('hidden');
+            
+            // نمایش گزارش آزمایش
+            displayTestReport(test);
         }
         
-        function selectObservation(btn, correctObsList, observationText) {
-            try {
-                if (btn.classList.contains("selected")) return;
-                const isCorrect = correctObsList.includes(observationText);
-                
-                if (isCorrect) {
-                    correctObservations++;
-                    selectedObservations.push(observationText);
-                }
-                if (!isCorrect) {
-                    attempts++;
-                    btn.style.animation = 'shake 0.5s ease-in-out';
-                    setTimeout(() => btn.style.animation = '', 500);
-                    
-                    if (attempts >= maxAttempts) {
-                        alert("به حداکثر تلاش مجاز رسیدی. حالا می‌توانی تشخیص خود را بنویسی.");
-                    } else {
-                        alert("اشتباه! شما " + attempts + " بار تلاش کردید.");
-                    }
-                } else {
-                    btn.style.animation = 'success 0.5s ease-in-out';
-                    setTimeout(() => btn.style.animation = '', 500);
-                }
-                
-                btn.classList.add("selected");
-                
-                // ذخیره پیشرفت در دیتابیس (اگر کاربر لاگین کرده)
-                {% if user.is_authenticated %}
-                saveProgress(observationText, isCorrect);
-                {% endif %}
-            } catch (error) {
-                console.error('Error in selectObservation function:', error);
-                alert('خطا در انتخاب مشاهده. لطفاً دوباره تلاش کنید.');
+        function displayTestReport(test) {
+            console.log('displayTestReport called with:', test);
+            const testReportDiv = document.getElementById('test-report');
+            
+            if (!testReportDiv) {
+                console.error('test-report element not found!');
+                return;
             }
+            
+            // ایجاد گزارش آزمایش
+            let reportHTML = '';
+            
+            // بررسی اینکه آیا این یک slide است
+            if (test.title && test.title.startsWith('slide_')) {
+                // نمایش slide
+                if (test.report) {
+                    const slideNumber = currentSlideIndex + 1;
+                    const totalSlides = allSlides.length;
+                    
+                    reportHTML = `
+                        <div class="slide-content">
+                            <h4><i class="fas fa-search"></i> مشاهده اسلاید (${slideNumber} از ${totalSlides})</h4>
+                            <div class="slide-container">
+                                ${test.report}
+                            </div>
+                            ${totalSlides > 1 ? `
+                                <div class="slide-navigation">
+                                    <button onclick="prevSlide()" class="slide-nav-btn prev-btn">
+                                        <i class="fas fa-chevron-right"></i>
+                                        اسلاید قبلی
+                                    </button>
+                                    <span class="slide-counter">${slideNumber} / ${totalSlides}</span>
+                                    <button onclick="nextSlide()" class="slide-nav-btn next-btn">
+                                        اسلاید بعدی
+                                        <i class="fas fa-chevron-left"></i>
+                                    </button>
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                    } else {
+                    reportHTML = `
+                        <div class="slide-content">
+                            <div class="no-data-message">
+                                <i class="fas fa-image"></i>
+                                <p>تصویر اسلاید موجود نیست</p>
+                            </div>
+                        </div>
+                    `;
+                }
+            } else if (test.rows && test.rows.length > 0) {
+                // نمایش نتایج آزمایش
+                reportHTML = `
+                    <div class="test-report-content">
+                        <h4><i class="fas fa-clipboard-list"></i> نتایج آزمایش</h4>
+                        <div class="test-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>نام آزمایش</th>
+                                        <th>مقدار</th>
+                                        <th>محدوده طبیعی</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${test.rows.map(row => `
+                                        <tr>
+                                            <td>${row.name}</td>
+                                            <td><strong>${row.value}</strong></td>
+                                            <td>${row.reference}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+                } else {
+                reportHTML = `
+                    <div class="test-report-content">
+                        <div class="no-data-message">
+                            <i class="fas fa-info-circle"></i>
+                            <p>گزارش آزمایش موجود نیست</p>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            testReportDiv.innerHTML = reportHTML;
+            console.log('Test report displayed');
         }
+        
+        let currentSlideIndex = 0;
+        let allSlides = [];
+
+        // تابع نمایش باکس تشخیص inline
+        function showDiagnosisInput() {
+            const diagnosisContainer = document.getElementById('diagnosis-container');
+            const explanationDiv = document.getElementById('diagnostic-explanation-inline');
+            
+            // نمایش باکس تشخیص
+            diagnosisContainer.style.display = 'block';
+            
+            // مخفی کردن پاسخ تشریحی اگر قبلاً نمایش داده شده
+            explanationDiv.style.display = 'none';
+            
+            // پاک کردن متن قبلی
+            document.getElementById('diagnosis-text-inline').value = '';
+            
+            // فوکوس روی textarea
+            document.getElementById('diagnosis-text-inline').focus();
+            
+            // اسکرول به باکس تشخیص
+            diagnosisContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        
+        // تابع ارسال تشخیص inline
+        function submitDiagnosisInline() {
+            const diagnosisText = document.getElementById('diagnosis-text-inline').value.trim();
+            
+            if (!diagnosisText) {
+                alert('لطفاً تشخیص خود را وارد کنید!');
+                return;
+            }
+            
+            // نمایش پاسخ تشریحی inline
+            showDiagnosticExplanationInline(diagnosisText);
+        }
+        
+        // تابع نمایش پاسخ تشریحی inline
+        function showDiagnosticExplanationInline(userDiagnosis) {
+            const explanationDiv = document.getElementById('diagnostic-explanation-inline');
+            
+            // نمایش تشخیص کاربر
+            document.getElementById('user-diagnosis-text').textContent = userDiagnosis;
+            
+            // نمایش پاسخ تشریحی
+            explanationDiv.style.display = 'block';
+            
+            // اسکرول به پاسخ تشریحی
+            explanationDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // تابع نمایش پاسخ تشریحی (popup - حذف شده)
+        function showDiagnosticExplanation(userDiagnosis) {
+            const explanationBox = document.createElement('div');
+            explanationBox.id = 'diagnostic-explanation-box';
+            explanationBox.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+                border: 2px solid #10b981;
+                border-radius: 16px;
+                padding: 30px;
+                box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+                z-index: 1001;
+                width: 90%;
+                max-width: 700px;
+                color: white;
+                backdrop-filter: blur(10px);
+                max-height: 80vh;
+                overflow-y: auto;
+            `;
+            
+            // پاسخ تشریحی نمونه (می‌توانید از دیتابیس دریافت کنید)
+            const diagnosticExplanation = `
+                <div style="text-align: center; margin-bottom: 25px;">
+                    <h3 style="color: #10b981; margin: 0; font-size: 1.5rem;">
+                        <i class="fas fa-clipboard-check" style="margin-left: 10px;"></i>
+                        پاسخ تشریحی
+                    </h3>
+                </div>
+                
+                <div style="background: #374151; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                    <h4 style="color: #3b82f6; margin: 0 0 10px 0;">تشخیص شما:</h4>
+                    <p style="margin: 0; color: #e5e7eb; font-style: italic;">"${userDiagnosis}"</p>
+                </div>
+                
+                <div style="background: #065f46; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                    <h4 style="color: #10b981; margin: 0 0 15px 0;">
+                        <i class="fas fa-check-circle" style="margin-left: 8px;"></i>
+                        پاسخ صحیح:
+                    </h4>
+                    <p style="margin: 0; color: #d1fae5;">
+                        بر اساس علائم و نتایج آزمایش‌ها، تشخیص نهایی این کیس عبارت است از:
+                        <strong>تشخیص دقیق بر اساس داده‌های ارائه شده</strong>
+                    </p>
+                </div>
+                
+                <div style="background: #1e3a8a; padding: 20px; border-radius: 10px;">
+                    <h4 style="color: #60a5fa; margin: 0 0 15px 0;">
+                        <i class="fas fa-info-circle" style="margin-left: 8px;"></i>
+                        توضیحات تکمیلی:
+                    </h4>
+                    <p style="margin: 0; color: #dbeafe;">
+                        این تشخیص بر اساس ترکیب علائم بالینی، نتایج آزمایش‌های CBC، شیمی بالینی و بررسی مورفولوژیک سلول‌ها صورت گرفته است. 
+                        بیمار نیاز به درمان مناسب و پیگیری دقیق دارد.
+                    </p>
+                </div>
+                
+                <div style="text-align: center; margin-top: 25px;">
+                    <button id="close-explanation" style="
+                        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+                        color: white;
+                        border: none;
+                        padding: 12px 30px;
+                        border-radius: 10px;
+                        font-size: 1rem;
+                        font-weight: 600;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+                    " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                        <i class="fas fa-check" style="margin-left: 8px;"></i>
+                        متوجه شدم
+                    </button>
+                </div>
+            `;
+            
+            explanationBox.innerHTML = diagnosticExplanation;
+            
+            // اضافه کردن به صفحه
+            document.body.appendChild(explanationBox);
+            
+            // اضافه کردن پس‌زمینه تیره
+            const overlay = document.createElement('div');
+            overlay.id = 'explanation-overlay';
+            overlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.8);
+                z-index: 1000;
+                backdrop-filter: blur(5px);
+            `;
+            document.body.appendChild(overlay);
+            
+            // اضافه کردن event listeners
+            document.getElementById('close-explanation').addEventListener('click', closeExplanationBox);
+            overlay.addEventListener('click', closeExplanationBox);
+        }
+        
+        // تابع بستن باکس تشخیص
+        function closeDiagnosisBox() {
+            const box = document.getElementById('diagnosis-input-box');
+            const overlay = document.getElementById('diagnosis-overlay');
+            if (box) box.remove();
+            if (overlay) overlay.remove();
+        }
+        
+        // تابع بستن باکس توضیحات
+        function closeExplanationBox() {
+            const box = document.getElementById('diagnostic-explanation-box');
+            const overlay = document.getElementById('explanation-overlay');
+            if (box) box.remove();
+            if (overlay) overlay.remove();
+        }
+
+        function showSlideTest(buttonElement) {
+            console.log('showSlideTest called');
+            
+            // حذف کلاس active از همه دکمه‌ها
+            document.querySelectorAll('.test-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // اضافه کردن کلاس active به دکمه انتخاب شده
+            if (buttonElement) {
+                buttonElement.classList.add('active');
+            }
+            
+            // پیدا کردن همه slides
+            allSlides = testData.filter(t => t.title && t.title.startsWith('slide_'));
+            
+            if (allSlides.length === 0) {
+                console.log('No slide test found');
+                document.getElementById("test-report").innerHTML = `
+                    <div style="color: red; padding: 20px; text-align: center; background: #fee; border: 1px solid #fcc; border-radius: 8px;">
+                        <h4>اسلاید یافت نشد!</h4>
+                        <p>لطفاً ابتدا اسلایدها را در Admin Panel اضافه کنید.</p>
+                    </div>
+                `;
+                document.getElementById("observations").innerHTML = `
+                    <div style="color: red; padding: 20px; text-align: center; background: #fee; border: 1px solid #fcc; border-radius: 8px;">
+                        <h4>مشاهده‌ای یافت نشد!</h4>
+                        <p>لطفاً ابتدا اسلایدها را در Admin Panel اضافه کنید.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // شروع از اولین slide
+            currentSlideIndex = 0;
+            const slideTest = allSlides[currentSlideIndex];
+            
+            console.log('Found slides:', allSlides.length, 'Starting with:', slideTest);
+            currentTestType = slideTest.title;
+            
+            // نمایش slide
+            displayTests(slideTest);
+        }
+
+        function nextSlide() {
+            if (allSlides.length === 0) return;
+            
+            currentSlideIndex = (currentSlideIndex + 1) % allSlides.length;
+            const slideTest = allSlides[currentSlideIndex];
+            
+            console.log('Moving to slide:', currentSlideIndex + 1, 'of', allSlides.length);
+            currentTestType = slideTest.title;
+            
+            // نمایش slide جدید
+            displayTests(slideTest);
+        }
+
+        function prevSlide() {
+            if (allSlides.length === 0) return;
+            
+            currentSlideIndex = currentSlideIndex === 0 ? allSlides.length - 1 : currentSlideIndex - 1;
+            const slideTest = allSlides[currentSlideIndex];
+            
+            console.log('Moving to slide:', currentSlideIndex + 1, 'of', allSlides.length);
+            currentTestType = slideTest.title;
+            
+            // نمایش slide جدید
+            displayTests(slideTest);
+        }
+        
         
         function saveProgress(observationText, isCorrect) {
             try {
                 const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
                 if (!csrfToken) {
                     console.error('CSRF token not found');
+                    showNotification('خطا: CSRF token یافت نشد', 'error');
                     return;
                 }
                 
-                fetch('{% url "save_progress" %}', {
+                const formData = new FormData();
+                formData.append('case_id', '{{ case.id }}');
+                formData.append('observation_text', observationText);
+                formData.append('is_correct', isCorrect.toString());
+                
+                fetch('{% url "cases:save_progress" %}', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
                         'X-CSRFToken': csrfToken.value
                     },
-                    body: 'case_id={{ case.id }}&observation_text=' + encodeURIComponent(observationText) + '&is_correct=' + isCorrect
-                }).catch(error => {
+                    body: formData
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Response data:', data);
+                    if (data.status === 'success') {
+                        console.log('Progress saved successfully');
+                        if (isCorrect) {
+                            showNotification('مشاهده صحیح انتخاب شد!', 'success');
+                        } else {
+                            showNotification('مشاهده اشتباه انتخاب شد', 'warning');
+                        }
+                    } else {
+                        console.error('Server error:', data.error);
+                        showNotification('خطا: ' + (data.error || 'خطای نامشخص'), 'error');
+                    }
+                })
+                .catch(error => {
                     console.error('Error saving progress:', error);
+                    showNotification('خطا در ذخیره مشاهده: ' + error.message, 'error');
                 });
             } catch (error) {
                 console.error('Error in saveProgress function:', error);
+                showNotification('خطا در تابع ذخیره: ' + error.message, 'error');
             }
+        }
+        
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 1rem 1.5rem;
+                border-radius: 8px;
+                color: white;
+                font-weight: 600;
+                z-index: 1000;
+                animation: slideIn 0.3s ease-out;
+            `;
+            
+            if (type === 'success') {
+                notification.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+            } else if (type === 'error') {
+                notification.style.background = 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)';
+            } else {
+                notification.style.background = 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)';
+            }
+            
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease-in';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
         }
         
         function submitTest() {
@@ -365,7 +1780,7 @@
             // ارسال پاسخ‌ها به سرور
             const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
             
-            fetch('{% url "submit_case_result" %}', {
+            fetch('{% url "cases:submit_case_result" %}', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
@@ -450,7 +1865,7 @@
             
             const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
             
-            fetch('{% url "submit_case_result" %}', {
+            fetch('{% url "cases:submit_case_result" %}', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
@@ -489,11 +1904,23 @@
             try {
                 console.log('Page loaded, showing CBC test...');
                 console.log('Available test data:', testData);
+                console.log('Looking for slide test...');
+                const slideTests = testData.filter(t => t.title.startsWith('slide_'));
+                console.log('Slide tests found:', slideTests);
                 
                 // بررسی اینکه آیا تست CBC موجود است
                 const cbcTest = testData.find(t => t.title === 'cbc');
+                const slideTest = slideTests.length > 0 ? slideTests[0] : null;
+                
                 if (cbcTest) {
                     showTest('cbc');
+                    const firstBtn = document.querySelector('.test-btn');
+                    if (firstBtn) {
+                        firstBtn.classList.add('active');
+                    }
+                } else if (slideTest) {
+                    // اگر اسلاید موجود است، آن را نمایش بده
+                    showTest(slideTest.title);
                     const firstBtn = document.querySelector('.test-btn');
                     if (firstBtn) {
                         firstBtn.classList.add('active');
@@ -502,7 +1929,7 @@
                     console.log('CBC test not found, showing first available test...');
                     if (testData.length > 0) {
                         const firstTest = testData[0];
-                        showTest(firstTest.test_category.toLowerCase());
+                        showTest(firstTest.title.toLowerCase());
                         const firstBtn = document.querySelector('.test-btn');
                         if (firstBtn) {
                             firstBtn.classList.add('active');
@@ -573,8 +2000,8 @@
 
         .test-buttons {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 0.75rem;
         }
 
         .test-btn {
@@ -704,6 +2131,243 @@
         .submit-test-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Case Navigation Buttons */
+        .case-navigation {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 2px solid #e5e7eb;
+        }
+
+        .nav-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .prev-btn {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+            color: white;
+        }
+
+        .prev-btn:hover {
+            background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(107, 114, 128, 0.3);
+        }
+
+        .next-btn {
+            background: linear-gradient(135deg, #3ea66b 0%, #2d7d4f 100%);
+            color: white;
+        }
+
+        .next-btn:hover {
+            background: linear-gradient(135deg, #2d7d4f 0%, #1e5a3a 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(62, 166, 107, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .case-navigation {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+            
+            .nav-btn {
+                justify-content: center;
+                padding: 0.75rem;
+                font-size: 0.75rem;
+            }
+        }
+
+        /* Observation Items Styling */
+        .observation-item {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            user-select: none;
+        }
+
+        .observation-item:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .observation-item.selected {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Test Report Styling */
+        .test-report-content {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .test-report-content h4 {
+            color: #3ea66b;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .test-table {
+            overflow-x: auto;
+        }
+
+        .test-table table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+        }
+
+        .test-table th {
+            background: #f8f9fa;
+            color: #374151;
+            font-weight: 600;
+            padding: 0.75rem;
+            text-align: right;
+            border: 1px solid #e5e7eb;
+        }
+
+        .test-table td {
+            padding: 0.75rem;
+            border: 1px solid #e5e7eb;
+            text-align: right;
+        }
+
+        .test-table tbody tr:nth-child(even) {
+            background: #f9fafb;
+        }
+
+        .test-table tbody tr:hover {
+            background: #f3f4f6;
+        }
+
+        .no-data-message {
+            text-align: center;
+            padding: 2rem;
+            color: #6b7280;
+        }
+
+        .no-data-message i {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: #d1d5db;
+        }
+
+        /* Slide Content Styling */
+        .slide-content {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .slide-content h4 {
+            color: #3ea66b;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .slide-container {
+            text-align: center;
+        }
+
+        .slide-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            margin-bottom: 1rem;
+        }
+
+        .slide-container div {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            border-right: 4px solid #3ea66b;
+            text-align: right;
+            margin-top: 1rem;
+        }
+
+        /* Slide Navigation */
+        .slide-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .slide-nav-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .slide-nav-btn.prev-btn {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+            color: white;
+        }
+
+        .slide-nav-btn.prev-btn:hover {
+            background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+            transform: translateY(-1px);
+        }
+
+        .slide-nav-btn.next-btn {
+            background: linear-gradient(135deg, #3ea66b 0%, #2d7d4f 100%);
+            color: white;
+        }
+
+        .slide-nav-btn.next-btn:hover {
+            background: linear-gradient(135deg, #2d7d4f 0%, #1e5a3a 100%);
+            transform: translateY(-1px);
+        }
+
+        .slide-counter {
+            background: #f3f4f6;
+            color: #374151;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        @media (max-width: 768px) {
+            .slide-navigation {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .slide-nav-btn {
+                width: 100%;
+                justify-content: center;
+            }
         }
 
         .test-results-section {
@@ -906,45 +2570,52 @@
             border-bottom: 2px solid #e5e7eb;
         }
         
-        .observations-container button {
-            background: rgba(255, 255, 255, 0.9);
-            color: #374151;
-            border: 2px solid #e5e7eb;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.75rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            backdrop-filter: blur(10px);
-            font-size: 0.95rem;
-            margin-bottom: 0.75rem;
-            width: 100%;
-            text-align: right;
-            justify-content: flex-start;
-        }
-        
-        .observations-container button:hover {
-            border-color: #667eea;
-            color: #667eea;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-        
-        .observations-container button.selected {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: white;
-            border-color: transparent;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
         
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
             25% { transform: translateX(-5px); }
             75% { transform: translateX(5px); }
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+        
+        /* استایل اسکرول بار */
+        .observations-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .observations-container::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 4px;
+        }
+        
+        .observations-container::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #3ea66b 0%, #2d7d4f 100%);
+            border-radius: 4px;
+        }
+        
+        .observations-container::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #2d7d4f 0%, #1e5a3a 100%);
         }
         
         @keyframes success {
@@ -960,5 +2631,6 @@
             }
         }
     </style>
+
 </body>
 </html>

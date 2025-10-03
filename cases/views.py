@@ -6,6 +6,8 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.http import JsonResponse
 from django.utils import timezone
+from django.db.models import Q
+from dadash_app.decorators import subscription_required_or_admin
 from .models import (
     Case,
     LabTest,
@@ -19,19 +21,44 @@ from .models import (
     MORPHO_DEFAULT_OPTIONS,
 )
 
+@subscription_required_or_admin
 def case_list(request, category_slug=None):
     categories = CaseCategory.objects.all()
     selected_category = None
-    cases = Case.objects.all()
-    if category_slug:
+    cases = Case.objects.filter(is_published=True)
+    
+    # فیلتر بر اساس دسته‌بندی
+    category_id = request.GET.get('category')
+    if category_id and category_id != 'all':
+        try:
+            selected_category = get_object_or_404(CaseCategory, id=category_id)
+            cases = cases.filter(category=selected_category)
+        except (ValueError, CaseCategory.DoesNotExist):
+            pass
+    elif category_slug:
         selected_category = get_object_or_404(CaseCategory, slug=category_slug)
         cases = cases.filter(category=selected_category)
+    
+    # جستجو
+    search_query = request.GET.get('search')
+    if search_query:
+        cases = cases.filter(
+            Q(title__icontains=search_query) | 
+            Q(history__icontains=search_query) |
+            Q(category__name__icontains=search_query)
+        )
+    
+    # مرتب‌سازی
+    cases = cases.order_by('-created_at')
+    
     return render(request, 'cases/case_list.html', {
         'cases': cases,
         'categories': categories,
-        'selected_category': selected_category
+        'selected_category': selected_category,
+        'search_query': search_query or '',
     })
 
+@subscription_required_or_admin
 def case_detail(request, case_id):
     case = get_object_or_404(Case, id=case_id)
     
@@ -60,31 +87,38 @@ def case_detail(request, case_id):
     tests_map = {}
     for lt in lab_tests:
         key = lt.lab_type.lower()
-        # تلاش برای یافتن تست مرتبط با تطبیق انعطاف‌پذیر
-        related_test = (
-            test_observations.filter(lab_type__iexact=key.upper()).first()
-            or (test_observations.filter(lab_type__iexact='CHEM').first() if key in ['chem', 'clinical chemistry'] else None)
-            or (test_observations.filter(lab_type__iexact='CBC').first() if key in ['cbc'] else None)
-            or (test_observations.filter(lab_type__iexact='MORPHO').first() if key in ['morpho'] else None)
-        )
+        # یافتن تست مرتبط با تطبیق دقیق
+        related_test = test_observations.filter(lab_type__iexact=lt.lab_type.upper()).first()
 
         if key not in tests_map:
             tests_map[key] = {
                 'title': key,
                 'rows': [],
                 'observations': (
-                    [opt.observation_text for opt in related_test.options.all()] if related_test and hasattr(related_test, 'options') and related_test.options.exists()
+                    [opt.observation_text for opt in UserObservation.objects.filter(case_test=related_test)] if related_test and key != 'cbc'
                     else (
-                        CBC_DEFAULT_OPTIONS if key == 'cbc' else (
-                            CHEM_DEFAULT_OPTIONS if key == 'chem' else (
-                                MORPHO_DEFAULT_OPTIONS if key == 'morpho' else []
+                        [opt.observation_text for opt in UserObservation.objects.filter(case_test__lab_type='CBC_DEFAULT')] if key == 'cbc'
+                        else (
+                            [opt.observation_text for opt in UserObservation.objects.filter(case_test__lab_type='CHEM_DEFAULT')] if key == 'chem'
+                            else (
+                                [opt.observation_text for opt in UserObservation.objects.filter(case_test__lab_type='MORPHO_DEFAULT')] if key == 'morpho'
+                                else []
                             )
                         )
                     )
                 ),
                 'correct_observations': (
-                    [opt.observation_text for opt in related_test.options.filter(is_correct=True)] if related_test and hasattr(related_test, 'options') and related_test.options.exists()
-                    else []
+                    [opt.observation_text for opt in UserObservation.objects.filter(case_test=related_test, is_correct=True)] if related_test and key != 'cbc'
+                    else (
+                        [opt.observation_text for opt in UserObservation.objects.filter(case_test__lab_type='CBC_DEFAULT', is_correct=True)] if key == 'cbc'
+                        else (
+                            [opt.observation_text for opt in UserObservation.objects.filter(case_test__lab_type='CHEM_DEFAULT', is_correct=True)] if key == 'chem'
+                            else (
+                                [opt.observation_text for opt in UserObservation.objects.filter(case_test__lab_type='MORPHO_DEFAULT', is_correct=True)] if key == 'morpho'
+                                else []
+                            )
+                        )
+                    )
                 ),
             }
 
@@ -97,57 +131,80 @@ def case_detail(request, case_id):
 
     tests_data = list(tests_map.values())
 
-    # اگر هیچ داده‌ای برای CBC/CHEM/MORPHO وجود ندارد، ورودی‌های پیش‌فرض اضافه کن
-    if not any(t.get('title') == 'cbc' for t in tests_data):
-        tests_data.append({
-            'title': 'cbc',
-            'rows': [],
-            'observations': CBC_DEFAULT_OPTIONS,
-            'correct_observations': [],
-        })
-    if not any(t.get('title') == 'chem' for t in tests_data):
-        tests_data.append({
-            'title': 'chem',
-            'rows': [],
-            'observations': CHEM_DEFAULT_OPTIONS,
-            'correct_observations': [],
-        })
-    # اضافه کردن گزینه‌های morpho به other
-    other_test = next((t for t in tests_data if t.get('title') == 'other'), None)
-    if other_test:
-        # اگر other وجود دارد، گزینه‌های morpho را اضافه کن
-        other_test['observations'].extend(MORPHO_DEFAULT_OPTIONS)
-    else:
-        # اگر other وجود ندارد، آن را ایجاد کن
-        tests_data.append({
-            'title': 'other',
-            'rows': [],
-            'observations': MORPHO_DEFAULT_OPTIONS,
-            'correct_observations': [],
-        })
+    # اضافه کردن گزینه‌های پیش‌فرض از دیتابیس
+    default_test_types = ['CBC_DEFAULT', 'CHEM_DEFAULT', 'MORPHO_DEFAULT']
+    
+    for default_type in default_test_types:
+        # بررسی آیا این نوع تست در tests_data موجود است
+        if not any(t.get('title') == default_type.lower().replace('_default', '') for t in tests_data):
+            # پیدا کردن default test در دیتابیس
+            default_test = test_observations.filter(lab_type=default_type).first()
+            
+            if default_test:
+                # دریافت observations از دیتابیس
+                observations = [opt.observation_text for opt in UserObservation.objects.filter(case_test=default_test)]
+                correct_observations = [opt.observation_text for opt in UserObservation.objects.filter(case_test=default_test, is_correct=True)]
+                
+                test_title = default_type.lower().replace('_default', '')
+                tests_data.append({
+                    'title': test_title,
+                    'rows': [],  # default tests هیچ row ندارند
+                    'observations': observations,
+                    'correct_observations': correct_observations,
+                })
     
     # اضافه کردن اسلایدها به داده‌ها (نمایش حتی بدون Test مرتبط)
     slides_data = []
-    for slide in slides:
-        slide_test = test_observations.filter(title__iexact='slide').first()
+    for i, slide in enumerate(slides):
+        slide_test = test_observations.filter(lab_type__iexact='slide').first()
 
         try:
-            if slide.image and slide.image.name:
-                report_html = f"<img src='{slide.image.url}' style='max-width:100%; height:auto; border-radius:8px;' /><br><br><strong>توضیحات:</strong> {slide.description}"
+            if slide.image and slide.image.strip():
+                # slide.image یک CharField است که نام فایل را ذخیره می‌کند
+                image_url = f"/media/slides/{slide.image}"
+                report_html = f"""
+                <div style="text-align: center; margin-bottom: 1rem;">
+                    <img src='{image_url}' 
+                         style='max-width:100%; height:auto; border-radius:8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);' 
+                         alt='{slide.title or "Slide Image"}' 
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+                    <div style='display:none; background: #f0f0f0; padding: 20px; text-align: center; border-radius:8px;'>
+                        <i class='fas fa-image' style='font-size: 48px; color: #ccc;'></i><br>
+                        <p>تصویر یافت نشد: {slide.image}</p>
+                    </div>
+                </div>
+                <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; border-right: 4px solid #3ea66b;">
+                    <strong>عنوان:</strong> {slide.title or 'بدون عنوان'}<br><br>
+                    <strong>توضیحات:</strong> {slide.description or 'بدون توضیح'}
+                </div>
+                """
             else:
-                report_html = f"<div style='background: #f0f0f0; padding: 20px; text-align: center; border-radius:8px;'><i class='fas fa-image' style='font-size: 48px; color: #ccc;'></i><br><br><strong>توضیحات:</strong> {slide.description}</div>"
+                report_html = f"""
+                <div style='background: #f0f0f0; padding: 20px; text-align: center; border-radius:8px;'>
+                    <i class='fas fa-image' style='font-size: 48px; color: #ccc;'></i><br><br>
+                    <strong>عنوان:</strong> {slide.title or 'بدون عنوان'}<br><br>
+                    <strong>توضیحات:</strong> {slide.description or 'بدون توضیح'}
+                </div>
+                """
         except Exception as e:
             print(f"Error processing slide image: {e}")
-            report_html = f"<div style='background: #f0f0f0; padding: 20px; text-align: center; border-radius:8px;'><i class='fas fa-image' style='font-size: 48px; color: #ccc;'></i><br><br><strong>توضیحات:</strong> {slide.description}</div>"
+            report_html = f"""
+            <div style='background: #f0f0f0; padding: 20px; text-align: center; border-radius:8px;'>
+                <i class='fas fa-image' style='font-size: 48px; color: #ccc;'></i><br><br>
+                <strong>خطا در نمایش تصویر:</strong> {str(e)}<br><br>
+                <strong>عنوان:</strong> {slide.title or 'بدون عنوان'}<br><br>
+                <strong>توضیحات:</strong> {slide.description or 'بدون توضیح'}
+            </div>
+            """
 
         slides_data.append({
-            'title': 'slide',
+            'title': f'slide_{i+1}',
             'report': report_html,
             'observations': (
-                [opt.text for opt in slide_test.options.all()] if slide_test and hasattr(slide_test, 'options') and slide_test.options.exists() else (slide_test.observations if slide_test and slide_test.observations else [])
+                [opt.observation_text for opt in UserObservation.objects.filter(case_test=slide_test)] if slide_test else []
             ),
             'correct_observations': (
-                [opt.text for opt in slide_test.options.filter(is_correct=True)] if slide_test and hasattr(slide_test, 'options') and slide_test.options.exists() else (slide_test.correct_observations if slide_test and slide_test.correct_observations else [])
+                [opt.observation_text for opt in UserObservation.objects.filter(case_test=slide_test, is_correct=True)] if slide_test else []
             ),
         })
     
@@ -181,6 +238,8 @@ def case_detail(request, case_id):
         'prev_case_id': prev_case_id,
         'tests': all_tests,
         'user_progress': user_progress,
+        'correct_diagnosis': case.correct_diagnosis or 'تشخیص صحیح در دسترس نیست',
+        'diagnosis_explanation': case.explanation or 'توضیحات تکمیلی در دسترس نیست',
     })
 
 def debug_case(request, case_id):
@@ -270,23 +329,40 @@ def profile_view(request):
 @login_required
 def save_progress(request):
     if request.method == 'POST':
-        case_id = request.POST.get('case_id')
-        observation_text = request.POST.get('observation_text')
-        is_correct = request.POST.get('is_correct') == 'true'
-        
-        case = get_object_or_404(Case, id=case_id)
-        
-        # ذخیره مشاهدات کاربر
-        UserObservation.objects.create(
-            user=request.user,
-            case=case,
-            observation_text=observation_text,
-            is_correct=is_correct
-        )
-        
-        return JsonResponse({'status': 'success'})
+        try:
+            case_id = request.POST.get('case_id')
+            observation_text = request.POST.get('observation_text')
+            is_correct = request.POST.get('is_correct') == 'true'
+            
+            if not case_id or not observation_text:
+                return JsonResponse({'status': 'error', 'error': 'Missing required fields'})
+            
+            case = get_object_or_404(Case, id=case_id)
+            
+            # پیدا کردن یا ایجاد یک LabTest پیش‌فرض برای این case
+            default_test, created = case.lab_tests.get_or_create(
+                lab_type='OBSERVATION',
+                defaults={
+                    'lab_name': 'User Observation',
+                    'lab_result': 'N/A',
+                    'normal_range': 'N/A'
+                }
+            )
+            
+            # ذخیره مشاهدات کاربر
+            UserObservation.objects.create(
+                user=request.user,
+                case=case,
+                case_test=default_test,
+                observation_text=observation_text,
+                is_correct=is_correct
+            )
+            
+            return JsonResponse({'status': 'success'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'error': str(e)})
     
-    return JsonResponse({'status': 'error'})
+    return JsonResponse({'status': 'error', 'error': 'Invalid request method'})
 
 @login_required
 def submit_case_result(request):

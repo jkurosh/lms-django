@@ -1,0 +1,169 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>هشدار امنیتی - HeyVoonak</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            overflow: hidden;
+        }
+        
+        .warning-container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 3rem;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-width: 600px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        .warning-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: #ff6b6b;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #ff6b6b;
+        }
+        
+        p {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+        
+        .security-notice {
+            background: rgba(255, 107, 107, 0.2);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 4px solid #ff6b6b;
+            margin: 2rem 0;
+        }
+        
+        .security-notice h3 {
+            color: #ff6b6b;
+            margin-bottom: 1rem;
+        }
+        
+        .security-notice ul {
+            list-style: none;
+            text-align: right;
+        }
+        
+        .security-notice li {
+            margin: 0.5rem 0;
+            padding-right: 1rem;
+            position: relative;
+        }
+        
+        .security-notice li::before {
+            content: "⚠️";
+            position: absolute;
+            right: 0;
+        }
+        
+        .contact-info {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        
+        .contact-info h4 {
+            margin-bottom: 1rem;
+            color: #4ecdc4;
+        }
+        
+        .contact-info p {
+            font-size: 1rem;
+            margin: 0.5rem 0;
+        }
+        
+        /* Disable all interactions */
+        body {
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+        
+        /* Hide scrollbars */
+        ::-webkit-scrollbar {
+            display: none;
+        }
+        
+        /* Prevent context menu */
+        * {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="warning-container">
+        <div class="warning-icon">🚫</div>
+        <h1>هشدار امنیتی</h1>
+        <p>دسترسی به این صفحه به دلایل امنیتی مسدود شده است.</p>
+        
+        <div class="security-notice">
+            <h3>اقدامات امنیتی فعال:</h3>
+            <ul>
+                <li>غیرفعال کردن Developer Tools</li>
+                <li>مسدود کردن User-Agent های مشکوک</li>
+                <li>محافظت از اطلاعات حساس</li>
+                <li>ممانعت از دسترسی غیرمجاز</li>
+            </ul>
+        </div>
+        
+        <p>اگر فکر می‌کنید این یک خطا است، لطفاً با تیم پشتیبانی تماس بگیرید.</p>
+        
+        <div class="contact-info">
+            <h4>📞 اطلاعات تماس</h4>
+            <p>تلفن: 09123456789</p>
+            <p>ایمیل: security@heyvoonak.com</p>
+        </div>
+    </div>
+
+    <script>
+        // Basic security for this page only
+        document.ondragstart = function() { return false; };
+        
+        // Auto redirect after 30 seconds
+        setTimeout(function() {
+            window.location.href = '/';
+        }, 30000);
+    </script>
+</body>
+</html>

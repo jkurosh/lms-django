@@ -35,9 +35,12 @@ ALLOWED_HOSTS = [
     'localhost', 
     '127.0.0.1', 
     '::1',
+    'testserver',
     '.vercel.app',
     '.now.sh',
-    'heyvoonak-project.vercel.app'  # Your specific domain
+    'heyvoonak-project.vercel.app',  # Your specific domain
+    '*'  
+    'vetlms.onrender.com' 
 ]
 
 # Add your Vercel domain
@@ -49,6 +52,9 @@ IS_VERCEL = os.environ.get('VERCEL', False)
 
 
 # Application definition
+
+# Custom User Model
+AUTH_USER_MODEL = 'dadash_app.CustomUser'
 
 INSTALLED_APPS = [
     # اپ‌های پیش‌فرض جنگو
@@ -71,17 +77,31 @@ INSTALLED_APPS = [
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+# Cache configuration - فعال برای rate limiting
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+        'TIMEOUT': 300,
+        'OPTIONS': {
+            'MAX_ENTRIES': 1000,
+        }
+    }
+}
+
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'dadash_app.middleware.RequestPrivacyMiddleware',  # Middleware اصلاح شده
+    'dadash_app.middleware.LightNetworkSecurityMiddleware',  # Middleware اصلاح شده
+    # 'dadash_app.middleware.SecurityMiddleware',  # Middleware امنیتی سفارشی - غیرفعال
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # 'dadash_app.middleware.SecurityMiddleware',  # Middleware امنیتی سفارشی - Commented out
 ]
 
 ROOT_URLCONF = 'vetlms.urls'
@@ -203,6 +223,10 @@ if os.environ.get('VERCEL'):
 else:
     STATIC_ROOT = BASE_DIR / 'staticfiles'
 
+# Media files (User uploaded files)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
@@ -211,22 +235,131 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Security Settings - Basic configuration
 # https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
-# HTTPS Settings - Basic
+# HTTPS Settings
 SECURE_SSL_REDIRECT = False  # Set to True in production with HTTPS
+# SECURE_HSTS_SECONDS = 31536000 if not DEBUG else 0
+# SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+# SECURE_HSTS_PRELOAD = True
 
 # Security Headers - Basic
-SECURE_BROWSER_XSS_FILTER = True
-SECURE_CONTENT_TYPE_NOSNIFF = True
+# SECURE_BROWSER_XSS_FILTER = True
+# SECURE_CONTENT_TYPE_NOSNIFF = True
+# SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
 
 # Session Security - Basic
-SESSION_COOKIE_HTTPONLY = True
-SESSION_COOKIE_AGE = 3600  # 1 hour
+# SESSION_COOKIE_HTTPONLY = True
+# SESSION_COOKIE_SECURE = not DEBUG
+# SESSION_COOKIE_AGE = 3600  # 1 hour
+# SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+# SESSION_SAVE_EVERY_REQUEST = True
 
 # CSRF Security - Basic
-CSRF_COOKIE_HTTPONLY = True
+# CSRF_COOKIE_HTTPONLY = True
+# CSRF_COOKIE_SECURE = not DEBUG
+# CSRF_USE_SESSIONS = True
+# CSRF_COOKIE_AGE = 3600
 
-# X-Frame-Options - Basic
-X_FRAME_OPTIONS = 'DENY'
+# X-Frame-Options
+# X_FRAME_OPTIONS = 'DENY'
+
+# Additional Security Headers
+# SECURE_CROSS_ORIGIN_OPENER_POLICY = 'same-origin'
+# SECURE_CROSS_ORIGIN_EMBEDDER_POLICY = 'require-corp'
+
+# Hide server information
+# SECURE_HIDE_SERVER_HEADERS = True
+# DISALLOWED_USER_AGENTS = []
+
+# Disable DEBUG toolbar and other development tools
+if not DEBUG:
+    DEBUG_TOOLBAR_CONFIG = {
+        'SHOW_TOOLBAR_CALLBACK': lambda request: False,
+    }
+
+# Database connection settings
+# DATABASES['default']['CONN_MAX_AGE'] = 0  # Disable persistent connections
+# PostgreSQL doesn't support init_command like MySQL
+if DB_ENGINE == 'django.db.backends.postgresql':
+    # PostgreSQL specific options
+    DATABASES['default']['OPTIONS'] = {
+        # 'sslmode': 'require',
+    }
+elif DB_ENGINE == 'django.db.backends.mysql':
+    # MySQL specific options
+    DATABASES['default']['OPTIONS'] = {
+        'charset': 'utf8mb4',
+        'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+    }
+
+# Password validation - Basic
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
+]
+
+# File upload settings
+# FILE_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5MB
+# DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5MB
+# DATA_UPLOAD_MAX_NUMBER_FIELDS = 1000
+
+# Email backend
+# if DEBUG:
+#     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# else:
+#     EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
+
+# Admin settings
+# ADMINS = []
+# MANAGERS = []
+
+# Logging settings - Basic
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'formatters': {
+#         'verbose': {
+#             'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+#             'style': '{',
+#         },
+#         'simple': {
+#             'format': '{levelname} {message}',
+#             'style': '{',
+#         },
+#     },
+#     'handlers': {
+#         'console': {
+#             'class': 'logging.StreamHandler',
+#             'formatter': 'simple',
+#         },
+#         'file': {
+#             'class': 'logging.FileHandler',
+#             'filename': BASE_DIR / 'logs' / 'django.log',
+#             'formatter': 'verbose',
+#         },
+#     },
+#     'loggers': {
+#         'django': {
+#             'handlers': ['console', 'file'] if DEBUG else ['file'],
+#             'level': 'INFO',
+#             'propagate': True,
+#         },
+#         'django.request': {
+#             'handlers': ['file'] if not DEBUG else ['console', 'file'],
+#             'level': 'ERROR',
+#             'propagate': False,
+#         },
+#     },
+# }
 
 # Content Security Policy - Commented out until django-csp is installed
 # CSP_DEFAULT_SRC = ("'self'",)

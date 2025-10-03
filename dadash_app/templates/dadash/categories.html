@@ -1,0 +1,1023 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="دسته‌بندی‌های مطالعات موردی دامپزشکی">
+    <title>دسته‌بندی‌ها - Heyvoonak</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3EA66B;
+            --primary-dark: #2d8a54;
+            --secondary: #4B6A9D;
+            --background: #ffffff;
+            --foreground: #0f172a;
+            --muted: #f1f5f9;
+            --muted-foreground: #64748b;
+            --border: #e2e8f0;
+            --card: #ffffff;
+            --card-foreground: #0f172a;
+        }
+
+        .dark {
+            --background: #1a1a1a;
+            --foreground: #e5e7eb;
+            --muted: #374151;
+            --muted-foreground: #9ca3af;
+            --border: #4b5563;
+            --card: #374151;
+            --card-foreground: #e5e7eb;
+        }
+
+        body {
+            font-family: 'Vazir', 'Tahoma', sans-serif;
+            background-color: var(--background);
+            color: var(--foreground);
+            transition: background-color 0.3s ease, color 0.3s ease;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* Dark Mode Toggle - Optimized */
+        .dark-mode-toggle {
+            background: var(--muted);
+            border: 1px solid var(--border);
+            color: var(--foreground);
+            padding: 0.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            font-size: 1.1rem;
+            margin-right: 1rem;
+        }
+
+        .dark-mode-toggle:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .light-icon {
+            display: block;
+            color: #f59e0b;
+        }
+
+        .dark-icon {
+            display: none;
+            color: #fbbf24;
+        }
+
+        .dark .light-icon {
+            display: none;
+        }
+
+        .dark .dark-icon {
+            display: block;
+        }
+
+        /* User Profile Styles */
+        .user-dropdown {
+            position: relative;
+        }
+
+        .user-profile-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem;
+            border-radius: 12px;
+            transition: background-color 0.15s ease;
+            cursor: pointer;
+            background: transparent;
+        }
+
+        .user-profile-header:hover {
+            background: rgba(62, 166, 107, 0.1);
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #3EA66B;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.875rem;
+            font-weight: 600;
+            border: none;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--foreground);
+        }
+
+        .user-role {
+            font-size: 0.75rem;
+            color: var(--muted-foreground);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            min-width: 200px;
+            z-index: 1000;
+            display: none;
+            margin-top: 0.5rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s ease, visibility 0.2s ease;
+        }
+
+        .dropdown-menu.show {
+            display: block !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+
+        .dropdown-header {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .dropdown-header .user-info .user-name {
+            font-weight: 600;
+            color: var(--foreground);
+            margin-bottom: 0.25rem;
+        }
+
+        .dropdown-header .user-info .user-email {
+            font-size: 0.875rem;
+            color: var(--muted-foreground);
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: var(--foreground);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            font-size: 0.875rem;
+        }
+
+        .dropdown-item:hover {
+            background-color: var(--muted);
+        }
+
+        .dropdown-item.logout {
+            color: #ef4444;
+        }
+
+        .dropdown-item.logout:hover {
+            background-color: rgba(239, 68, 68, 0.1);
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background-color: var(--border);
+            margin: 0.5rem 0;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            font-size: 0.875rem;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--foreground);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--muted);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-top: 80px;
+            min-height: calc(100vh - 80px);
+            background-color: var(--background);
+        }
+
+        .content-wrapper {
+            display: flex;
+            min-height: calc(100vh - 80px);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background-color: var(--card);
+            border-left: 1px solid var(--border);
+            padding: 2rem 1rem;
+            overflow-y: auto;
+        }
+
+        /* Content Area */
+        .content-area {
+            flex: 1;
+            padding: 2rem;
+            background-color: var(--background);
+        }
+
+        .sidebar h2 {
+            color: var(--foreground);
+            margin-bottom: 1.5rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .category-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .category-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .category-item a {
+            display: block;
+            padding: 0.75rem 1rem;
+            color: var(--foreground);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+
+        .category-item a:hover,
+        .category-item a.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary-dark);
+            cursor: pointer;
+        }
+
+        .category-item a {
+            transition: all 0.3s ease;
+        }
+
+        /* Subcategories Styles */
+        .subcategories-container {
+            margin-top: 1rem;
+        }
+
+        .subcategory-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .back-button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .back-button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .subcategory-header h2 {
+            color: var(--foreground);
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .category-card {
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+
+        .category-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary);
+        }
+
+        .subcategory-card {
+            background-color: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .subcategory-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary);
+            transform: scaleY(0);
+            transition: transform 0.2s ease;
+        }
+
+        .subcategory-card:hover::before {
+            transform: scaleY(1);
+        }
+
+        .subcategory-card:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            border-color: var(--primary);
+        }
+
+        .subcategory-card h4 {
+            color: var(--foreground);
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .subcategory-card p {
+            color: var(--muted-foreground);
+            font-size: 0.9rem;
+            line-height: 1.4;
+            margin-bottom: 1rem;
+        }
+
+        .subcategory-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: var(--muted-foreground);
+        }
+
+        .subcategory-count {
+            background-color: var(--primary);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+
+
+        .content-header {
+            margin-bottom: 2rem;
+        }
+
+        .content-header h1 {
+            color: var(--foreground);
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .content-header p {
+            color: var(--muted-foreground);
+            font-size: 1.1rem;
+        }
+
+        /* Cards */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background-color: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+            cursor: pointer;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary);
+        }
+
+        .card h3 {
+            color: var(--foreground);
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .card p {
+            color: var(--muted-foreground);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        .card-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: var(--muted-foreground);
+        }
+
+        .card-count {
+            background-color: var(--primary);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        /* Mobile menu styles */
+        .mobile-menu {
+            display: none;
+        }
+
+        .mobile-menu.active {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .user-profile-header .user-info {
+                display: none;
+            }
+            
+            .user-avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 0.75rem;
+            }
+            
+            .user-profile-header {
+                padding: 0.25rem;
+            }
+
+            .content-wrapper {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                order: 2;
+            }
+
+            .content-area {
+                order: 1;
+            }
+
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation -->
+    <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300" style="background-color: var(--card); border-bottom: 1px solid var(--border);">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <div class="flex items-center space-x-2 space-x-reverse">
+                    <div class="bg-primary rounded-lg p-2">
+                        <i class="fas fa-stethoscope text-white text-xl"></i>
+                    </div>
+                    <span class="text-xl font-bold text-secondary">Heyvoonak</span>
+                    <!-- Dark Mode Toggle -->
+                    <button id="dark-mode-toggle" class="dark-mode-toggle" title="تغییر حالت تاریک/روشن">
+                        <i class="fas fa-moon light-icon"></i>
+                        <i class="fas fa-sun dark-icon"></i>
+                    </button>
+                </div>
+
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex items-center space-x-6 space-x-reverse">
+                    <a href="{% url 'heyvoonak:dadash_home' %}" class="text-foreground hover:text-primary transition-colors">خانه</a>
+                    <a href="{% url 'heyvoonak:landing_page' %}" class="text-foreground hover:text-primary transition-colors">لندینگ</a>
+                    <a href="{% url 'cases:case_list' %}" class="text-foreground hover:text-primary transition-colors">مطالعات موردی</a>
+                    
+                    <!-- User Profile Section -->
+                    {% if user.is_authenticated %}
+                        <div class="user-dropdown">
+                            <div class="user-profile-header" id="profileBtn">
+                                <div class="user-avatar">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div class="user-info">
+                                    <div class="user-name">{{ user.first_name|default:user.username }}</div>
+                                    <div class="user-role">دانشجوی دامپزشکی</div>
+                                </div>
+                            </div>
+                            <div class="dropdown-menu" id="userMenu">
+                                <div class="dropdown-header">
+                                    <div class="user-info">
+                                        <div class="user-name">{{ user.first_name|default:user.username }}</div>
+                                        <div class="user-email">{{ user.phone_number|default:user.email }}</div>
+                                    </div>
+                                </div>
+                                <div class="dropdown-divider"></div>
+                                <a href="{% url 'heyvoonak:designali_dashboard' %}" class="dropdown-item">
+                                    <i class="fas fa-tachometer-alt"></i>
+                                    داشبورد
+                                </a>
+                                <a href="{% url 'heyvoonak:profile_settings' %}" class="dropdown-item">
+                                    <i class="fas fa-user-cog"></i>
+                                    پروفایل
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a href="{% url 'heyvoonak:logout' %}" class="dropdown-item logout">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    خروج
+                                </a>
+                            </div>
+                        </div>
+                    {% else %}
+                        <a href="{% url 'heyvoonak:login' %}" class="btn btn-outline">ورود</a>
+                        <a href="{% url 'heyvoonak:register' %}" class="btn btn-primary">شروع کنید</a>
+                    {% endif %}
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center gap-2">
+                    {% if user.is_authenticated %}
+                        <div class="user-dropdown">
+                            <div class="user-profile-header" id="profileBtnMobile">
+                                <div class="user-avatar">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div class="user-info">
+                                    <div class="user-name">{{ user.first_name|default:user.username }}</div>
+                                    <div class="user-role">دانشجوی دامپزشکی</div>
+                                </div>
+                            </div>
+                            <div class="dropdown-menu" id="userMenuMobile">
+                                <div class="dropdown-header">
+                                    <div class="user-info">
+                                        <div class="user-name">{{ user.first_name|default:user.username }}</div>
+                                        <div class="user-email">{{ user.phone_number|default:user.email }}</div>
+                                    </div>
+                                </div>
+                                <div class="dropdown-divider"></div>
+                                <a href="{% url 'heyvoonak:designali_dashboard' %}" class="dropdown-item">
+                                    <i class="fas fa-tachometer-alt"></i>
+                                    داشبورد
+                                </a>
+                                <a href="{% url 'heyvoonak:profile_settings' %}" class="dropdown-item">
+                                    <i class="fas fa-user-cog"></i>
+                                    پروفایل
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a href="{% url 'heyvoonak:logout' %}" class="dropdown-item logout">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    خروج
+                                </a>
+                            </div>
+                        </div>
+                    {% endif %}
+                    <button id="mobile-menu-btn" class="p-2">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+                </div>
+            </div>
+
+            <!-- Mobile Menu -->
+            <div id="mobile-menu" class="mobile-menu md:hidden absolute top-full left-0 right-0 border-t shadow-lg" style="background-color: var(--card); border-color: var(--border);">
+                <!-- User Profile Menu for Mobile -->
+                {% if user.is_authenticated %}
+                    <div class="p-4 border-b" style="border-color: var(--border);">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-10 h-10 bg-gradient-to-r from-primary to-primary-dark rounded-full flex items-center justify-center text-white">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div>
+                                <div class="font-semibold text-foreground">{{ user.first_name|default:user.username }}</div>
+                                <div class="text-sm text-muted-foreground">آنلاین</div>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <a href="{% url 'heyvoonak:designali_dashboard' %}" class="flex items-center gap-3 p-3 rounded-lg transition-colors" style="color: var(--foreground);">
+                                <i class="fas fa-tachometer-alt" style="color: var(--primary);"></i>
+                                <span>داشبورد</span>
+                            </a>
+                            <a href="{% url 'heyvoonak:profile_settings' %}" class="flex items-center gap-3 p-3 rounded-lg transition-colors" style="color: var(--foreground);">
+                                <i class="fas fa-user-cog" style="color: var(--primary);"></i>
+                                <span>پروفایل</span>
+                            </a>
+                            <a href="{% url 'heyvoonak:logout' %}" class="flex items-center gap-3 p-3 rounded-lg transition-colors" style="color: #ef4444;">
+                                <i class="fas fa-sign-out-alt" style="color: #ef4444;"></i>
+                                <span>لاگ اوت</span>
+                            </a>
+                        </div>
+                    </div>
+                {% endif %}
+                
+                <div class="p-4 space-y-4">
+                    <a href="{% url 'heyvoonak:dadash_home' %}" class="block text-foreground hover:text-primary transition-colors">خانه</a>
+                    <a href="{% url 'heyvoonak:landing_page' %}" class="block text-foreground hover:text-primary transition-colors">لندینگ</a>
+                    <a href="{% url 'cases:case_list' %}" class="block text-foreground hover:text-primary transition-colors">مطالعات موردی</a>
+                    <div class="flex space-x-2 space-x-reverse">
+                        <button class="btn btn-outline flex-1">ورود</button>
+                        <button class="btn btn-primary flex-1">شروع کنید</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="content-wrapper">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <h2>دسته‌بندی‌ها</h2>
+                <ul class="category-list">
+                    <li class="category-item">
+                        <a href="#" class="active">همه دسته‌بندی‌ها</a>
+                    </li>
+                    {% for category in categories %}
+                    <li class="category-item">
+                        <a href="#">{{ category.name }}</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+        </aside>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <div class="content-header">
+                    <h1 id="content-title">دسته‌بندی‌های مطالعات موردی</h1>
+                    <p id="content-subtitle">انتخاب کنید و شروع به یادگیری کنید</p>
+            </div>
+
+                <!-- Main Categories View -->
+                <div id="main-categories" class="cards-grid">
+                    {% for category in categories %}
+                    <div class="card category-card" data-category="{{ category.name }}">
+                        <h3>{{ category.name }}</h3>
+                        <p>{{ category.description|default:"توضیحات این دسته‌بندی در دسترس نیست." }}</p>
+                        <div class="card-meta">
+                            <span>تعداد موارد: {{ category.cases.count|default:0 }}</span>
+                            <span class="card-count">{{ category.cases.count|default:0 }} مورد</span>
+                        </div>
+                        </div>
+                    {% empty %}
+                    <div class="card">
+                        <h3>هیچ دسته‌بندی‌ای یافت نشد</h3>
+                        <p>لطفاً بعداً دوباره تلاش کنید.</p>
+                    </div>
+                    {% endfor %}
+            </div>
+
+                <!-- Subcategories View (Hidden by default) -->
+                <div id="subcategories-view" class="subcategories-container" style="display: none;">
+                    <div class="subcategory-header">
+                        <button id="back-to-main" class="back-button">
+                            <i class="fas fa-arrow-right"></i>
+                            بازگشت به دسته‌بندی‌ها
+                    </button>
+                        <h2 id="selected-category-title">زیرمجموعه‌های انتخاب شده</h2>
+                    </div>
+                    <div id="subcategories-grid" class="cards-grid">
+                        <!-- Subcategories will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Dark mode functionality
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark');
+            }
+
+            // Dark mode toggle
+            const darkModeToggle = document.getElementById('dark-mode-toggle');
+            if (darkModeToggle) {
+                darkModeToggle.addEventListener('click', function() {
+                    document.body.classList.toggle('dark');
+                    const isDark = document.body.classList.contains('dark');
+                    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                });
+            }
+
+        // Mobile menu toggle
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+            if (mobileMenuBtn && mobileMenu) {
+                mobileMenuBtn.addEventListener('click', function() {
+            mobileMenu.classList.toggle('active');
+        });
+            }
+
+            // User menu toggle functions
+            function toggleUserMenu() {
+                const menu = document.getElementById('userMenu');
+                if (menu) {
+                    menu.classList.toggle('show');
+                }
+            }
+
+            function toggleUserMenuMobile() {
+                const menu = document.getElementById('userMenuMobile');
+                if (menu) {
+                    menu.classList.toggle('show');
+                }
+            }
+            
+            // Desktop profile button
+            const profileBtn = document.getElementById('profileBtn');
+            if (profileBtn) {
+                profileBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    toggleUserMenu();
+                });
+            }
+
+            // Mobile profile button
+            const profileBtnMobile = document.getElementById('profileBtnMobile');
+            if (profileBtnMobile) {
+                profileBtnMobile.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    toggleUserMenuMobile();
+                });
+            }
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(event) {
+                const menu = document.getElementById('userMenu');
+                const profileBtn = document.getElementById('profileBtn');
+                const mobileMenu = document.getElementById('userMenuMobile');
+                const mobileProfileBtn = document.getElementById('profileBtnMobile');
+                
+                if (menu && profileBtn && !menu.contains(event.target) && !profileBtn.contains(event.target)) {
+                    menu.classList.remove('show');
+                }
+                
+                if (mobileMenu && mobileProfileBtn && !mobileMenu.contains(event.target) && !mobileProfileBtn.contains(event.target)) {
+                    mobileMenu.classList.remove('show');
+                }
+            });
+
+            // Category filtering functionality
+        function filterByCategory(categoryId) {
+                console.log('Filter by category:', categoryId);
+            const url = new URL(window.location);
+            if (categoryId === 'all') {
+                url.searchParams.delete('category');
+            } else {
+                url.searchParams.set('category', categoryId);
+            }
+            url.searchParams.delete('page'); // Reset to first page
+            window.location.href = url.toString();
+        }
+
+            // Category buttons click handlers
+            document.querySelectorAll('.category-item a').forEach(button => {
+                button.addEventListener('click', function(e) {
+                e.preventDefault();
+                    const categoryId = this.getAttribute('data-category') || 'all';
+                    console.log('Category button clicked:', categoryId);
+                    filterByCategory(categoryId);
+            });
+        });
+
+            // Category mapping for API calls
+            const categoryMapping = {
+                'پاتولوژی': 1,
+                'بیماری\u200cهای داخلی': 2,
+                'اطفال': 3,
+                'جراحی': 4,
+                'زنان و زایمان': 5,
+                'روانپزشکی': 6,
+                'اورژانس': 7,
+                'رادیولوژی': 8,
+                'قلب\u200cشناسی': 9,
+                'پوست\u200cشناسی': 10
+            };
+
+            // Show subcategories function
+            async function showSubcategories(categoryName) {
+                
+                // Hide main categories
+                document.getElementById('main-categories').style.display = 'none';
+                
+                // Show subcategories view
+                document.getElementById('subcategories-view').style.display = 'block';
+                
+                // Update title
+                document.getElementById('content-title').textContent = `زیرمجموعه\u200cهای ${categoryName}`;
+                document.getElementById('content-subtitle').textContent = 'زیرمجموعه\u200cهای انتخاب شده را مشاهده کنید';
+                document.getElementById('selected-category-title').textContent = `زیرمجموعه\u200cهای ${categoryName}`;
+                
+                // Show loading
+                const subcategoriesGrid = document.getElementById('subcategories-grid');
+                subcategoriesGrid.innerHTML = `
+                    <div class="card">
+                        <h3>در حال بارگذاری...</h3>
+                        <p>زیرمجموعه\u200cها در حال دریافت هستند.</p>
+                    </div>
+                `;
+                
+                // Get category ID
+                const categoryId = categoryMapping[categoryName];
+                
+                if (!categoryId) {
+                    subcategoriesGrid.innerHTML = `
+                        <div class="card">
+                            <h3>خطا</h3>
+                            <p>دسته\u200cبندی یافت نشد.</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                try {
+                    // Fetch subcategories from API
+                    const response = await fetch(`/api/categories/${categoryId}/subcategories/`);
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        const subcategories = data.subcategories;
+                        
+                        // Clear loading
+                        subcategoriesGrid.innerHTML = '';
+                        
+                        if (subcategories.length === 0) {
+                            subcategoriesGrid.innerHTML = `
+                                <div class="card">
+                                    <h3>هیچ زیرمجموعه\u200cای یافت نشد</h3>
+                                    <p>برای این دسته\u200cبندی زیرمجموعه\u200cای تعریف نشده است.</p>
+                                </div>
+                            `;
+                        } else {
+                            subcategories.forEach(subcategory => {
+                                const subcategoryCard = document.createElement('div');
+                                subcategoryCard.className = 'subcategory-card';
+                                subcategoryCard.innerHTML = `
+                                    <h4>${subcategory.name}</h4>
+                                    <p>${subcategory.description || 'توضیحات در دسترس نیست'}</p>
+                                    <div class="subcategory-meta">
+                                        <span>تعداد موارد: ${subcategory.case_count}</span>
+                                        <span class="subcategory-count">${subcategory.case_count} مورد</span>
+                                    </div>
+                                `;
+                                
+                                // Add click handler to navigate to case list
+                                subcategoryCard.addEventListener('click', function() {
+                                    window.location.href = `/cases/?subcategory=${subcategory.id}`;
+                                });
+                                
+                                subcategoriesGrid.appendChild(subcategoryCard);
+                            });
+                        }
+                    } else {
+                        throw new Error(data.error || 'خطا در دریافت زیرمجموعه\u200cها');
+                    }
+                } catch (error) {
+                    console.error('Error fetching subcategories:', error);
+                    subcategoriesGrid.innerHTML = `
+                        <div class="card">
+                            <h3>خطا در بارگذاری</h3>
+                            <p>خطا در دریافت زیرمجموعه\u200cها: ${error.message}</p>
+                        </div>
+                    `;
+                }
+            }
+
+            // Back to main categories function
+            function backToMainCategories() {
+                
+                // Show main categories
+                document.getElementById('main-categories').style.display = 'grid';
+                
+                // Hide subcategories view
+                document.getElementById('subcategories-view').style.display = 'none';
+                
+                // Reset title
+                document.getElementById('content-title').textContent = 'دسته\u200cبندی\u200cهای مطالعات موردی';
+                document.getElementById('content-subtitle').textContent = 'انتخاب کنید و شروع به یادگیری کنید';
+                
+                // Remove active class from all sidebar links
+                document.querySelectorAll('.category-list a').forEach(l => l.classList.remove('active'));
+                // Add active to "همه دسته\u200cبندی\u200cها"
+                document.querySelector('.category-list a[href="#"]').classList.add('active');
+            }
+
+            // Category sidebar links
+            document.querySelectorAll('.category-list a').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const text = this.textContent.trim();
+                    
+                    // Remove active class from all links
+                    document.querySelectorAll('.category-list a').forEach(l => l.classList.remove('active'));
+                    // Add active class to clicked link
+                    this.classList.add('active');
+                    
+                    if (text === 'همه دسته\u200cبندی\u200cها') {
+                        backToMainCategories();
+                    } else {
+                        showSubcategories(text);
+                    }
+                });
+            });
+
+            // Category cards click handlers
+            document.querySelectorAll('.category-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const categoryName = this.getAttribute('data-category');
+                    
+                    // Update sidebar active state
+                    document.querySelectorAll('.category-list a').forEach(l => l.classList.remove('active'));
+                    const sidebarLink = Array.from(document.querySelectorAll('.category-list a')).find(link => 
+                        link.textContent.trim() === categoryName
+                    );
+                    if (sidebarLink) {
+                        sidebarLink.classList.add('active');
+                    }
+                    
+                    showSubcategories(categoryName);
+                });
+            });
+
+            // Back button
+            document.getElementById('back-to-main').addEventListener('click', function(e) {
+                e.preventDefault();
+                backToMainCategories();
+            });
+
+        });
+    </script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

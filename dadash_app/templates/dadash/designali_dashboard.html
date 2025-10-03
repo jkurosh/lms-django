@@ -1,0 +1,1460 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HeyVoonak - سیستم مدیریت کلینیک دامپزشکی</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3EA66B;
+            --primary-dark: #2d8a54;
+            --secondary: #4B6A9D;
+            --background: #ffffff;
+            --foreground: #0f172a;
+            --muted: #f1f5f9;
+            --muted-foreground: #64748b;
+            --border: #e2e8f0;
+            --card: #ffffff;
+            --card-foreground: #0f172a;
+        }
+
+        .dark {
+            --background: #0f172a;
+            --foreground: #f8fafc;
+            --muted: #1e293b;
+            --muted-foreground: #94a3b8;
+            --border: #334155;
+            --card: #1e293b;
+            --card-foreground: #f8fafc;
+        }
+
+        body {
+            font-family: 'Vazir', 'Tahoma', sans-serif;
+            background-color: var(--background);
+            color: var(--foreground);
+            margin: 0;
+            padding: 0;
+            direction: rtl;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .dashboard-container {
+            min-height: 100vh;
+            background: var(--background);
+        }
+
+        /* Navbar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 50;
+            height: 64px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.5);
+        }
+
+        .navbar-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 100%;
+            padding: 0 1rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+        }
+
+        .logo-text {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--secondary);
+        }
+
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .nav-btn {
+            background: none;
+            border: none;
+            color: var(--muted-foreground);
+            font-size: 1.25rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-btn:hover {
+            background: rgba(62, 166, 107, 0.1);
+            color: var(--primary);
+        }
+
+        .notification-btn {
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        .notification-btn.has-unread i {
+            color: #ef4444 !important;
+            animation: pulse 2s infinite;
+        }
+
+        .notification-btn.has-unread {
+            color: #ef4444;
+        }
+
+        .notification-count {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            background: #ef4444;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.125rem 0.375rem;
+            border-radius: 10px;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        .notification-count.zero {
+            display: none;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .user-dropdown {
+            position: relative;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .user-avatar:hover {
+            background: var(--primary-dark);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            min-width: 200px;
+            z-index: 1000;
+            display: none;
+            margin-top: 0.5rem;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+        .dropdown-header {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .user-info .user-name {
+            font-weight: 600;
+            color: var(--foreground);
+            margin-bottom: 0.25rem;
+        }
+
+        .user-info .user-email {
+            font-size: 0.875rem;
+            color: var(--muted-foreground);
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: var(--foreground);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            font-size: 0.875rem;
+        }
+
+        .dropdown-item:hover {
+            background: var(--muted);
+        }
+
+        .dropdown-item.logout {
+            color: #dc2626;
+        }
+
+        .dropdown-item.logout:hover {
+            background: rgba(220, 38, 38, 0.1);
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 0.5rem 0;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding-top: 64px;
+            min-height: 100vh;
+        }
+
+        /* Tab Navigation */
+        .tab-navigation {
+            background: white;
+            border-bottom: 1px solid var(--border);
+            padding: 0 1rem;
+        }
+
+        .tab-buttons {
+            display: flex;
+            gap: 0;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 1rem 1.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--muted-foreground);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn:hover {
+            color: var(--foreground);
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-btn.disabled {
+            color: var(--muted-foreground);
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .tab-btn.disabled:hover {
+            color: var(--muted-foreground);
+        }
+
+        /* Tab Content */
+        .tab-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .tab-panel {
+            display: none;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        /* Welcome Section */
+        .welcome-section {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: 24px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            color: white;
+            text-align: right;
+        }
+
+        .welcome-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            align-items: flex-end;
+        }
+
+        @media (min-width: 768px) {
+            .welcome-content {
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+            }
+        }
+
+        .welcome-text h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .welcome-text p {
+            font-size: 1rem;
+            opacity: 0.9;
+            margin: 0 0 1rem 0;
+            max-width: 600px;
+        }
+
+        .welcome-actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .welcome-action-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.25rem;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .welcome-action-btn.primary {
+            background: white;
+            color: var(--primary);
+        }
+
+        .welcome-action-btn.primary:hover {
+            background: rgba(255, 255, 255, 0.9);
+            transform: translateY(-2px);
+        }
+
+        .welcome-action-btn.secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .welcome-action-btn.secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .welcome-action-btn.tertiary {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .welcome-action-btn.tertiary:hover {
+            background: linear-gradient(135deg, #7c3aed, #6d28d9);
+            transform: translateY(-2px);
+        }
+
+        .dark-mode-toggle {
+            background: var(--muted);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-left: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 40px;
+            height: 40px;
+        }
+
+        .dark-mode-toggle:hover {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .dark-mode-toggle i {
+            font-size: 16px;
+        }
+
+        .light-icon {
+            display: block;
+            color: #f59e0b;
+        }
+
+        .dark-icon {
+            display: none;
+            color: #fbbf24;
+        }
+
+        .dark .light-icon {
+            display: none;
+        }
+
+        .dark .dark-icon {
+            display: block;
+        }
+
+
+        /* Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        @media (min-width: 768px) {
+            .content-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        /* Content Sections */
+        .content-section {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--foreground);
+            margin: 0;
+        }
+
+        .view-all-btn {
+            background: none;
+            border: none;
+            color: var(--muted-foreground);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .view-all-btn:hover {
+            background: rgba(62, 166, 107, 0.1);
+            color: var(--primary);
+        }
+
+        /* Case Studies List */
+        .case-studies-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .case-study-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem;
+            border-radius: 16px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            text-align: right;
+        }
+
+        .case-study-item:hover {
+            background: rgba(62, 166, 107, 0.05);
+        }
+
+        .case-study-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .case-study-info {
+            flex: 1;
+            text-align: right;
+        }
+
+        .case-study-info h3 {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--foreground);
+            margin: 0 0 0.25rem 0;
+        }
+
+        .case-study-info p {
+            font-size: 0.75rem;
+            color: var(--muted-foreground);
+            margin: 0;
+        }
+
+        .case-study-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .status-badge.completed {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+            border-color: rgba(34, 197, 94, 0.3);
+        }
+
+        .status-badge.upcoming {
+            background: rgba(62, 166, 107, 0.2);
+            color: var(--primary);
+            border-color: rgba(62, 166, 107, 0.3);
+        }
+
+        .status-badge.bookmarked {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+            border-color: rgba(251, 191, 36, 0.3);
+        }
+
+        .case-actions {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-sm {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.75rem;
+            border-radius: 0.375rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--muted-foreground);
+        }
+
+        .empty-icon {
+            width: 4rem;
+            height: 4rem;
+            background: var(--muted);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .empty-state h3 {
+            margin-bottom: 0.5rem;
+            color: var(--foreground);
+        }
+
+        .empty-state p {
+            margin-bottom: 1.5rem;
+            font-size: 0.875rem;
+        }
+
+        .view-btn {
+            background: none;
+            border: none;
+            color: var(--muted-foreground);
+            font-size: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .view-btn:hover {
+            background: rgba(62, 166, 107, 0.1);
+            color: var(--primary);
+        }
+
+        /* Booked Cases */
+        .booked-cases-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .booked-case-item {
+            padding: 1rem;
+            border-radius: 16px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            text-align: right;
+        }
+
+        .booked-case-item:hover {
+            background: rgba(62, 166, 107, 0.05);
+        }
+
+        .case-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .case-header h3 {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--foreground);
+            margin: 0;
+        }
+
+        .booked-case-item p {
+            font-size: 0.75rem;
+            color: var(--muted-foreground);
+            margin: 0 0 0.75rem 0;
+        }
+
+        .case-details {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .case-detail {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.75rem;
+            color: var(--muted-foreground);
+        }
+
+        .case-detail i {
+            font-size: 0.75rem;
+        }
+
+        .case-client {
+            font-size: 0.75rem;
+            color: var(--muted-foreground);
+        }
+
+        .case-client strong {
+            color: var(--foreground);
+            font-weight: 500;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: var(--muted-foreground);
+        }
+
+        .empty-state i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            opacity: 0.5;
+        }
+
+        .empty-state p {
+            font-size: 0.875rem;
+            margin: 0;
+        }
+
+        /* Notifications Section */
+        .notifications-section {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .notifications-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .notification-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 0.75rem;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .notification-item:hover {
+            background: var(--muted);
+        }
+
+        .notification-item.unread {
+            background: rgba(62, 166, 107, 0.05);
+            border-color: var(--primary);
+        }
+
+        .notification-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .notification-icon.info { background: #3b82f6; }
+        .notification-icon.success { background: #22c55e; }
+        .notification-icon.warning { background: #f59e0b; }
+        .notification-icon.error { background: #ef4444; }
+        .notification-icon.announcement { background: #8b5cf6; }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+            color: var(--foreground);
+        }
+
+        .notification-message {
+            font-size: 0.8rem;
+            color: var(--muted-foreground);
+            line-height: 1.4;
+            margin-bottom: 0.5rem;
+        }
+
+        .notification-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 0.75rem;
+            color: var(--muted-foreground);
+        }
+
+        .notification-time {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .notification-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .notification-action-btn {
+            background: none;
+            border: none;
+            color: var(--muted-foreground);
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .notification-action-btn:hover {
+            background: var(--muted);
+            color: var(--foreground);
+        }
+
+        .empty-notifications {
+            text-align: center;
+            padding: 2rem;
+            color: var(--muted-foreground);
+        }
+
+        .empty-notifications i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            opacity: 0.5;
+        }
+
+        .empty-notifications p {
+            font-size: 0.875rem;
+            margin: 0;
+        }
+
+        .mark-all-read-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .mark-all-read-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .tab-content {
+                padding: 1rem;
+            }
+            
+            .welcome-section {
+                padding: 1.5rem;
+            }
+            
+            .welcome-text h1 {
+                font-size: 1.5rem;
+            }
+            
+            .content-section {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="dashboard-container">
+    <!-- Header -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-left">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-paw"></i>
+                    </div>
+                    <span class="logo-text">HeyVoonak</span>
+                </div>
+            </div>
+            
+            <div class="navbar-right">
+                <button id="dark-mode-toggle" class="dark-mode-toggle" title="تغییر حالت تاریک/روشن">
+                    <i class="fas fa-moon light-icon"></i>
+                    <i class="fas fa-sun dark-icon"></i>
+                </button>
+                <button class="nav-btn notification-btn" title="اعلان‌ها">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-count">5</span>
+                </button>
+                <div class="user-dropdown">
+                    <button class="user-avatar dropdown-toggle" onclick="toggleUserDropdown()">
+                        <i class="fas fa-user"></i>
+                    </button>
+                    <div class="dropdown-menu" id="userDropdown">
+                        <div class="dropdown-header">
+                            <div class="user-info">
+                                <div class="user-name">{{ user.first_name|default:user.username }}</div>
+                                <div class="user-email">{{ user.phone_number|default:user.email }}</div>
+                            </div>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <a href="/profile/" class="dropdown-item">
+                            <i class="fas fa-user-cog"></i>
+                            پروفایل
+                        </a>
+                        <a href="/settings/" class="dropdown-item">
+                            <i class="fas fa-cog"></i>
+                            تنظیمات
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="/logout/" class="dropdown-item logout">
+                            <i class="fas fa-sign-out-alt"></i>
+                            خروج
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Tab Navigation -->
+        <div class="tab-navigation">
+            <div class="tab-buttons">
+                <button class="tab-btn active" onclick="switchTab('home')">خانه</button>
+                <button class="tab-btn disabled" disabled>برنامه‌ها</button>
+                <button class="tab-btn disabled" disabled>فایل‌ها</button>
+                <button class="tab-btn disabled" disabled>پروژه‌ها</button>
+                <button class="tab-btn disabled" disabled>آموزش</button>
+            </div>
+        </div>
+
+        <!-- Tab Content -->
+        <div class="tab-content">
+            <!-- Home Tab -->
+            <div class="tab-panel active" id="homeTab">
+                <!-- Welcome Section -->
+                <section class="welcome-section">
+                    <div class="welcome-content">
+                        <div class="welcome-text">
+                            <h1>خوش آمدید، {{ user.first_name|default:user.username }}!</h1>
+                            <p>مطالعات موردی و پروژه‌های آینده خود را در یک مکان مدیریت کنید.</p>
+                            <div class="welcome-actions">
+                                <a href="/categories/" class="welcome-action-btn primary">
+                                    <i class="fas fa-th-large"></i>
+                                    دسته‌بندی‌ها
+                                </a>
+                                <a href="/cases/" class="welcome-action-btn secondary">
+                                    <i class="fas fa-book"></i>
+                                    مطالعات موردی
+                                </a>
+                                <a href="{% url 'heyvoonak:subscription_status' %}" class="welcome-action-btn tertiary">
+                                    <i class="fas fa-crown"></i>
+                                    وضعیت اشتراک
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Notifications Section -->
+                <section class="notifications-section">
+                    <div class="section-header">
+                        <h2>اعلان‌ها</h2>
+                        <button class="mark-all-read-btn" onclick="markAllNotificationsRead()">
+                            <i class="fas fa-check-double"></i>
+                            همه را خوانده شد
+                        </button>
+                    </div>
+                    <div class="notifications-list" id="notificationsList">
+                        <!-- Notifications will be loaded here -->
+                        <div class="empty-notifications">
+                            <i class="fas fa-bell-slash"></i>
+                            <p>هیچ اعلان جدیدی وجود ندارد</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Content Grid -->
+                <div class="content-grid">
+                    <!-- Latest Case Studies -->
+                    <section class="content-section">
+                        <div class="section-header">
+                            <h2>آخرین مطالعات موردی</h2>
+                            <a href="/cases/" class="view-all-btn">مشاهده همه</a>
+                        </div>
+                        <div class="case-studies-list">
+                            {% for case in recent_cases %}
+                            <div class="case-study-item">
+                                <div class="case-study-icon">
+                                    <i class="fas fa-file-medical"></i>
+                                </div>
+                                <div class="case-study-info">
+                                    <h3>{{ case.title|truncatechars:50 }}</h3>
+                                    <p>
+                                        {% if case.category %}
+                                            {{ case.category.name }}
+                                        {% else %}
+                                            بدون دسته‌بندی
+                                        {% endif %}
+                                        • {{ case.created_at|date:"d F Y" }}
+                                    </p>
+                                </div>
+                                <div class="case-study-actions">
+                                    <span class="status-badge upcoming">
+                                        <i class="fas fa-clock"></i>
+                                        جدید
+                                    </span>
+                                    <a href="{% url 'cases:case_detail' case.id %}" class="view-btn">مشاهده</a>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="empty-state">
+                                <div class="empty-icon">
+                                    <i class="fas fa-file-medical"></i>
+                                </div>
+                                <h3>هیچ مطالعه موردی وجود ندارد</h3>
+                                <p>هنوز هیچ مطالعه موردی در سیستم ثبت نشده است</p>
+                                <a href="/cases/" class="btn btn-primary">
+                                    <i class="fas fa-plus"></i>
+                                    مشاهده همه کیس‌ها
+                                </a>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </section>
+
+                    <!-- Booked Cases -->
+                    <section class="content-section">
+                        <div class="section-header">
+                            <h2>کیس‌های ذخیره شده</h2>
+                            <a href="/cases/" class="view-all-btn">مشاهده همه</a>
+                        </div>
+                        <div class="booked-cases-list">
+                            {% if user_bookmarks %}
+                                {% for bookmark in user_bookmarks %}
+                                <div class="booked-case-item" data-bookmark-id="{{ bookmark.id }}">
+                                    <div class="case-header">
+                                        <h3>{{ bookmark.case.title|truncatechars:50 }}</h3>
+                                        <span class="status-badge bookmarked">
+                                            <i class="fas fa-star"></i>
+                                            ذخیره شده
+                                        </span>
+                                    </div>
+                                    <p>{{ bookmark.case.description|default:bookmark.case.history|truncatechars:100 }}</p>
+                                    <div class="case-details">
+                                        <div class="case-detail">
+                                            <i class="fas fa-tag"></i>
+                                            <span>{{ bookmark.case.category.name|default:"بدون دسته‌بندی" }}</span>
+                                        </div>
+                                        <div class="case-detail">
+                                            <i class="fas fa-calendar"></i>
+                                            <span>{{ bookmark.created_at|date:"d F Y" }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="case-actions">
+                                        <a href="{% url 'cases:case_detail' bookmark.case.id %}" class="btn btn-primary btn-sm">
+                                            <i class="fas fa-play"></i>
+                                            شروع مطالعه
+                                        </a>
+                                        <button class="btn btn-secondary btn-sm" onclick="removeBookmark({{ bookmark.id }})">
+                                            <i class="fas fa-trash"></i>
+                                            حذف از ذخیره
+                                        </button>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="empty-state">
+                                    <div class="empty-icon">
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                    <h3>هیچ کیس ذخیره شده‌ای ندارید</h3>
+                                    <p>کیس‌هایی که bookmark می‌کنید در اینجا نمایش داده می‌شوند</p>
+                                    <a href="/cases/" class="btn btn-primary">
+                                        <i class="fas fa-plus"></i>
+                                        مشاهده کیس‌ها
+                                    </a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    // Tab switching
+    function switchTab(tabName) {
+        // Remove active class from all tabs and panels
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
+        
+        // Add active class to selected tab and panel
+        document.querySelector(`[onclick="switchTab('${tabName}')"]`).classList.add('active');
+        document.getElementById(tabName + 'Tab').classList.add('active');
+    }
+
+    // User dropdown functionality
+    function toggleUserDropdown() {
+        const dropdown = document.getElementById('userDropdown');
+        dropdown.classList.toggle('show');
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+        const dropdown = document.getElementById('userDropdown');
+        const dropdownToggle = document.querySelector('.dropdown-toggle');
+        
+        if (!dropdown.contains(event.target) && !dropdownToggle.contains(event.target)) {
+            dropdown.classList.remove('show');
+        }
+    });
+
+    // Remove bookmark functionality
+    async function removeBookmark(bookmarkId) {
+        if (!confirm('آیا مطمئن هستید که می‌خواهید این کیس را از ذخیره‌ها حذف کنید؟')) {
+            return;
+        }
+        
+        try {
+            const response = await fetch(`/api/bookmark/${bookmarkId}/remove/`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                // Remove the bookmark item from UI
+                const bookmarkItem = document.querySelector(`[data-bookmark-id="${bookmarkId}"]`);
+                if (bookmarkItem) {
+                    bookmarkItem.remove();
+                }
+                
+                // Show success message
+                showNotification('کیس از ذخیره‌ها حذف شد', 'success');
+                
+                // If no bookmarks left, show empty state
+                const bookmarksList = document.querySelector('.booked-cases-list');
+                if (bookmarksList && bookmarksList.children.length === 0) {
+                    location.reload(); // Reload to show empty state
+                }
+            } else {
+                showNotification('خطا در حذف bookmark: ' + (data.error || 'خطای نامشخص'), 'error');
+            }
+        } catch (error) {
+            console.error('Error removing bookmark:', error);
+            showNotification('خطا در ارتباط با سرور', 'error');
+        }
+    }
+
+    // Show notification
+    function showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.textContent = message;
+        
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        `;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+    }
+
+    // Helper function to get CSRF token
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    // Notifications functionality
+    function loadUserNotifications() {
+        fetch('/user-notifications/')
+        .then(response => response.json())
+        .then(data => {
+            const notificationsList = document.getElementById('notificationsList');
+            
+            if (data.notifications && data.notifications.length > 0) {
+                notificationsList.innerHTML = '';
+                
+                data.notifications.forEach(notification => {
+                    const notificationElement = createNotificationElement(notification);
+                    notificationsList.appendChild(notificationElement);
+                });
+            } else {
+                notificationsList.innerHTML = `
+                    <div class="empty-notifications">
+                        <i class="fas fa-bell-slash"></i>
+                        <p>هیچ اعلان جدیدی وجود ندارد</p>
+                    </div>
+                `;
+            }
+        })
+        .catch(error => {
+            console.error('Error loading notifications:', error);
+        });
+    }
+
+    function createNotificationElement(notification) {
+        const div = document.createElement('div');
+        div.className = `notification-item ${notification.is_read ? '' : 'unread'}`;
+        div.onclick = () => markNotificationRead(notification.id);
+        
+        const iconClass = getNotificationIcon(notification.notification_type);
+        const timeAgo = getTimeAgo(notification.created_at);
+        
+        div.innerHTML = `
+            <div class="notification-icon ${notification.notification_type}">
+                <i class="fas ${iconClass}"></i>
+            </div>
+            <div class="notification-content">
+                <div class="notification-title">${notification.title}</div>
+                <div class="notification-message">${notification.message}</div>
+                <div class="notification-meta">
+                    <div class="notification-time">
+                        <i class="fas fa-clock"></i>
+                        <span>${timeAgo}</span>
+                    </div>
+                    ${notification.sender ? `<div>از: ${notification.sender}</div>` : ''}
+                </div>
+            </div>
+            <div class="notification-actions">
+                <button class="notification-action-btn" onclick="event.stopPropagation(); deleteNotification(${notification.id})" title="حذف">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        `;
+        
+        return div;
+    }
+
+    function getNotificationIcon(type) {
+        const icons = {
+            'info': 'fa-info-circle',
+            'success': 'fa-check-circle',
+            'warning': 'fa-exclamation-triangle',
+            'error': 'fa-times-circle',
+            'announcement': 'fa-bullhorn'
+        };
+        return icons[type] || 'fa-bell';
+    }
+
+    function getTimeAgo(dateString) {
+        const date = new Date(dateString);
+        const now = new Date();
+        const diff = now - date;
+        
+        const minutes = Math.floor(diff / 60000);
+        const hours = Math.floor(diff / 3600000);
+        const days = Math.floor(diff / 86400000);
+        
+        if (minutes < 60) return `${minutes} دقیقه پیش`;
+        if (hours < 24) return `${hours} ساعت پیش`;
+        return `${days} روز پیش`;
+    }
+
+    function markNotificationRead(notificationId) {
+        fetch(`/user-notifications/${notificationId}/mark-read/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update UI
+                const notificationElement = document.querySelector(`[onclick="markNotificationRead(${notificationId})"]`);
+                if (notificationElement) {
+                    notificationElement.classList.remove('unread');
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error marking notification as read:', error);
+        });
+    }
+
+    function markAllNotificationsRead() {
+        fetch('/user-notifications/mark-all-read/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update UI
+                document.querySelectorAll('.notification-item.unread').forEach(item => {
+                    item.classList.remove('unread');
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error marking all notifications as read:', error);
+        });
+    }
+
+    function deleteNotification(notificationId) {
+        if (confirm('آیا مطمئن هستید که می‌خواهید این اعلان را حذف کنید؟')) {
+            fetch(`/user-notifications/${notificationId}/delete/`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Remove from UI
+                    const notificationElement = document.querySelector(`[onclick="markNotificationRead(${notificationId})"]`);
+                    if (notificationElement) {
+                        notificationElement.remove();
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error deleting notification:', error);
+            });
+        }
+    }
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add smooth animations
+        const cards = document.querySelectorAll('.case-study-item, .booked-case-item');
+        cards.forEach((card, index) => {
+            card.style.animationDelay = `${index * 0.1}s`;
+            card.classList.add('animate-in');
+        });
+        
+        // Update notification button appearance
+        function updateNotificationButton(unreadCount) {
+            const notificationBtn = document.querySelector('.notification-btn');
+            const notificationCount = document.querySelector('.notification-count');
+            
+            if (unreadCount > 0) {
+                // Has unread notifications - make it red with pulse animation
+                notificationBtn.classList.add('has-unread');
+                notificationCount.textContent = unreadCount;
+                notificationCount.classList.remove('zero');
+            } else {
+                // No unread notifications - normal state
+                notificationBtn.classList.remove('has-unread');
+                notificationCount.classList.add('zero');
+            }
+        }
+
+        // Simulate notification count (replace with real data)
+        const unreadCount = 3; // This should come from your backend
+        updateNotificationButton(unreadCount);
+        
+        // Load notifications
+        loadUserNotifications();
+        
+        // Auto-refresh notifications every 30 seconds
+        setInterval(loadUserNotifications, 30000);
+    });
+
+    // Dark mode functionality
+    const darkModeToggle = document.getElementById('dark-mode-toggle');
+    const body = document.body;
+
+    // Check for saved theme preference or default to light mode
+    const currentTheme = localStorage.getItem('theme') || 'light';
+    if (currentTheme === 'dark') {
+        body.classList.add('dark');
+    }
+
+    // Toggle dark mode
+    darkModeToggle.addEventListener('click', () => {
+        body.classList.toggle('dark');
+        const isDark = body.classList.contains('dark');
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    });
+</script>
+</body>
+</html>

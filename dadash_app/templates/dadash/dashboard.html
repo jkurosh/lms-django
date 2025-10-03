@@ -1,0 +1,259 @@
+{% extends 'dadash/base.html' %}
+{% load static %}
+
+{% block title %}داشبورد کاربری{% endblock %}
+
+{% block content %}
+<div class="creative-dashboard">
+    <!-- Animated Background -->
+    <div class="animated-background">
+        <div class="gradient-orb orb-1"></div>
+        <div class="gradient-orb orb-2"></div>
+        <div class="gradient-orb orb-3"></div>
+    </div>
+
+    <!-- Header Section -->
+    <header class="creative-header">
+        <div class="header-content">
+            <div class="header-left">
+                <div class="logo-section">
+                    <div class="logo-icon">
+                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                            <rect width="32" height="32" rx="8" fill="url(#logoGradient)"/>
+                            <defs>
+                                <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop stop-color="#667eea" offset="0%"/>
+                                    <stop stop-color="#764ba2" offset="100%"/>
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                    </div>
+                    <h1 class="header-title">داشبورد کاربری</h1>
+                </div>
+                <p class="header-subtitle">
+                    خوش آمدید، {{ user.first_name|default:user.username }}! 
+                    پیشرفت خود را در یادگیری پزشکی دامپزشکی دنبال کنید.
+                </p>
+            </div>
+            <div class="header-right">
+                <div class="user-profile">
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-info">
+                        <div class="user-name">{{ user.first_name|default:user.username }}</div>
+                        <div class="user-role">دانشجوی دامپزشکی</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="creative-main">
+        <!-- Stats Overview -->
+        <section class="stats-section">
+            <div class="stats-grid">
+                <div class="stat-card glass-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number">{{ total_cases }}</div>
+                        <div class="stat-label">کل کیس‌ها</div>
+                    </div>
+                    <div class="stat-trend">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>+12%</span>
+                    </div>
+                </div>
+                
+                <div class="stat-card glass-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number">{{ completed_cases }}</div>
+                        <div class="stat-label">تکمیل شده</div>
+                    </div>
+                    <div class="stat-trend">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>+8%</span>
+                    </div>
+                </div>
+                
+                <div class="stat-card glass-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number">{{ in_progress_cases }}</div>
+                        <div class="stat-label">در حال انجام</div>
+                    </div>
+                    <div class="stat-trend">
+                        <i class="fas fa-arrow-down"></i>
+                        <span>-3%</span>
+                    </div>
+                </div>
+                
+                <div class="stat-card glass-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number">{{ completion_percentage }}%</div>
+                        <div class="stat-label">درصد پیشرفت</div>
+                    </div>
+                    <div class="stat-trend">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>+5%</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Content Grid -->
+        <section class="content-grid">
+            <!-- Recent Activity -->
+            <div class="content-card glass-card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-history"></i>
+                        فعالیت‌های اخیر
+                    </h3>
+                    <a href="{% url 'heyvoonak:my_cases' %}" class="card-action">
+                        <i class="fas fa-arrow-left"></i>
+                    </a>
+                </div>
+                
+                <div class="card-content">
+                    {% if recent_progress %}
+                        {% for progress in recent_progress %}
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-{% if progress.completed %}check{% else %}play{% endif %}"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">{{ progress.case.title }}</div>
+                                <div class="activity-meta">
+                                    <span class="activity-time">{{ progress.updated_at|date:"Y/m/d H:i" }}</span>
+                                    {% if progress.completed %}
+                                        <span class="activity-status completed">تکمیل شده</span>
+                                    {% else %}
+                                        <span class="activity-status in-progress">در حال انجام</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="empty-state">
+                            <i class="fas fa-inbox"></i>
+                            <p>هنوز فعالیتی ثبت نشده است</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Popular Categories -->
+            <div class="content-card glass-card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-tags"></i>
+                        دسته‌بندی‌های محبوب
+                    </h3>
+                    <a href="{% url 'heyvoonak:categories_page' %}" class="card-action">
+                        <i class="fas fa-arrow-left"></i>
+                    </a>
+                </div>
+                
+                <div class="card-content">
+                    {% if popular_categories %}
+                        {% for category in popular_categories %}
+                        <div class="category-item">
+                            <div class="category-icon">
+                                <i class="fas fa-{% cycle 'heart' 'brain' 'bone' 'eye' 'paw' 'stethoscope' %}"></i>
+                            </div>
+                            <div class="category-info">
+                                <div class="category-name">{{ category.name }}</div>
+                                <div class="category-stats">
+                                    {{ category.case_count }} کیس • {{ category.user_progress_count }} تکمیل شده
+                                </div>
+                            </div>
+                            <div class="category-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: {% widthratio category.user_progress_count category.case_count 100 %}%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="empty-state">
+                            <i class="fas fa-tags"></i>
+                            <p>دسته‌بندی‌ای یافت نشد</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+
+        <!-- Recent Cases -->
+        <section class="recent-cases-section">
+            <div class="content-card glass-card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-file-medical"></i>
+                        کیس‌های اخیر
+                    </h3>
+                    <a href="{% url 'heyvoonak:my_cases' %}" class="card-action">
+                        <i class="fas fa-arrow-left"></i>
+                    </a>
+                </div>
+                
+                <div class="card-content">
+                    <div class="cases-grid">
+                        {% if recent_cases %}
+                            {% for case in recent_cases %}
+                            <div class="case-card">
+                                <div class="case-header">
+                                    <div class="case-category">{{ case.category.name }}</div>
+                                    <div class="case-difficulty">
+                                        <i class="fas fa-star"></i>
+                                        <span>متوسط</span>
+                                    </div>
+                                </div>
+                                <div class="case-body">
+                                    <h4 class="case-title">{{ case.title }}</h4>
+                                    <p class="case-summary">{{ case.summary|truncatewords:15 }}</p>
+                                </div>
+                                <div class="case-footer">
+                                    <a href="{% url 'cases:case_detail' case.id %}" class="case-button">
+                                        <i class="fas fa-play"></i>
+                                        <span>شروع</span>
+                                    </a>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="empty-state">
+                                <i class="fas fa-file-medical"></i>
+                                <p>کیس جدیدی یافت نشد</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Floating Action Button -->
+    <div class="floating-actions">
+        <a href="{% url 'heyvoonak:my_cases' %}" class="fab primary">
+            <i class="fas fa-plus"></i>
+        </a>
+        <a href="{% url 'heyvoonak:analytics' %}" class="fab secondary">
+            <i class="fas fa-chart-bar"></i>
+        </a>
+    </div>
+</div>
+{% endblock %}

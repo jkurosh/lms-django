@@ -1,0 +1,365 @@
+{% extends 'dadash/base.html' %}
+{% load static %}
+
+{% block title %}دستاوردها - HeyVoonak{% endblock %}
+
+{% block extra_css %}
+<style>
+    .achievement-card {
+        background: white;
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        margin-bottom: 2rem;
+        transition: all 0.3s ease;
+    }
+    
+    .achievement-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+    
+    .achievement-item {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .achievement-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    }
+    
+    .achievement-item.earned {
+        background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+        border: 2px solid #f59e0b;
+    }
+    
+    .achievement-item.not-earned {
+        background: #f8fafc;
+        border: 2px solid #e2e8f0;
+        opacity: 0.7;
+    }
+    
+    .achievement-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        display: block;
+    }
+    
+    .achievement-title {
+        font-size: 1.25rem;
+        font-weight: bold;
+        color: #374151;
+        margin-bottom: 0.5rem;
+    }
+    
+    .achievement-description {
+        color: #6b7280;
+        margin-bottom: 1rem;
+    }
+    
+    .achievement-date {
+        font-size: 0.875rem;
+        color: #9ca3af;
+    }
+    
+    .progress-bar {
+        height: 8px;
+        background: #e5e7eb;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-top: 1rem;
+    }
+    
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 10px;
+        transition: width 0.5s ease;
+    }
+    
+    .progress-text {
+        font-size: 0.875rem;
+        color: #6b7280;
+        margin-top: 0.5rem;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stat-item {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        text-align: center;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .stat-number {
+        font-size: 2rem;
+        font-weight: bold;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .stat-label {
+        color: #6b7280;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+    }
+    
+    .badge-earned {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    
+    .badge-not-earned {
+        background: #f3f4f6;
+        color: #6b7280;
+        padding: 0.25rem 0.75rem;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    
+    .celebration {
+        animation: celebrate 2s ease-in-out infinite;
+    }
+    
+    @keyframes celebrate {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+    }
+    
+    .filter-tabs {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+    }
+    
+    .filter-tab {
+        padding: 0.5rem 1rem;
+        border-radius: 25px;
+        background: #f3f4f6;
+        color: #6b7280;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: none;
+    }
+    
+    .filter-tab.active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+    
+    .filter-tab:hover {
+        background: #e5e7eb;
+    }
+    
+    .filter-tab.active:hover {
+        background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50">
+    <!-- Header -->
+    <div class="bg-white shadow-sm border-b">
+        <div class="container mx-auto px-6 py-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-800">دستاوردها</h1>
+                    <p class="text-gray-600 mt-2">مجموعه دستاوردها و نشان‌های شما</p>
+                </div>
+                <div class="text-right">
+                    <div class="text-sm text-gray-600">
+                        {{ total_achievements }} از {{ total_possible }} دستاورد کسب شده
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mx-auto px-6 py-8">
+        <!-- Stats Overview -->
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-number">{{ total_achievements }}</div>
+                <div class="stat-label">دستاوردهای کسب شده</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">{{ total_possible|add:"-"|add:total_achievements|stringformat:"s"|slice:"1:" }}</div>
+                <div class="stat-label">دستاوردهای باقی‌مانده</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">{{ profile.total_cases_completed }}</div>
+                <div class="stat-label">کیس‌های تکمیل شده</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">{{ profile.overall_accuracy }}%</div>
+                <div class="stat-label">دقت کلی</div>
+            </div>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="filter-tabs">
+            <button class="filter-tab active" onclick="filterAchievements('all')">همه</button>
+            <button class="filter-tab" onclick="filterAchievements('earned')">کسب شده</button>
+            <button class="filter-tab" onclick="filterAchievements('not-earned')">در انتظار</button>
+        </div>
+
+        <!-- Achievements Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for achievement in achievements %}
+            <div class="achievement-item {% if achievement.earned %}earned{% else %}not-earned{% endif %} {% if achievement.earned %}celebration{% endif %}" 
+                 data-status="{% if achievement.earned %}earned{% else %}not-earned{% endif %}">
+                
+                <div class="achievement-icon">{{ achievement.icon }}</div>
+                
+                <div class="achievement-title">{{ achievement.title }}</div>
+                
+                <div class="achievement-description">{{ achievement.description }}</div>
+                
+                {% if achievement.earned %}
+                    <div class="flex items-center justify-between">
+                        <span class="badge-earned">✅ کسب شده</span>
+                        {% if achievement.date %}
+                            <div class="achievement-date">{{ achievement.date|date:"Y/m/d" }}</div>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <div class="flex items-center justify-between">
+                        <span class="badge-not-earned">⏳ در انتظار</span>
+                        {% if achievement.progress is not None and achievement.target %}
+                            <div class="achievement-date">{{ achievement.progress }}/{{ achievement.target }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    {% if achievement.progress is not None and achievement.target %}
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: {{ achievement.progress|floatformat:0|add:0|div:achievement.target|mul:100 }}%"></div>
+                        </div>
+                        <div class="progress-text">
+                            {{ achievement.progress|floatformat:0|add:0|div:achievement.target|mul:100|floatformat:0 }}% تکمیل شده
+                        </div>
+                    {% endif %}
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Achievement Tips -->
+        <div class="achievement-card">
+            <h3 class="text-xl font-bold text-gray-800 mb-6">نکات برای کسب دستاوردها</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                    <div class="flex items-start space-x-3">
+                        <div class="text-2xl">🎯</div>
+                        <div>
+                            <h4 class="font-semibold text-blue-800 mb-2">تمرکز روی دقت</h4>
+                            <p class="text-blue-700 text-sm">
+                                برای کسب دستاوردهای دقت، روی کیفیت پاسخ‌ها تمرکز کنید نه سرعت.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-green-50 border border-green-200 rounded-xl p-4">
+                    <div class="flex items-start space-x-3">
+                        <div class="text-2xl">📚</div>
+                        <div>
+                            <h4 class="font-semibold text-green-800 mb-2">تنوع در مطالعه</h4>
+                            <p class="text-green-700 text-sm">
+                                کیس‌های مختلف را امتحان کنید تا دستاوردهای دسته‌بندی را کسب کنید.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-purple-50 border border-purple-200 rounded-xl p-4">
+                    <div class="flex items-start space-x-3">
+                        <div class="text-2xl">🔄</div>
+                        <div>
+                            <h4 class="font-semibold text-purple-800 mb-2">تکرار و تمرین</h4>
+                            <p class="text-purple-700 text-sm">
+                                کیس‌های قبلی را تکرار کنید تا مهارت خود را بهبود دهید.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-orange-50 border border-orange-200 rounded-xl p-4">
+                    <div class="flex items-start space-x-3">
+                        <div class="text-2xl">🏆</div>
+                        <div>
+                            <h4 class="font-semibold text-orange-800 mb-2">هدف‌گذاری</h4>
+                            <p class="text-orange-700 text-sm">
+                                اهداف کوتاه‌مدت تعیین کنید و قدم به قدم به سمت دستاوردها حرکت کنید.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function filterAchievements(status) {
+        // Update active tab
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        event.target.classList.add('active');
+        
+        // Filter achievements
+        const achievements = document.querySelectorAll('.achievement-item');
+        achievements.forEach(achievement => {
+            const achievementStatus = achievement.getAttribute('data-status');
+            
+            if (status === 'all') {
+                achievement.style.display = 'block';
+            } else if (status === achievementStatus) {
+                achievement.style.display = 'block';
+            } else {
+                achievement.style.display = 'none';
+            }
+        });
+    }
+    
+    // Add animation to achievements
+    document.addEventListener('DOMContentLoaded', function() {
+        const achievements = document.querySelectorAll('.achievement-item');
+        achievements.forEach((achievement, index) => {
+            achievement.style.opacity = '0';
+            achievement.style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                achievement.style.transition = 'all 0.6s ease';
+                achievement.style.opacity = '1';
+                achievement.style.transform = 'translateY(0)';
+            }, index * 100);
+        });
+    });
+</script>
+{% endblock %}

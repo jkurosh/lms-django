@@ -1,0 +1,1567 @@
+{% load cases_extras %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% csrf_token %}
+    <title>پنل ادمین - HeyVoonak</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #3EA66B;
+            --primary-dark: #2d8a54;
+            --secondary: #4B6A9D;
+            --background: #f8fafc;
+            --foreground: #0f172a;
+            --muted: #f1f5f9;
+            --muted-foreground: #64748b;
+            --border: #e2e8f0;
+            --card: #ffffff;
+            --card-foreground: #0f172a;
+            --sidebar-bg: #ffffff;
+            --sidebar-border: #e2e8f0;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --info: #3b82f6;
+        }
+
+        .dark {
+            --background: #0f172a;
+            --foreground: #f8fafc;
+            --muted: #1e293b;
+            --muted-foreground: #94a3b8;
+            --border: #334155;
+            --card: #1e293b;
+            --card-foreground: #f8fafc;
+            --sidebar-bg: #1e293b;
+            --sidebar-border: #334155;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Vazir', 'Tahoma', sans-serif;
+            background-color: var(--background);
+            color: var(--foreground);
+            direction: rtl;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: var(--sidebar-bg);
+            border-left: 1px solid var(--sidebar-border);
+            position: fixed;
+            top: 0;
+            right: 0;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar.collapsed {
+            transform: translateX(100%);
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--sidebar-border);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .logo-text {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .sidebar-nav {
+            padding: 1rem 0;
+        }
+
+        .nav-section {
+            margin-bottom: 2rem;
+        }
+
+        .nav-section-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--muted-foreground);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1.5rem;
+            color: var(--muted-foreground);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border-right: 3px solid transparent;
+        }
+
+        .nav-item:hover {
+            background: rgba(62, 166, 107, 0.05);
+            color: var(--foreground);
+        }
+
+        .nav-item.active {
+            background: rgba(62, 166, 107, 0.1);
+            color: var(--primary);
+            border-right-color: var(--primary);
+        }
+
+        .nav-item i {
+            width: 20px;
+            text-align: center;
+            font-size: 0.875rem;
+        }
+
+        .nav-item span {
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .nav-item .nav-arrow {
+            margin-right: auto;
+            font-size: 0.75rem;
+            transition: transform 0.2s ease;
+        }
+
+        .nav-item.expanded .nav-arrow {
+            transform: rotate(90deg);
+        }
+
+        .nav-submenu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .nav-submenu.expanded {
+            max-height: 200px;
+        }
+
+        .nav-subitem {
+            display: block;
+            padding: 0.5rem 1.5rem 0.5rem 3rem;
+            color: var(--muted-foreground);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+        }
+
+        .nav-subitem:hover {
+            background: rgba(62, 166, 107, 0.05);
+            color: var(--foreground);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-right: 280px;
+            transition: margin-right 0.3s ease;
+        }
+
+        .main-content.sidebar-collapsed {
+            margin-right: 0;
+        }
+
+        /* Header */
+        .header {
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .sidebar-toggle {
+            background: none;
+            border: none;
+            color: var(--muted-foreground);
+            font-size: 1.25rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-toggle:hover {
+            background: rgba(62, 166, 107, 0.1);
+            color: var(--primary);
+        }
+
+        .search-bar {
+            position: relative;
+            width: 300px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-size: 0.875rem;
+            background: var(--muted);
+            transition: all 0.2s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: var(--card);
+            box-shadow: 0 0 0 3px rgba(62, 166, 107, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--muted-foreground);
+            font-size: 0.875rem;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header-btn {
+            background: none;
+            border: none;
+            color: var(--muted-foreground);
+            font-size: 1.25rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .header-btn:hover {
+            background: rgba(62, 166, 107, 0.1);
+            color: var(--primary);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            background: var(--error);
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.125rem 0.375rem;
+            border-radius: 10px;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .user-profile:hover {
+            background: rgba(62, 166, 107, 0.05);
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--foreground);
+        }
+
+        .user-role {
+            font-size: 0.75rem;
+            color: var(--muted-foreground);
+        }
+
+        /* Content Area */
+        .content-area {
+            padding: 2rem;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+        }
+
+        .stat-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .stat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .stat-title {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--muted-foreground);
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            color: white;
+        }
+
+        .stat-icon.primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        }
+
+        .stat-icon.success {
+            background: linear-gradient(135deg, var(--success) 0%, #16a34a 100%);
+        }
+
+        .stat-icon.warning {
+            background: linear-gradient(135deg, var(--warning) 0%, #d97706 100%);
+        }
+
+        .stat-icon.error {
+            background: linear-gradient(135deg, var(--error) 0%, #dc2626 100%);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--foreground);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-change {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .stat-change.positive {
+            color: var(--success);
+        }
+
+        .stat-change.negative {
+            color: var(--error);
+        }
+
+        .stat-progress {
+            margin-top: 1rem;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: var(--muted);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        .progress-fill.primary {
+            background: var(--primary);
+        }
+
+        .progress-fill.success {
+            background: var(--success);
+        }
+
+        .progress-fill.warning {
+            background: var(--warning);
+        }
+
+        .progress-fill.error {
+            background: var(--error);
+        }
+
+        /* Charts */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .chart-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--foreground);
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+
+        /* Tables */
+        .tables-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .table-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .table-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .table-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--foreground);
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: var(--muted);
+            color: var(--foreground);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th,
+        .table td {
+            padding: 0.75rem;
+            text-align: right;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .table th {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--muted-foreground);
+            background: var(--muted);
+        }
+
+        .table td {
+            font-size: 0.875rem;
+            color: var(--foreground);
+        }
+
+        .table tbody tr:hover {
+            background: rgba(62, 166, 107, 0.05);
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .status-available {
+            background: rgba(34, 197, 94, 0.1);
+            color: var(--success);
+        }
+
+        .status-unavailable {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--error);
+        }
+
+        .profile-img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .profile-placeholder {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            color: var(--muted-foreground);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tables-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(100%);
+            }
+            
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-right: 0;
+            }
+            
+            .search-bar {
+                width: 200px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .content-area {
+                padding: 1rem;
+            }
+        }
+
+        /* Dark mode toggle */
+        /* Notification Styles */
+        .notifications-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .notification-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .notification-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .notification-form-container {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border);
+        }
+
+        .notification-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: var(--foreground);
+            font-size: 0.875rem;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            padding: 0.75rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.875rem;
+            transition: border-color 0.2s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+
+        .checkbox-label input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 1rem;
+        }
+
+        .dark-mode-toggle {
+            background: var(--muted);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-left: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 40px;
+            height: 40px;
+        }
+
+        .dark-mode-toggle:hover {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .dark-mode-toggle i {
+            font-size: 16px;
+        }
+
+        .light-icon {
+            display: block;
+            color: #f59e0b;
+        }
+
+        .dark-icon {
+            display: none;
+            color: #fbbf24;
+        }
+
+        .dark .light-icon {
+            display: none;
+        }
+
+        .dark .dark-icon {
+            display: block;
+        }
+
+        .dark-mode {
+            --background: #0f172a;
+            --foreground: #f8fafc;
+            --muted: #1e293b;
+            --muted-foreground: #94a3b8;
+            --border: #334155;
+            --card: #1e293b;
+            --card-foreground: #f8fafc;
+            --sidebar-bg: #1e293b;
+            --sidebar-border: #334155;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-section">
+                    <div class="logo-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <div class="logo-text">HeyVoonak</div>
+                </div>
+            </div>
+
+            <div class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">منوی اصلی</div>
+                    
+                    <a href="#" class="nav-item active" onclick="showSection('dashboard')">
+                        <i class="fas fa-home"></i>
+                        <span>داشبورد</span>
+                        <i class="fas fa-chevron-left nav-arrow"></i>
+                    </a>
+                    <div class="nav-submenu expanded">
+                        <a href="#" class="nav-subitem" onclick="showSection('dashboard')">داشبورد 1</a>
+                        <a href="#" class="nav-subitem" onclick="showSection('dashboard2')">داشبورد 2</a>
+                        <a href="#" class="nav-subitem" onclick="showSection('dashboard3')">داشبورد 3</a>
+                    </div>
+
+                    <a href="#" class="nav-item" onclick="showSection('events')">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>مدیریت رویدادها</span>
+                        <i class="fas fa-chevron-left nav-arrow"></i>
+                    </a>
+
+                    <a href="/adlog/auth/user/" class="nav-item" target="_blank">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                        <span>مدیریت کاربران</span>
+                        <i class="fas fa-external-link-alt nav-arrow"></i>
+                    </a>
+
+                    <a href="/adlog/cases/userprogress/" class="nav-item" target="_blank">
+                        <i class="fas fa-user-graduate"></i>
+                        <span>پیشرفت کاربران</span>
+                        <i class="fas fa-external-link-alt nav-arrow"></i>
+                    </a>
+
+                    <a href="/adlog/cases/case/" class="nav-item" target="_blank">
+                        <i class="fas fa-book"></i>
+                        <span>مدیریت کیس‌ها</span>
+                        <i class="fas fa-external-link-alt nav-arrow"></i>
+                    </a>
+
+                    <a href="/adlog/cases/casecategory/" class="nav-item" target="_blank">
+                        <i class="fas fa-tags"></i>
+                        <span>دسته‌بندی‌ها</span>
+                        <i class="fas fa-external-link-alt nav-arrow"></i>
+                    </a>
+
+                    <a href="/adlog/cases/userprofile/" class="nav-item" target="_blank">
+                        <i class="fas fa-id-card"></i>
+                        <span>پروفایل کاربران</span>
+                        <i class="fas fa-external-link-alt nav-arrow"></i>
+                    </a>
+
+                    <a href="#" class="nav-item" onclick="showSection('notifications')">
+                        <i class="fas fa-bell"></i>
+                        <span>مدیریت اعلان‌ها</span>
+                        <i class="fas fa-chevron-left nav-arrow"></i>
+                    </a>
+                    <div class="nav-submenu">
+                        <a href="#" class="nav-subitem" onclick="showSection('notifications')">لیست اعلان‌ها</a>
+                        <a href="#" class="nav-subitem" onclick="showSection('send-notification')">ارسال اعلان جدید</a>
+                        <a href="/adlog/dadash_app/notification/" class="nav-subitem" target="_blank">مدیریت پیشرفته</a>
+                    </div>
+
+                    <a href="#" class="nav-item" onclick="showSection('library')">
+                        <i class="fas fa-book-open"></i>
+                        <span>کتابخانه</span>
+                        <i class="fas fa-chevron-left nav-arrow"></i>
+                    </a>
+
+                    <a href="#" class="nav-item" onclick="showSection('departments')">
+                        <i class="fas fa-building"></i>
+                        <span>دانشکده‌ها</span>
+                        <i class="fas fa-chevron-left nav-arrow"></i>
+                    </a>
+
+                    <a href="#" class="nav-item" onclick="showSection('staff')">
+                        <i class="fas fa-users"></i>
+                        <span>کارکنان</span>
+                        <i class="fas fa-chevron-left nav-arrow"></i>
+                    </a>
+
+                    <a href="#" class="nav-item" onclick="showSection('holidays')">
+                        <i class="fas fa-calendar-times"></i>
+                        <span>تعطیلات</span>
+                        <i class="fas fa-chevron-left nav-arrow"></i>
+                    </a>
+
+                    <a href="#" class="nav-item" onclick="showSection('fees')">
+                        <i class="fas fa-dollar-sign"></i>
+                        <span>هزینه‌ها</span>
+                        <i class="fas fa-chevron-left nav-arrow"></i>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">برنامه‌ها</div>
+                    
+                    <a href="#" class="nav-item" onclick="showSection('apps')">
+                        <i class="fas fa-th-large"></i>
+                        <span>برنامه‌ها</span>
+                        <i class="fas fa-chevron-left nav-arrow"></i>
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="main-content" id="mainContent">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <button class="sidebar-toggle" onclick="toggleSidebar()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="search-bar">
+                        <input type="text" class="search-input" placeholder="جستجو...">
+                        <i class="fas fa-search search-icon"></i>
+                    </div>
+                </div>
+
+                <div class="header-right">
+                    <a href="/adlog/" class="header-btn" title="پنل Django Admin" style="text-decoration: none; color: var(--muted-foreground);">
+                        <i class="fas fa-cog"></i>
+                    </a>
+                    <button id="dark-mode-toggle" class="dark-mode-toggle" onclick="toggleDarkMode()" title="تغییر حالت تاریک/روشن">
+                        <i class="fas fa-moon light-icon"></i>
+                        <i class="fas fa-sun dark-icon"></i>
+                    </button>
+                    <button class="header-btn" title="اعلان‌ها">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">{{ completed_cases|default:"0" }}</span>
+                    </button>
+                    <button class="header-btn" title="علاقه‌مندی‌ها">
+                        <i class="fas fa-star"></i>
+                    </button>
+                    <div class="user-profile">
+                        <div class="user-avatar">ا</div>
+                        <div class="user-info">
+                            <div class="user-name">ادمین سیستم</div>
+                            <div class="user-role">مدیر کل</div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <main class="content-area">
+                
+                <!-- Notifications Section -->
+                <div class="section" id="notifications-section" style="display: none;">
+                    <div class="section-header">
+                        <h2>مدیریت اعلان‌ها</h2>
+                        <p>ارسال و مدیریت اعلان‌ها برای کاربران</p>
+                    </div>
+                    
+                    <div class="notifications-grid">
+                        <div class="notification-stats">
+                            <div class="stat-card">
+                                <div class="stat-header">
+                                    <div class="stat-title">کل اعلان‌ها</div>
+                                    <div class="stat-icon info">
+                                        <i class="fas fa-bell"></i>
+                                    </div>
+                                </div>
+                                <div class="stat-value">0</div>
+                                <div class="stat-change">
+                                    <span>اعلان‌های فعال</span>
+                                </div>
+                            </div>
+                            
+                            <div class="stat-card">
+                                <div class="stat-header">
+                                    <div class="stat-title">اعلان‌های خوانده نشده</div>
+                                    <div class="stat-icon warning">
+                                        <i class="fas fa-bell-slash"></i>
+                                    </div>
+                                </div>
+                                <div class="stat-value">0</div>
+                                <div class="stat-change">
+                                    <span>نیاز به توجه</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="notification-actions">
+                            <button class="btn btn-primary" onclick="showSection('send-notification')">
+                                <i class="fas fa-plus"></i>
+                                ارسال اعلان جدید
+                            </button>
+                            <button class="btn btn-secondary" onclick="loadNotifications()">
+                                <i class="fas fa-sync"></i>
+                                بروزرسانی
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Send Notification Section -->
+                <div class="section" id="send-notification-section" style="display: none;">
+                    <div class="section-header">
+                        <h2>ارسال اعلان جدید</h2>
+                        <p>ایجاد و ارسال اعلان برای کاربران</p>
+                    </div>
+                    
+                    <div class="notification-form-container">
+                        <form class="notification-form" id="notificationForm">
+                            <div class="form-group">
+                                <label for="notification-title">عنوان اعلان</label>
+                                <input type="text" id="notification-title" name="title" placeholder="عنوان اعلان را وارد کنید" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="notification-message">پیام</label>
+                                <textarea id="notification-message" name="message" rows="4" placeholder="محتوای اعلان را وارد کنید" required></textarea>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="notification-type">نوع اعلان</label>
+                                    <select id="notification-type" name="type">
+                                        <option value="info">اطلاعاتی</option>
+                                        <option value="success">موفقیت</option>
+                                        <option value="warning">هشدار</option>
+                                        <option value="error">خطا</option>
+                                        <option value="announcement">اعلان عمومی</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="notification-recipient">دریافت‌کننده</label>
+                                    <select id="notification-recipient" name="recipient">
+                                        <option value="">همه کاربران (اعلان عمومی)</option>
+                                        <option value="specific">کاربر خاص</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="expires" id="notification-expires">
+                                    <span class="checkmark"></span>
+                                    تنظیم زمان انقضا
+                                </label>
+                                <input type="datetime-local" id="notification-expiry" name="expiry" style="margin-top: 0.5rem; display: none;">
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary" onclick="showSection('notifications')">
+                                    انصراف
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-paper-plane"></i>
+                                    ارسال اعلان
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-title">کل دانشجویان</div>
+                            <div class="stat-icon primary">
+                                <i class="fas fa-user-graduate"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value">{% get_total_users %}</div>
+                        <div class="stat-change positive">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>{% get_active_users %} کاربر فعال</span>
+                        </div>
+                        <div class="stat-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill primary" style="width: {% if total_users > 0 %}{{ active_users|percentage:total_users }}{% else %}0{% endif %}%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-title">دانشجویان جدید</div>
+                            <div class="stat-icon success">
+                                <i class="fas fa-user-plus"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value">{{ new_students_this_month|default:"0" }}</div>
+                        <div class="stat-change positive">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>{{ monthly_completions|default:"0" }} تکمیل این ماه</span>
+                        </div>
+                        <div class="stat-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill success" style="width: {% if total_cases > 0 %}{{ completed_cases|percentage:total_cases }}{% else %}0{% endif %}%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-title">کل دوره‌ها</div>
+                            <div class="stat-icon warning">
+                                <i class="fas fa-book"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value">{% get_total_cases %}</div>
+                        <div class="stat-change positive">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>{% get_total_categories %} دسته‌بندی</span>
+                        </div>
+                        <div class="stat-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill warning" style="width: {% if total_cases > 0 %}{{ total_cases|percentage:total_cases|add:10 }}{% else %}0{% endif %}%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-title">درآمد</div>
+                            <div class="stat-icon error">
+                                <i class="fas fa-dollar-sign"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value">{{ total_income|default:"0" }}$</div>
+                        <div class="stat-change positive">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>{{ weekly_completions|default:"0" }} تکمیل این هفته</span>
+                        </div>
+                        <div class="stat-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill error" style="width: {% if total_cases > 0 %}{{ completed_cases|percentage:total_cases }}{% else %}0{% endif %}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts -->
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title">گزارش درآمد/هزینه</div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="incomeChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title">آمار کلی</div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="statsChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tables -->
+                <div class="tables-grid">
+                    <div class="table-card">
+                        <div class="table-header">
+                            <div class="table-title">لیست اساتید</div>
+                            <div class="table-actions">
+                                <button class="btn btn-primary">
+                                    <i class="fas fa-plus"></i>
+                                    اضافه کردن
+                                </button>
+                            </div>
+                        </div>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>نام استاد</th>
+                                    <th>مدرک</th>
+                                    <th>وضعیت</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for professor in professors %}
+                                <tr>
+                                    <td>
+                                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                            <div class="profile-placeholder">{{ professor.first_name|first|default:professor.username|first }}</div>
+                                            <span>{{ professor.first_name|default:"" }} {{ professor.last_name|default:professor.username }}</span>
+                                        </div>
+                                    </td>
+                                    <td>{{ professor.email|default:"-" }}</td>
+                                    <td>
+                                        {% if professor.is_active %}
+                                            <span class="status-badge status-available">فعال</span>
+                                        {% else %}
+                                            <span class="status-badge status-unavailable">غیرفعال</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="3" style="text-align: center; color: var(--muted-foreground);">
+                                        هیچ استادی یافت نشد
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="table-card">
+                        <div class="table-header">
+                            <div class="table-title">لیست دانشجویان</div>
+                            <div class="table-actions">
+                                <button class="btn btn-secondary">
+                                    <i class="fas fa-download"></i>
+                                    دانلود
+                                </button>
+                            </div>
+                        </div>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>نام دانشجو</th>
+                                    <th>مربی</th>
+                                    <th>تاریخ</th>
+                                    <th>ساعت</th>
+                                    <th>عملیات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for student in recent_students %}
+                                <tr>
+                                    <td>{{ student.get_full_name|default:student.username }}</td>
+                                    <td>{{ student.username }}</td>
+                                    <td>{{ student.date_joined|date:"Y/m/d" }}</td>
+                                    <td>{{ student.last_login|date:"H:i"|default:"-" }}</td>
+                                    <td>
+                                        <a href="/adlog/auth/user/{{ student.id }}/change/" target="_blank" title="ویرایش">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" style="text-align: center; color: var(--muted-foreground);">
+                                        هیچ دانشجویی یافت نشد
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Sidebar toggle
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            
+            sidebar.classList.toggle('collapsed');
+            mainContent.classList.toggle('sidebar-collapsed');
+        }
+
+        // Dark mode toggle
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark');
+            const isDark = document.body.classList.contains('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        }
+
+        // Initialize dark mode from localStorage
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        if (currentTheme === 'dark') {
+            document.body.classList.add('dark');
+        }
+
+        // Navigation
+        function showSection(section) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(s => {
+                s.style.display = 'none';
+            });
+            
+            // Show selected section
+            if (section === 'notifications') {
+                document.getElementById('notifications-section').style.display = 'block';
+            } else if (section === 'send-notification') {
+                document.getElementById('send-notification-section').style.display = 'block';
+            } else {
+                // Show dashboard by default
+                document.querySelector('.stats-grid').style.display = 'grid';
+            }
+            
+            // Remove active class from all nav items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Add active class to clicked item
+            event.target.closest('.nav-item').classList.add('active');
+            
+            console.log('Showing section:', section);
+        }
+
+        // Notification form handling
+        document.addEventListener('DOMContentLoaded', function() {
+            // Handle expiry checkbox
+            const expiryCheckbox = document.getElementById('notification-expires');
+            const expiryInput = document.getElementById('notification-expiry');
+            
+            if (expiryCheckbox && expiryInput) {
+                expiryCheckbox.addEventListener('change', function() {
+                    expiryInput.style.display = this.checked ? 'block' : 'none';
+                });
+            }
+            
+            // Handle notification form submission
+            const notificationForm = document.getElementById('notificationForm');
+            if (notificationForm) {
+                notificationForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    sendNotification();
+                });
+            }
+        });
+
+        function sendNotification() {
+            const formData = new FormData(document.getElementById('notificationForm'));
+            
+            // Create notification data
+            const notificationData = {
+                title: formData.get('title'),
+                message: formData.get('message'),
+                notification_type: formData.get('type'),
+                is_broadcast: formData.get('recipient') === '',
+                expires_at: formData.get('expires') ? formData.get('expiry') : null
+            };
+            
+            // Get CSRF token from meta tag or cookie
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || getCookie('csrftoken');
+            
+            if (!csrfToken) {
+                alert('خطا: CSRF token یافت نشد. لطفاً صفحه را رفرش کنید.');
+                return;
+            }
+            
+            console.log('Sending notification with CSRF token:', csrfToken.substring(0, 10) + '...');
+            
+            // Send to backend
+            fetch('/admin-panel/send-notification/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+                body: JSON.stringify(notificationData)
+            })
+            .then(response => {
+                console.log('Response status:', response.status);
+                
+                if (response.status === 401) {
+                    alert('لطفاً ابتدا وارد شوید');
+                    window.location.href = '/login/';
+                    return;
+                }
+                
+                if (response.status === 403) {
+                    alert('شما دسترسی لازم برای ارسال اعلان ندارید');
+                    return;
+                }
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                return response.json();
+            })
+            .then(data => {
+                if (!data) return; // اگر redirect شده باشیم
+                
+                console.log('Response data:', data);
+                if (data.success) {
+                    alert('اعلان با موفقیت ارسال شد!');
+                    document.getElementById('notificationForm').reset();
+                    showSection('notifications');
+                    // Reload notifications stats
+                    loadNotifications();
+                } else {
+                    alert('خطا در ارسال اعلان: ' + (data.message || 'خطای نامشخص'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('خطا در ارسال اعلان: ' + error.message);
+            });
+        }
+
+        function loadNotifications() {
+            // Load notifications from backend
+            fetch('/admin-panel/notifications/')
+            .then(response => {
+                if (response.status === 401) {
+                    console.log('User not authenticated');
+                    return {total: 0, unread: 0};
+                }
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Notifications stats:', data);
+                // Update notification stats
+                const totalElement = document.querySelector('#notifications-section .stat-value');
+                const unreadElement = document.querySelector('#notifications-section .stat-value:last-child');
+                
+                if (totalElement) totalElement.textContent = data.total || 0;
+                if (unreadElement) unreadElement.textContent = data.unread || 0;
+            })
+            .catch(error => {
+                console.error('Error loading notifications:', error);
+                // Set default values on error
+                const totalElement = document.querySelector('#notifications-section .stat-value');
+                const unreadElement = document.querySelector('#notifications-section .stat-value:last-child');
+                
+                if (totalElement) totalElement.textContent = '0';
+                if (unreadElement) unreadElement.textContent = '0';
+            });
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // Initialize charts
+        document.addEventListener('DOMContentLoaded', function() {
+            // Income/Expense Chart
+            const incomeCtx = document.getElementById('incomeChart').getContext('2d');
+            new Chart(incomeCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['2000', '2001', '2002', '2003', '2004', '2005', '2006', '2007', '2008', '2009'],
+                    datasets: [{
+                        label: 'سری A',
+                        data: [40, 50, 60, 70, 80, 90, 100, 110, 120, 60],
+                        backgroundColor: '#3EA66B',
+                        borderColor: '#2d8a54',
+                        borderWidth: 1
+                    }, {
+                        label: 'سری B',
+                        data: [20, 30, 40, 50, 60, 70, 80, 90, 100, 20],
+                        backgroundColor: '#f59e0b',
+                        borderColor: '#d97706',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 200
+                        }
+                    }
+                }
+            });
+
+            // Stats Chart
+            const statsCtx = document.getElementById('statsChart').getContext('2d');
+            new Chart(statsCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['کیس‌ها', 'کاربران', 'دسته‌بندی‌ها', 'تکمیل‌ها'],
+                    datasets: [{
+                        data: [
+                            {% get_total_cases %}, 
+                            {% get_total_users %}, 
+                            {% get_total_categories %}, 
+                            {% get_completed_cases %}
+                        ],
+                        backgroundColor: [
+                            '#3EA66B',
+                            '#4B6A9D',
+                            '#f59e0b',
+                            '#ef4444'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        }
+                    }
+                }
+            });
+        });
+
+        // Mobile sidebar toggle
+        if (window.innerWidth <= 768) {
+            document.getElementById('sidebar').classList.add('collapsed');
+        }
+
+        window.addEventListener('resize', function() {
+            if (window.innerWidth <= 768) {
+                document.getElementById('sidebar').classList.add('collapsed');
+            } else {
+                document.getElementById('sidebar').classList.remove('collapsed');
+            }
+        });
+    </script>
+</body>
+</html>

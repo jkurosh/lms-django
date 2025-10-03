@@ -8,6 +8,7 @@ urlpatterns = [
     path('', include('dadash_app.urls')),
     path('cases/', include('cases.urls')),
     path('api/v1/', include('cases.api_urls')),
+    # path('accounts/', include('django.contrib.auth.urls')),  # Disabled
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

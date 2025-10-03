@@ -273,7 +273,9 @@ class SlideAdmin(admin.ModelAdmin):
 
     def thumbnail_preview(self, obj):
         if obj.image:
-            return format_html('<img src="{}" style="height:60px; border-radius:4px;" />', obj.image.url)
+            # obj.image یک CharField است که نام فایل را ذخیره می‌کند
+            image_url = f"/media/slides/{obj.image}"
+            return format_html('<img src="{}" style="height:60px; border-radius:4px;" />', image_url)
         return "-"
     thumbnail_preview.short_description = "پیش‌نمایش"
 
@@ -299,10 +301,11 @@ class UserProgressAdmin(admin.ModelAdmin):
 # TestAdmin removed - Test model not in use
 
 class UserObservationAdmin(admin.ModelAdmin):
-    list_display = ('case', 'case_test', 'observation_text', 'is_correct', 'created_at')
-    list_filter = ('case', 'is_correct', 'created_at')
-    search_fields = ('observation_text', 'case__title')
+    list_display = ('case', 'case_test', 'observation_text', 'is_correct', 'is_correct_display', 'created_at')
+    list_filter = ('case', 'is_correct', 'case_test__lab_type', 'created_at')
+    search_fields = ('observation_text', 'case__title', 'case_test__lab_type')
     readonly_fields = ('created_at', 'updated_at')
+    list_editable = ('is_correct',)
     fieldsets = (
         ('اطلاعات اصلی', {
             'fields': ('case', 'case_test', 'observation_text', 'is_correct', 'explanation')
@@ -315,6 +318,33 @@ class UserObservationAdmin(admin.ModelAdmin):
             'classes': ('collapse',)
         }),
     )
+    
+    def is_correct_display(self, obj):
+        if obj.is_correct:
+            return format_html('<span style="color: green; font-weight: bold;">✓ صحیح</span>')
+        else:
+            return format_html('<span style="color: red; font-weight: bold;">✗ غلط</span>')
+    is_correct_display.short_description = 'وضعیت'
+    is_correct_display.admin_order_field = 'is_correct'
+    
+    actions = ['mark_as_correct', 'mark_as_incorrect', 'toggle_correct_status']
+    
+    @admin.action(description="علامت‌گذاری به عنوان صحیح")
+    def mark_as_correct(self, request, queryset):
+        updated = queryset.update(is_correct=True)
+        self.message_user(request, f'{updated} مشاهده به عنوان صحیح علامت‌گذاری شد.')
+    
+    @admin.action(description="علامت‌گذاری به عنوان غلط")
+    def mark_as_incorrect(self, request, queryset):
+        updated = queryset.update(is_correct=False)
+        self.message_user(request, f'{updated} مشاهده به عنوان غلط علامت‌گذاری شد.')
+    
+    @admin.action(description="تغییر وضعیت صحیح/غلط")
+    def toggle_correct_status(self, request, queryset):
+        for obj in queryset:
+            obj.is_correct = not obj.is_correct
+            obj.save()
+        self.message_user(request, f'وضعیت {queryset.count()} مشاهده تغییر کرد.')
 
 
 class UserProfileAdmin(admin.ModelAdmin):
@@ -374,7 +404,7 @@ admin.site.register(Slide, SlideAdmin)
 # admin.site.register(Test, TestAdmin)  # Commented out - Test model not in use
 admin.site.register(UserProgress, UserProgressAdmin)
 admin.site.register(UserObservation, UserObservationAdmin)
-admin.site.register(UserProfile, UserProfileAdmin)
+# admin.site.register(UserProfile, UserProfileAdmin)  # Temporarily disabled - table doesn't exist
 
 # تنظیمات ظاهری پنل ادمین
 admin.site.site_header = "پنل مدیریت Heyvoonak"
