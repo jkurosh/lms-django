@@ -1,219 +1,0 @@
-{% extends 'dadash/base.html' %}
-
-{% block title %}Heyvoonak - سیستم یادگیری مطالعات موردی دامپزشکی{% endblock %}
-
-{% block content %}
-<!-- Hero Section -->
-<section class="hero-section">
-    <div class="container">
-        <div class="hero-content">
-            <div class="hero-text">
-                <h1>سیستم یادگیری مطالعات موردی دامپزشکی</h1>
-                <p>پلتفرم پیشرفته یادگیری برای دانشجویان و متخصصان دامپزشکی. با مطالعات موردی واقعی، تست‌های تعاملی و ابزارهای تشخیصی پیشرفته، مهارت‌های خود را تقویت کنید.</p>
-                
-                <div class="hero-buttons">
-                    <a href="{% url 'cases:case_list' %}" class="btn btn-primary">شروع یادگیری</a>
-                    <a href="#about" class="btn btn-secondary">درباره ما</a>
-                </div>
-
-                <!-- Stats -->
-                <div class="stats-grid">
-                    <div class="stat-item">
-                        <div class="stat-number">{{ total_cases }}</div>
-                        <div class="stat-label">مطالعات موردی</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-number">{{ categories|length }}</div>
-                        <div class="stat-label">دسته‌بندی</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-number">500+</div>
-                        <div class="stat-label">دانشجو</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="hero-visual">
-                <div class="hero-icon">
-                    <svg width="200" height="200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M11 2a2 2 0 0 0-2 2v5H4a2 2 0 0 0-2 2v2c0 1.1.9 2 2 2h5v5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-5h5a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2h-5V4a2 2 0 0 0-2-2h-2z"/>
-                    </svg>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Services Section -->
-<section class="services-section" id="services">
-    <div class="container">
-        <div class="section-header">
-            <h2>ویژگی‌های منحصر به فرد</h2>
-            <p>ابزارهای پیشرفته برای یادگیری و تمرین در زمینه دامپزشکی</p>
-        </div>
-
-        <div class="services-grid">
-            <div class="service-card">
-                <div class="service-icon">🔬</div>
-                <h3>مطالعات موردی واقعی</h3>
-                <p>دسترسی به صدها مطالعه موردی واقعی از کلینیک‌های دامپزشکی معتبر</p>
-            </div>
-            
-            <div class="service-card">
-                <div class="service-icon">⚡</div>
-                <h3>تست‌های آزمایشگاهی</h3>
-                <p>شبیه‌سازی تست‌های CBC، شیمی بالینی و سایر آزمایش‌های تشخیصی</p>
-            </div>
-            
-            <div class="service-card">
-                <div class="service-icon">📊</div>
-                <h3>تحلیل پیشرفت</h3>
-                <p>ردیابی پیشرفت یادگیری و شناسایی نقاط ضعف و قوت</p>
-            </div>
-            
-            <div class="service-card">
-                <div class="service-icon">👥</div>
-                <h3>یادگیری تعاملی</h3>
-                <p>فرصت‌های یادگیری مشارکتی و بحث با همکاران</p>
-            </div>
-            
-            <div class="service-card">
-                <div class="service-icon">📱</div>
-                <h3>دسترسی موبایل</h3>
-                <p>یادگیری در هر زمان و مکان با رابط کاربری موبایل</p>
-            </div>
-            
-            <div class="service-card">
-                <div class="service-icon">🏆</div>
-                <h3>گواهی‌نامه</h3>
-                <p>دریافت گواهی‌نامه معتبر پس از تکمیل دوره‌ها</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Categories Section -->
-<section class="categories-section" id="categories">
-    <div class="container">
-        <div class="section-header">
-            <h2>دسته‌بندی‌های تخصصی</h2>
-            <p>انتخاب از میان تخصص‌های مختلف دامپزشکی</p>
-        </div>
-
-        <div class="categories-grid">
-            <a href="{% url 'cases:case_list' %}" class="category-card">
-                <div class="category-icon">🩺</div>
-                <h3>همه مطالعات موردی</h3>
-                <p>دسترسی کامل به تمام مطالعات موردی موجود</p>
-                <div class="category-meta">
-                    <span class="category-count">{{ total_cases }} مورد</span>
-                    <span class="category-level">همه سطوح</span>
-                </div>
-            </a>
-            
-            <a href="{% url 'heyvoonak:internal_diseases' %}" class="category-card">
-                <div class="category-icon">❤️</div>
-                <h3>بیماری‌های داخلی</h3>
-                <p>مطالعات موردی بیماری‌های سیستمیک و داخلی</p>
-                <div class="category-meta">
-                    <span class="category-count">{{ categories|length }} مورد</span>
-                    <span class="category-level">متوسط</span>
-                </div>
-            </a>
-            
-            <a href="{% url 'heyvoonak:surgery' %}" class="category-card">
-                <div class="category-icon">⚡</div>
-                <h3>جراحی</h3>
-                <p>مطالعات موردی جراحی و پروسه‌های جراحی</p>
-                <div class="category-meta">
-                    <span class="category-count">{{ categories|length }} مورد</span>
-                    <span class="category-level">پیشرفته</span>
-                </div>
-            </a>
-            
-            <a href="{% url 'heyvoonak:emergency' %}" class="category-card">
-                <div class="category-icon">🛡️</div>
-                <h3>پزشکی اورژانس</h3>
-                <p>مطالعات موردی اورژانس و مراقبت‌های بحرانی</p>
-                <div class="category-meta">
-                    <span class="category-count">{{ categories|length }} مورد</span>
-                    <span class="category-level">پیشرفته</span>
-                </div>
-            </a>
-            
-            <a href="{% url 'heyvoonak:dermatology' %}" class="category-card">
-                <div class="category-icon">👥</div>
-                <h3>پوست‌شناسی</h3>
-                <p>مطالعات موردی بیماری‌های پوست و مو</p>
-                <div class="category-meta">
-                    <span class="category-count">{{ categories|length }} مورد</span>
-                    <span class="category-level">متوسط</span>
-                </div>
-            </a>
-            
-            <a href="{% url 'heyvoonak:radiology' %}" class="category-card">
-                <div class="category-icon">🔬</div>
-                <h3>رادیولوژی</h3>
-                <p>مطالعات موردی تصویربرداری و تشخیص</p>
-                <div class="category-meta">
-                    <span class="category-count">{{ categories|length }} مورد</span>
-                    <span class="category-level">متوسط</span>
-                </div>
-            </a>
-            
-            <a href="{% url 'heyvoonak:cardiology' %}" class="category-card">
-                <div class="category-icon">❤️</div>
-                <h3>قلب و عروق</h3>
-                <p>مطالعات موردی بیماری‌های قلبی و عروقی</p>
-                <div class="category-meta">
-                    <span class="category-count">{{ categories|length }} مورد</span>
-                    <span class="category-level">پیشرفته</span>
-                </div>
-            </a>
-        </div>
-    </div>
-</section>
-
-<!-- CTA Section -->
-<section class="cta-section">
-    <div class="container">
-        <div class="cta-content">
-            <h2>آماده شروع یادگیری هستید؟</h2>
-            <p>همین حالا به جامعه دانشجویان دامپزشکی بپیوندید</p>
-            <a href="{% url 'cases:case_list' %}" class="btn btn-primary btn-large">شروع کنید</a>
-        </div>
-    </div>
-</section>
-
-<!-- About Section -->
-<section class="about-section" id="about">
-    <div class="container">
-        <div class="about-content">
-            <div class="about-text">
-                <h2>درباره Heyvoonak</h2>
-                <p>پلتفرم Heyvoonak با هدف ارتقای کیفیت آموزش دامپزشکی و فراهم کردن ابزارهای پیشرفته یادگیری برای دانشجویان و متخصصان این حوزه طراحی شده است.</p>
-                <p>ما معتقدیم که یادگیری مبتنی بر مطالعات موردی واقعی، بهترین روش برای تقویت مهارت‌های تشخیصی و درمانی است.</p>
-                
-                <div class="about-features">
-                    <div class="feature-item">
-                        <span class="feature-icon">✅</span>
-                        <span>مطالعات موردی تأیید شده توسط متخصصان</span>
-                    </div>
-                    <div class="feature-item">
-                        <span class="feature-icon">✅</span>
-                        <span>تست‌های تعاملی و ارزیابی پیشرفت</span>
-                    </div>
-                    <div class="feature-item">
-                        <span class="feature-icon">✅</span>
-                        <span>پشتیبانی کامل از زبان فارسی</span>
-                    </div>
-                    <div class="feature-item">
-                        <span class="feature-icon">✅</span>
-                        <span>رابط کاربری ساده و کاربرپسند</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-{% endblock %}

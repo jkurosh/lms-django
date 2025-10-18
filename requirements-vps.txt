@@ -1,0 +1,50 @@
+# Django Core
+Django>=5.2.3,<5.3
+
+# Database - PostgreSQL
+psycopg2-binary>=2.9.0
+
+# Image Processing
+Pillow>=10.0.0
+
+# Static Files
+whitenoise>=6.0.0
+
+# Environment Variables
+python-dotenv>=1.0.0
+
+# WSGI Server for Production
+gunicorn>=21.0.0
+
+# Database URL parsing
+dj-database-url>=2.0.0
+
+# Django REST Framework
+djangorestframework>=3.14.0
+
+# Django CORS Headers
+django-cors-headers>=4.0.0
+
+# Django Filter
+django-filter>=23.0
+
+# Additional security packages
+django-environ>=0.10.0
+
+# Payment Gateway
+requests>=2.31.0
+zarinpal>=1.0.0
+
+# SMS Provider (optional - install separately if needed)
+# kavenegar
+
+# Jalali Date
+jdatetime>=4.1.0
+
+# Data Processing (optional - heavy packages)
+# pandas>=2.0.0
+# openpyxl>=3.1.0
+
+# Security (optional - may need build tools)
+# cryptography>=41.0.0
+

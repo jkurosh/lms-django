@@ -1,0 +1,1012 @@
+{% extends 'dadash/base.html' %}
+{% load static %}
+
+{% block title %}سبد خرید{% endblock %}
+
+{% block content %}
+<div class="creative-dashboard">
+    <!-- Animated Background -->
+    <div class="animated-background">
+        <div class="gradient-orb orb-1"></div>
+        <div class="gradient-orb orb-2"></div>
+        <div class="gradient-orb orb-3"></div>
+    </div>
+
+    <!-- Header Section -->
+    <header class="creative-header">
+        <div class="header-content">
+            <div class="header-left">
+                <div class="logo-section">
+                    <div class="logo-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <h1 class="header-title">سبد خرید شما</h1>
+                </div>
+                <p class="header-subtitle">
+                    محصولات انتخابی خود را بررسی و خریداری کنید
+                </p>
+            </div>
+            <div class="header-right">
+                <a href="{% url 'users:subscription_plans' %}" class="btn-add-plan glass-card">
+                    <i class="fas fa-plus"></i>
+                    افزودن پلن
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="creative-main">
+        {% if cart.items_count > 0 %}
+        <div class="cart-layout">
+            <!-- Cart Items Section -->
+            <section class="cart-items-section">
+                <div class="section-header glass-card">
+                    <div class="section-title-group">
+                        <i class="fas fa-list"></i>
+                        <h3>آیتم‌های سبد خرید</h3>
+                        <span class="items-count">{{ cart.items_count }} عدد</span>
+                    </div>
+                    <form action="{% url 'users:clear_cart' %}" method="post" onsubmit="return confirm('آیا مطمئن هستید که می‌خواهید سبد خرید را خالی کنید؟');">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-clear">
+                            <i class="fas fa-trash-alt"></i>
+                            خالی کردن سبد
+                        </button>
+                    </form>
+                </div>
+
+                <div class="cart-items-list">
+                    {% for item in cart.items.all %}
+                    <div class="cart-item-card glass-card">
+                        <div class="item-badge">
+                            <i class="fas fa-crown"></i>
+                        </div>
+                        
+                        <div class="item-content">
+                            <div class="item-header">
+                                <div class="item-info">
+                                    <h4 class="item-title">{{ item.plan.name }}</h4>
+                                    <p class="item-subtitle">
+                                        <i class="fas fa-calendar-alt"></i>
+                                        {{ item.plan.get_duration_type_display }} - {{ item.plan.duration_days }} روز
+                                    </p>
+                                </div>
+                                
+                                <div class="item-price-section">
+                                    {% if item.plan.discount_percent > 0 %}
+                                    <div class="price-old">{{ item.plan.formatted_price }} تومان</div>
+                                    <div class="discount-badge">{{ item.plan.discount_percent }}% تخفیف</div>
+                                    {% endif %}
+                                    <div class="price-current">{{ item.plan.formatted_final_price }} تومان</div>
+                                </div>
+                            </div>
+
+                            <div class="item-features">
+                                {% for feature in item.plan.get_features_list %}
+                                <div class="feature-tag">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>{{ feature }}</span>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="item-actions">
+                            <form action="{% url 'users:remove_from_cart' item.id %}" method="post" onsubmit="return confirm('آیا مطمئن هستید؟');">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-remove">
+                                    <i class="fas fa-times"></i>
+                                    حذف
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <!-- Order Summary Section -->
+            <aside class="cart-summary-section">
+                <div class="summary-card glass-card">
+                    <div class="summary-header">
+                        <i class="fas fa-receipt"></i>
+                        <h3>خلاصه سفارش</h3>
+                    </div>
+
+                    <div class="summary-body">
+                        <div class="summary-item">
+                            <span class="label">تعداد آیتم‌ها:</span>
+                            <span class="value">{{ cart.items_count }} عدد</span>
+                        </div>
+
+                        <div class="summary-item">
+                            <span class="label">جمع کل:</span>
+                            <span class="value">{{ cart.total_price|floatformat:0 }} تومان</span>
+                        </div>
+
+                        <div class="summary-divider"></div>
+
+                        <div class="summary-total">
+                            <span class="label">قابل پرداخت:</span>
+                            <span class="value">{{ cart.total_price|floatformat:0 }} تومان</span>
+                        </div>
+                    </div>
+
+                    <form action="{% url 'users:checkout' %}" method="post" id="checkoutForm">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-checkout" id="checkoutBtn">
+                            <i class="fas fa-credit-card"></i>
+                            <span>پرداخت و تکمیل خرید</span>
+                        </button>
+                    </form>
+
+                    <a href="{% url 'users:subscription_plans' %}" class="btn-continue">
+                        <i class="fas fa-arrow-right"></i>
+                        <span>ادامه خرید</span>
+                    </a>
+                </div>
+
+                <!-- Security Badge -->
+                <div class="security-badge glass-card">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>پرداخت امن با درگاه زرین‌پال</span>
+                </div>
+            </aside>
+        </div>
+        {% else %}
+        <!-- Empty Cart -->
+        <section class="empty-cart-section">
+            <div class="empty-cart glass-card">
+                <div class="empty-animation">
+                    <i class="fas fa-shopping-basket"></i>
+                    <div class="pulse-ring"></div>
+                </div>
+                <h2 class="empty-title">سبد خرید شما خالی است!</h2>
+                <p class="empty-text">هنوز هیچ پلن اشتراکی به سبد خرید خود اضافه نکرده‌اید.</p>
+                <a href="{% url 'users:subscription_plans' %}" class="btn-shop">
+                    <i class="fas fa-crown"></i>
+                    <span>مشاهده پلن‌های اشتراک</span>
+                </a>
+            </div>
+        </section>
+        {% endif %}
+    </main>
+</div>
+
+<style>
+/* CSS Variables for Light & Dark Mode */
+:root {
+    --cart-bg-light: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    --cart-bg-dark: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    --cart-card-bg: rgba(255, 255, 255, 0.7);
+    --cart-card-border: rgba(255, 255, 255, 0.3);
+    --cart-text-primary: #1f2937;
+    --cart-text-secondary: #6b7280;
+    --cart-text-muted: #9ca3af;
+    --orb-color-1: rgba(62, 166, 107, 0.3);
+    --orb-color-2: rgba(16, 185, 129, 0.3);
+    --orb-color-3: rgba(62, 166, 107, 0.2);
+}
+
+.dark {
+    --cart-bg-light: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    --cart-card-bg: rgba(30, 41, 59, 0.7);
+    --cart-card-border: rgba(255, 255, 255, 0.1);
+    --cart-text-primary: #f8fafc;
+    --cart-text-secondary: #cbd5e1;
+    --cart-text-muted: #64748b;
+    --orb-color-1: rgba(62, 166, 107, 0.2);
+    --orb-color-2: rgba(16, 185, 129, 0.2);
+    --orb-color-3: rgba(62, 166, 107, 0.15);
+}
+
+/* Reset and Base */
+.creative-dashboard {
+    position: relative;
+    min-height: 100vh;
+    padding-bottom: 4rem;
+    overflow: hidden;
+    transition: background-color 0.3s ease;
+}
+
+/* Animated Background */
+.animated-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    background: var(--cart-bg-light);
+    transition: background 0.5s ease;
+}
+
+.gradient-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    animation: float 20s ease-in-out infinite;
+    transition: opacity 0.5s ease;
+}
+
+.orb-1 {
+    width: 500px;
+    height: 500px;
+    background: linear-gradient(135deg, #3EA66B, #2d8a54);
+    top: -250px;
+    right: -250px;
+    opacity: 0.3;
+    animation-delay: 0s;
+}
+
+.orb-2 {
+    width: 400px;
+    height: 400px;
+    background: linear-gradient(135deg, #10b981, #059669);
+    bottom: -200px;
+    left: -200px;
+    opacity: 0.3;
+    animation-delay: 5s;
+}
+
+.orb-3 {
+    width: 300px;
+    height: 300px;
+    background: linear-gradient(135deg, #3EA66B, #10b981);
+    top: 50%;
+    left: 50%;
+    opacity: 0.2;
+    animation-delay: 10s;
+}
+
+.dark .orb-1 {
+    opacity: 0.2;
+}
+
+.dark .orb-2 {
+    opacity: 0.2;
+}
+
+.dark .orb-3 {
+    opacity: 0.15;
+}
+
+@keyframes float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(30px, -30px) scale(1.1); }
+    66% { transform: translate(-20px, 20px) scale(0.9); }
+}
+
+/* Glass Card Effect */
+.glass-card {
+    background: var(--cart-card-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--cart-card-border);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.dark .glass-card {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* Header */
+.creative-header {
+    position: relative;
+    z-index: 10;
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+}
+
+.header-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+}
+
+.logo-section {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.logo-icon {
+    width: 56px;
+    height: 56px;
+    background: linear-gradient(135deg, #3EA66B 0%, #2d8a54 100%);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.8rem;
+    box-shadow: 0 8px 24px rgba(62, 166, 107, 0.3);
+}
+
+.header-title {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--cart-text-primary);
+    margin: 0;
+    transition: color 0.3s ease;
+}
+
+.dark .header-title {
+    background: linear-gradient(135deg, #f8fafc 0%, #3EA66B 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.header-subtitle {
+    color: var(--cart-text-secondary);
+    font-size: 1rem;
+    margin: 0.5rem 0 0 0;
+    transition: color 0.3s ease;
+}
+
+.btn-add-plan {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 2rem;
+    background: linear-gradient(135deg, #3EA66B 0%, #2d8a54 100%);
+    color: white;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.btn-add-plan:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(62, 166, 107, 0.4);
+}
+
+/* Main Content */
+.creative-main {
+    position: relative;
+    z-index: 10;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+/* Cart Layout */
+.cart-layout {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 2rem;
+}
+
+/* Section Header */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-radius: 16px;
+    margin-bottom: 1.5rem;
+}
+
+.section-title-group {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.section-title-group i {
+    font-size: 1.5rem;
+    color: #3EA66B;
+}
+
+.section-title-group h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--cart-text-primary);
+    margin: 0;
+    transition: color 0.3s ease;
+}
+
+.items-count {
+    background: linear-gradient(135deg, #3EA66B 0%, #2d8a54 100%);
+    color: white;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.btn-clear {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1.5rem;
+    background: white;
+    border: 2px solid #ef4444;
+    color: #ef4444;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-clear:hover {
+    background: #ef4444;
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* Cart Items List */
+.cart-items-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* Cart Item Card */
+.cart-item-card {
+    position: relative;
+    border-radius: 20px;
+    padding: 2rem;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.cart-item-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+.item-badge {
+    position: absolute;
+    top: 1.5rem;
+    left: 1.5rem;
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, #3EA66B 0%, #2d8a54 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.3rem;
+    box-shadow: 0 4px 12px rgba(62, 166, 107, 0.3);
+}
+
+.item-content {
+    margin-right: 5rem;
+}
+
+.item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+    gap: 2rem;
+}
+
+.item-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--cart-text-primary);
+    margin: 0 0 0.5rem 0;
+    transition: color 0.3s ease;
+}
+
+.item-subtitle {
+    color: var(--cart-text-secondary);
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    transition: color 0.3s ease;
+}
+
+.item-subtitle i {
+    color: #3EA66B;
+}
+
+.item-price-section {
+    text-align: left;
+}
+
+.price-old {
+    text-decoration: line-through;
+    color: var(--cart-text-muted);
+    font-size: 0.95rem;
+    margin-bottom: 0.3rem;
+    transition: color 0.3s ease;
+}
+
+.discount-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: white;
+    padding: 0.3rem 0.8rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.price-current {
+    font-size: 1.8rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #3EA66B 0%, #2d8a54 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.item-features {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 0.8rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.feature-tag {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1rem;
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    border-radius: 10px;
+    color: #065f46;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.dark .feature-tag {
+    background: rgba(16, 185, 129, 0.15);
+    border-color: rgba(16, 185, 129, 0.3);
+    color: #86efac;
+}
+
+.feature-tag i {
+    color: #10b981;
+    font-size: 0.8rem;
+}
+
+.dark .feature-tag i {
+    color: #34d399;
+}
+
+.item-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.btn-remove {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.7rem 1.5rem;
+    background: white;
+    border: 2px solid #ef4444;
+    color: #ef4444;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-remove:hover {
+    background: #ef4444;
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* Summary Section */
+.cart-summary-section {
+    position: sticky;
+    top: 2rem;
+    height: fit-content;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.summary-card {
+    border-radius: 20px;
+    padding: 2rem;
+}
+
+.summary-header {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.05);
+}
+
+.summary-header i {
+    font-size: 1.5rem;
+    color: #3EA66B;
+}
+
+.summary-header h3 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--cart-text-primary);
+    margin: 0;
+    transition: color 0.3s ease;
+}
+
+.summary-body {
+    margin-bottom: 2rem;
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.8rem 0;
+    font-size: 1rem;
+}
+
+.summary-item .label {
+    color: var(--cart-text-secondary);
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.summary-item .value {
+    color: var(--cart-text-primary);
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.summary-divider {
+    height: 1px;
+    background: rgba(0, 0, 0, 0.1);
+    margin: 1rem 0;
+}
+
+.summary-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 0;
+    border-top: 2px solid rgba(0, 0, 0, 0.05);
+    font-size: 1.3rem;
+}
+
+.summary-total .label {
+    color: var(--cart-text-primary);
+    font-weight: 700;
+    transition: color 0.3s ease;
+}
+
+.summary-total .value {
+    font-weight: 800;
+    background: linear-gradient(135deg, #3EA66B 0%, #2d8a54 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.btn-checkout {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    padding: 1.2rem;
+    background: linear-gradient(135deg, #3EA66B 0%, #2d8a54 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 1rem;
+}
+
+.btn-checkout:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(62, 166, 107, 0.4);
+}
+
+.btn-checkout:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn-continue {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    padding: 1rem;
+    background: var(--cart-card-bg);
+    border: 2px solid var(--cart-card-border);
+    color: var(--cart-text-primary);
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.btn-continue:hover {
+    border-color: #3EA66B;
+    color: #3EA66B;
+    transform: translateY(-2px);
+}
+
+.dark .btn-continue {
+    background: rgba(30, 41, 59, 0.5);
+}
+
+/* Security Badge */
+.security-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    padding: 1rem;
+    border-radius: 12px;
+    color: #10b981;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.security-badge i {
+    font-size: 1.2rem;
+}
+
+/* Empty Cart */
+.empty-cart-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60vh;
+}
+
+.empty-cart {
+    text-align: center;
+    padding: 4rem 3rem;
+    border-radius: 24px;
+    max-width: 500px;
+}
+
+.empty-animation {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 2rem;
+}
+
+.empty-animation i {
+    font-size: 5rem;
+    color: var(--cart-text-muted);
+    position: relative;
+    z-index: 2;
+    transition: color 0.3s ease;
+}
+
+.dark .empty-animation i {
+    color: #475569;
+}
+
+.pulse-ring {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    border: 3px solid #3EA66B;
+    border-radius: 50%;
+    opacity: 0.3;
+    animation: pulse 2s ease-out infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: translate(-50%, -50%) scale(0.8);
+        opacity: 0.5;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1.5);
+        opacity: 0;
+    }
+}
+
+.empty-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--cart-text-primary);
+    margin: 0 0 1rem 0;
+    transition: color 0.3s ease;
+}
+
+.empty-text {
+    font-size: 1.1rem;
+    color: var(--cart-text-secondary);
+    margin: 0 0 2rem 0;
+    line-height: 1.6;
+    transition: color 0.3s ease;
+}
+
+.btn-shop {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 1.2rem 2.5rem;
+    background: linear-gradient(135deg, #3EA66B 0%, #2d8a54 100%);
+    color: white;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+}
+
+.btn-shop:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(62, 166, 107, 0.4);
+}
+
+/* Loading Animation */
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .cart-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .cart-summary-section {
+        position: static;
+    }
+}
+
+@media (max-width: 768px) {
+    .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .header-title {
+        font-size: 1.5rem;
+    }
+
+    .item-content {
+        margin-right: 0;
+        margin-top: 4rem;
+    }
+
+    .item-badge {
+        top: 1rem;
+        right: 1rem;
+        left: auto;
+    }
+
+    .item-header {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .item-price-section {
+        text-align: right;
+    }
+
+    .item-features {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .creative-main {
+        padding: 0 1rem;
+    }
+
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .empty-cart {
+        padding: 3rem 1.5rem;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Checkout form handling
+    const checkoutForm = document.getElementById('checkoutForm');
+    const checkoutBtn = document.getElementById('checkoutBtn');
+    
+    if (checkoutForm && checkoutBtn) {
+        checkoutForm.addEventListener('submit', function(e) {
+            checkoutBtn.disabled = true;
+            checkoutBtn.innerHTML = '<span class="loading"></span> در حال انتقال به درگاه پرداخت...';
+        });
+    }
+
+    // Dark mode sync from localStorage (set by base.html)
+    const currentTheme = localStorage.getItem('theme') || 'light';
+    if (currentTheme === 'dark') {
+        document.body.classList.add('dark');
+    }
+
+    // Listen for theme changes
+    window.addEventListener('storage', function(e) {
+        if (e.key === 'theme') {
+            if (e.newValue === 'dark') {
+                document.body.classList.add('dark');
+            } else {
+                document.body.classList.remove('dark');
+            }
+        }
+    });
+
+    // Add smooth scroll
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+    });
+
+    // Animate cards on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+
+    document.querySelectorAll('.cart-item-card, .summary-card, .empty-cart').forEach(card => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        observer.observe(card);
+    });
+});
+</script>
+{% endblock %}

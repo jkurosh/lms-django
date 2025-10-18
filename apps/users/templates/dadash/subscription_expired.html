@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اشتراک منقضی شده - HeyVoonak</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Vazir:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #3EA66B;
+            --primary-dark: #2d8a54;
+            --secondary: #4B6A9D;
+            --background: #ffffff;
+            --foreground: #0f172a;
+            --muted: #f1f5f9;
+            --muted-foreground: #64748b;
+            --border: #e2e8f0;
+            --card: #ffffff;
+            --card-foreground: #0f172a;
+        }
+
+        body {
+            font-family: 'Vazir', 'Tahoma', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            color: var(--foreground);
+            direction: rtl;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            padding: 0.75rem 1.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(62, 166, 107, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(62, 166, 107, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--foreground);
+            border: 2px solid var(--border);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .animate-slide-up {
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { 
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <h1 class="text-2xl font-bold gradient-text">HeyVoonak</h1>
+                    </div>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4 space-x-reverse">
+                        <a href="{% url 'users:landing_page' %}" class="text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">خانه</a>
+                        <a href="{% url 'users:login' %}" class="btn btn-primary">ورود/ثبت نام</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="pt-16">
+        <!-- Hero Section -->
+        <section class="relative min-h-screen flex items-center justify-center px-4">
+            <div class="absolute inset-0 bg-gradient-to-br from-yellow-50 via-white to-orange-50"></div>
+            <div class="relative max-w-4xl mx-auto text-center animate-fade-in">
+                <!-- Icon -->
+                <div class="mb-8 animate-slide-up">
+                    <div class="mx-auto w-24 h-24 bg-gradient-to-br from-yellow-100 to-orange-200 rounded-full flex items-center justify-center shadow-lg">
+                        <i class="fas fa-exclamation-triangle text-orange-500 text-3xl"></i>
+                    </div>
+                </div>
+
+                <!-- Title -->
+                <h1 class="text-5xl md:text-6xl font-bold text-gray-900 mb-6 animate-slide-up">
+                    اشتراک منقضی شده
+                </h1>
+
+                <!-- Subtitle -->
+                <p class="text-xl md:text-2xl text-gray-600 mb-12 max-w-2xl mx-auto leading-relaxed animate-slide-up">
+                    اشتراک شما منقضی شده است. لطفاً آن را تمدید کنید
+                </p>
+
+                <!-- Subscription Info -->
+                {% if subscription %}
+                <div class="card p-8 max-w-2xl mx-auto mb-12 animate-slide-up">
+                    <h3 class="text-2xl font-semibold text-gray-900 mb-6">اطلاعات اشتراک فعلی</h3>
+                    <div class="grid md:grid-cols-2 gap-6 text-right">
+                        <div class="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
+                            <span class="text-gray-600">نوع اشتراک:</span>
+                            <span class="font-medium text-gray-900">{{ subscription.get_subscription_type_display }}</span>
+                        </div>
+                        <div class="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
+                            <span class="text-gray-600">تاریخ شروع:</span>
+                            <span class="font-medium text-gray-900">{{ subscription.start_date|date:"Y/m/d" }}</span>
+                        </div>
+                        <div class="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
+                            <span class="text-gray-600">تاریخ پایان:</span>
+                            <span class="font-medium text-gray-900">{{ subscription.end_date|date:"Y/m/d" }}</span>
+                        </div>
+                        <div class="flex justify-between items-center p-4 bg-red-50 rounded-lg">
+                            <span class="text-gray-600">وضعیت:</span>
+                            <span class="font-medium text-red-600">{{ subscription.get_status_display }}</span>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Features -->
+                <div class="grid md:grid-cols-2 gap-6 mb-12 animate-slide-up">
+                    <div class="card p-6 text-right">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center ml-4">
+                                <i class="fas fa-sync-alt text-green-600 text-xl"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold text-gray-900">تمدید فوری</h3>
+                        </div>
+                        <p class="text-gray-600">دسترسی فوری به مطالعات موردی پس از تمدید</p>
+                    </div>
+
+                    <div class="card p-6 text-right">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center ml-4">
+                                <i class="fas fa-history text-blue-600 text-xl"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold text-gray-900">حفظ پیشرفت</h3>
+                        </div>
+                        <p class="text-gray-600">تمام پیشرفت‌های قبلی شما حفظ خواهد شد</p>
+                    </div>
+
+                    <div class="card p-6 text-right">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center ml-4">
+                                <i class="fas fa-download text-green-600 text-xl"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold text-gray-900">آپدیت‌های جدید</h3>
+                        </div>
+                        <p class="text-gray-600">دسترسی به آخرین مطالعات موردی و ویژگی‌ها</p>
+                    </div>
+
+                    <div class="card p-6 text-right">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center ml-4">
+                                <i class="fas fa-headset text-yellow-600 text-xl"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold text-gray-900">پشتیبانی فنی</h3>
+                        </div>
+                        <p class="text-gray-600">تیم پشتیبانی متخصص برای راهنمایی شما</p>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-col sm:flex-row gap-4 justify-center items-center animate-slide-up">
+                    <a href="{% url 'users:login' %}" class="btn btn-primary text-lg px-8 py-4">
+                        <i class="fas fa-sync-alt ml-2"></i>
+                        تمدید اشتراک
+                    </a>
+                    <button onclick="history.back()" class="btn btn-secondary text-lg px-8 py-4">
+                        <i class="fas fa-arrow-right ml-2"></i>
+                        بازگشت
+                    </button>
+                </div>
+
+                <!-- Contact Info -->
+                <div class="mt-16 animate-slide-up">
+                    <div class="card p-8 max-w-md mx-auto">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">نیاز به راهنمایی دارید؟</h3>
+                        <div class="space-y-2 text-gray-600">
+                            <p class="flex items-center justify-center">
+                                <i class="fas fa-phone ml-2 text-green-600"></i>
+                                09123456789
+                            </p>
+                            <p class="flex items-center justify-center">
+                                <i class="fas fa-envelope ml-2 text-green-600"></i>
+                                info@heyvoonak.com
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h3 class="text-2xl font-bold mb-4">HeyVoonak</h3>
+                <p class="text-gray-400 mb-6">سیستم مدیریت کلینیک دامپزشکی</p>
+                <div class="flex justify-center space-x-6 space-x-reverse">
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fab fa-telegram text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fab fa-instagram text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fab fa-linkedin text-xl"></i>
+                    </a>
+                </div>
+                <p class="text-gray-500 text-sm mt-6">© 2024 HeyVoonak. تمامی حقوق محفوظ است.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Add some interactive animations
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.card');
+            
+            cards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.1}s`;
+            });
+        });
+    </script>
+</body>
+</html>

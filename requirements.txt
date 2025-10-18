@@ -22,6 +22,7 @@ gunicorn>=21.0.0
 
 # Security
 cryptography>=41.0.0
+django-csp==3.8
 
 # Database URL parsing
 dj-database-url>=2.0.0
@@ -40,3 +41,15 @@ django-tailwind>=3.4.0
 
 # Additional security packages
 django-environ>=0.10.0
+
+# Payment Gateway
+requests>=2.31.0
+zarinpal>=1.0.0
+zarinpal-py-sdk>=0.1.4  # SDK رسمی زرین‌پال
+
+# SMS Provider
+kavenegar
+ippanel>=2.0.7  # فراز اس‌ام‌اس SDK رسمی
+
+# Jalali Date
+jdatetime>=4.1.0

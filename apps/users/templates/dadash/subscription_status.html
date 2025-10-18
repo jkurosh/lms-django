@@ -1,0 +1,872 @@
+{% extends 'dadash/base.html' %}
+{% load static %}
+
+{% block title %}وضعیت اشتراک{% endblock %}
+
+{% block content %}
+<div class="subscription-status-page">
+    {% if user.is_authenticated %}
+        {% if subscription %}
+            <!-- Active Subscription Status -->
+            <div class="status-container">
+                <div class="status-header">
+                    <div class="status-icon success">
+                        <i class="fas fa-check-circle"></i>
+                        </div>
+                    <h1 class="status-title">وضعیت اشتراک شما</h1>
+                    <p class="status-subtitle">اطلاعات کامل اشتراک شما در سیستم HeyVoonak</p>
+                    </div>
+
+                    <!-- Subscription Info Card -->
+                <div class="subscription-card glass-card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <i class="fas fa-crown"></i>
+                            اطلاعات اشتراک
+                        </h2>
+                        </div>
+                        
+                    <div class="card-content">
+                        <div class="info-grid">
+                                <!-- Status Info -->
+                            <div class="info-item">
+                                <span class="info-label">وضعیت:</span>
+                                        {% if is_active %}
+                                    <span class="status-badge active">
+                                        <i class="fas fa-check-circle"></i>
+                                                فعال
+                                            </span>
+                                        {% else %}
+                                    <span class="status-badge inactive">
+                                        <i class="fas fa-times-circle"></i>
+                                                غیرفعال
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                    
+                            <div class="info-item">
+                                <span class="info-label">نوع اشتراک:</span>
+                                <span class="info-value">{{ subscription.get_subscription_type_display }}</span>
+                                </div>
+                                
+                            <div class="info-item">
+                                <span class="info-label">تاریخ شروع:</span>
+                                <span class="info-value">{{ subscription.start_date|date:"Y/m/d" }}</span>
+                                    </div>
+                                    
+                                    {% if subscription.end_date %}
+                                <div class="info-item">
+                                    <span class="info-label">تاریخ پایان:</span>
+                                    <span class="info-value">{{ subscription.end_date|date:"Y/m/d" }}</span>
+                                        </div>
+                                        
+                                <div class="info-item">
+                                    <span class="info-label">روزهای باقی‌مانده:</span>
+                                            {% if days_remaining > 0 %}
+                                        <span class="info-value success">{{ days_remaining }} روز</span>
+                                            {% else %}
+                                        <span class="info-value error">منقضی شده</span>
+                                            {% endif %}
+                                        </div>
+                                    {% else %}
+                                <div class="info-item">
+                                    <span class="info-label">مدت:</span>
+                                    <span class="info-value success">نامحدود</span>
+                                        </div>
+                                    {% endif %}
+                            </div>
+                            
+                            <!-- Additional Info -->
+                            {% if subscription.auto_renew %}
+                            <div class="info-alert info">
+                                <i class="fas fa-sync-alt"></i>
+                                <span>تمدید خودکار فعال است</span>
+                                </div>
+                            {% endif %}
+                            
+                            {% if subscription.notes %}
+                            <div class="info-alert note">
+                                <i class="fas fa-sticky-note"></i>
+                                <div>
+                                    <strong>یادداشت‌ها:</strong>
+                                    <p>{{ subscription.notes }}</p>
+                                </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Action Cards -->
+                <div class="action-cards">
+                        {% if not is_active %}
+                        <div class="action-card glass-card warning-card">
+                            <div class="action-icon warning">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <h3 class="action-title">اشتراک شما منقضی شده</h3>
+                            <p class="action-text">برای ادامه دسترسی به مطالعات موردی، اشتراک خود را تمدید کنید.</p>
+                            <a href="{% url 'users:subscription_plans' %}" class="action-button warning">
+                                        <i class="fas fa-sync-alt"></i>
+                                        تمدید اشتراک
+                            </a>
+                            </div>
+                        {% endif %}
+                        
+                    <div class="action-card glass-card">
+                        <div class="action-icon primary">
+                            <i class="fas fa-book-open"></i>
+                        </div>
+                        <h3 class="action-title">مطالعات موردی</h3>
+                        <p class="action-text">به صفحه مطالعات موردی بروید و یادگیری خود را شروع کنید.</p>
+                        <a href="{% url 'users:categories_page' %}" class="action-button primary">
+                            <i class="fas fa-arrow-left"></i>
+                            مشاهده مطالعات
+                        </a>
+                    </div>
+                    
+                    <div class="action-card glass-card">
+                        <div class="action-icon info">
+                                    <i class="fas fa-headset"></i>
+                                </div>
+                        <h3 class="action-title">پشتیبانی</h3>
+                        <p class="action-text">تیم پشتیبانی ما آماده پاسخگویی به سوالات شماست.</p>
+                        <div class="contact-info">
+                            <div class="contact-item">
+                                <i class="fas fa-phone"></i>
+                                <span>09123456789</span>
+                                    </div>
+                            <div class="contact-item">
+                                <i class="fas fa-envelope"></i>
+                                <span>info@heyvoonak.com</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        {% else %}
+            <!-- No Subscription -->
+            <div class="status-container no-subscription">
+                <div class="status-header">
+                    <div class="status-icon warning">
+                        <i class="fas fa-lock"></i>
+                        </div>
+                    <h1 class="status-title">اشتراک مورد نیاز</h1>
+                    <p class="status-subtitle">برای دسترسی به مطالعات موردی، اشتراک فعال لازم است</p>
+                    </div>
+
+                    <!-- Features Section -->
+                <div class="features-grid">
+                    <div class="feature-card glass-card">
+                        <div class="feature-icon success">
+                                <i class="fas fa-book-medical"></i>
+                            </div>
+                        <h3 class="feature-title">مطالعات موردی</h3>
+                        <p class="feature-text">دسترسی به صدها مطالعه موردی تخصصی در حوزه دامپزشکی</p>
+                        </div>
+                        
+                    <div class="feature-card glass-card">
+                        <div class="feature-icon info">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                        <h3 class="feature-title">تحلیل نتایج</h3>
+                        <p class="feature-text">تحلیل و بررسی دقیق پیشرفت و نتایج شما</p>
+                        </div>
+                        
+                    <div class="feature-card glass-card">
+                        <div class="feature-icon warning">
+                                <i class="fas fa-certificate"></i>
+                            </div>
+                        <h3 class="feature-title">گواهی پایان</h3>
+                        <p class="feature-text">دریافت گواهی معتبر پس از تکمیل دوره‌ها</p>
+                        </div>
+                    </div>
+
+                <!-- CTA Section -->
+                <div class="cta-section">
+                    <a href="{% url 'users:subscription_plans' %}" class="cta-button primary">
+                        <i class="fas fa-crown"></i>
+                        <span>مشاهده پلن‌های اشتراک</span>
+                            </a>
+                        </div>
+                    </div>
+        {% endif %}
+    {% else %}
+        <!-- Not Authenticated -->
+        <div class="status-container not-authenticated">
+            <div class="status-header">
+                <div class="status-icon error">
+                    <i class="fas fa-user-lock"></i>
+                                </div>
+                <h1 class="status-title">ورود مورد نیاز</h1>
+                <p class="status-subtitle">برای مشاهده وضعیت اشتراک، ابتدا وارد حساب کاربری خود شوید</p>
+            </div>
+
+            <div class="auth-actions">
+                <a href="{% url 'users:login' %}" class="auth-button primary">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>ورود به حساب کاربری</span>
+                </a>
+                <a href="{% url 'users:register' %}" class="auth-button secondary">
+                    <i class="fas fa-user-plus"></i>
+                    <span>ثبت نام</span>
+                        </a>
+                    </div>
+                </div>
+    {% endif %}
+                </div>
+                
+<style>
+/* CSS Variables for Dark Mode */
+:root {
+    --sub-bg: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    --sub-card-bg: rgba(255, 255, 255, 0.7);
+    --sub-card-border: rgba(255, 255, 255, 0.3);
+    --sub-text-primary: #1f2937;
+    --sub-text-secondary: #6b7280;
+    --sub-border: rgba(0, 0, 0, 0.1);
+}
+
+.dark {
+    --sub-bg: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    --sub-card-bg: rgba(30, 41, 59, 0.7);
+    --sub-card-border: rgba(255, 255, 255, 0.1);
+    --sub-text-primary: #f8fafc;
+    --sub-text-secondary: #cbd5e1;
+    --sub-border: rgba(255, 255, 255, 0.1);
+}
+
+.subscription-status-page {
+    min-height: 80vh;
+    padding: 3rem 0;
+}
+
+.status-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.status-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.status-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 1.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+}
+
+.status-icon.success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);
+}
+
+.status-icon.warning {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: white;
+    box-shadow: 0 8px 24px rgba(245, 158, 11, 0.3);
+}
+
+.status-icon.error {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: white;
+    box-shadow: 0 8px 24px rgba(239, 68, 68, 0.3);
+}
+
+.status-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--sub-text-primary);
+    margin-bottom: 0.5rem;
+    transition: color 0.3s ease;
+}
+
+.dark .status-title {
+    background: linear-gradient(135deg, #f8fafc 0%, #3EA66B 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.status-subtitle {
+    font-size: 1.1rem;
+    color: var(--sub-text-secondary);
+    transition: color 0.3s ease;
+}
+
+.glass-card {
+    background: var(--sub-card-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--sub-card-border);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.dark .glass-card {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.subscription-card {
+    margin-bottom: 2rem;
+}
+
+.card-header {
+    padding: 2rem;
+    border-bottom: 1px solid var(--sub-border);
+}
+
+.card-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--sub-text-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin: 0;
+    transition: color 0.3s ease;
+}
+
+.card-title i {
+    color: #3EA66B;
+}
+
+.card-content {
+    padding: 2rem;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.2rem;
+    background: rgba(0, 0, 0, 0.03);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.dark .info-item {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.info-label {
+    font-weight: 600;
+    color: var(--sub-text-secondary);
+    transition: color 0.3s ease;
+}
+
+.info-value {
+    font-weight: 700;
+    color: var(--sub-text-primary);
+    transition: color 0.3s ease;
+}
+
+.info-value.success {
+    color: #10b981;
+}
+
+.info-value.error {
+    color: #ef4444;
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.status-badge.active {
+    background: rgba(16, 185, 129, 0.2);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.5);
+}
+
+.dark .status-badge.active {
+    background: rgba(16, 185, 129, 0.15);
+    color: #34d399;
+}
+
+.status-badge.inactive {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.5);
+}
+
+.dark .status-badge.inactive {
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+}
+
+.info-alert {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    margin-top: 1.5rem;
+}
+
+.info-alert.info {
+    background: rgba(59, 130, 246, 0.1);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    color: #3b82f6;
+}
+
+.info-alert.note {
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    color: var(--sub-text-primary);
+}
+
+.action-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.action-card {
+    padding: 2rem;
+    text-align: center;
+}
+
+.action-icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 1rem;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: white;
+}
+
+.action-icon.primary {
+    background: linear-gradient(135deg, #3EA66B 0%, #2d8a54 100%);
+}
+
+.action-icon.warning {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.action-icon.info {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+}
+
+.action-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--sub-text-primary);
+    margin-bottom: 0.5rem;
+    transition: color 0.3s ease;
+}
+
+.action-text {
+    color: var(--sub-text-secondary);
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+    transition: color 0.3s ease;
+}
+
+.action-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1.5rem;
+    border-radius: 10px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.action-button.primary {
+    background: linear-gradient(135deg, #3EA66B 0%, #2d8a54 100%);
+    color: white;
+}
+
+.action-button.warning {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: white;
+}
+
+.action-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(62, 166, 107, 0.4);
+}
+
+.contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    color: var(--sub-text-secondary);
+    transition: color 0.3s ease;
+}
+
+.contact-item i {
+    color: #3EA66B;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.feature-card {
+    padding: 2rem;
+    text-align: center;
+}
+
+.feature-icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 1rem;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: white;
+}
+
+.feature-icon.success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.feature-icon.info {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+}
+
+.feature-icon.warning {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.feature-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--sub-text-primary);
+    margin-bottom: 0.5rem;
+    transition: color 0.3s ease;
+}
+
+.feature-text {
+    color: var(--sub-text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    transition: color 0.3s ease;
+}
+
+.cta-section {
+    text-align: center;
+}
+
+.cta-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 1.2rem 2.5rem;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.cta-button.primary {
+    background: linear-gradient(135deg, #3EA66B 0%, #2d8a54 100%);
+    color: white;
+    box-shadow: 0 8px 24px rgba(62, 166, 107, 0.3);
+}
+
+.cta-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 32px rgba(62, 166, 107, 0.4);
+}
+
+.auth-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.auth-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-decoration: none;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+.auth-button.primary {
+    background: linear-gradient(135deg, #3EA66B 0%, #2d8a54 100%);
+    color: white;
+}
+
+.auth-button.secondary {
+    background: var(--sub-card-bg);
+    border: 2px solid var(--sub-card-border);
+    color: var(--sub-text-primary);
+}
+
+.auth-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(62, 166, 107, 0.3);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .subscription-status-page {
+        padding: 0 1rem;
+    }
+    
+    .status-content {
+        max-width: 900px;
+    }
+    
+    .info-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .subscription-status-page {
+        padding: 0 0.75rem;
+    }
+    
+    .status-header {
+        padding: 2rem 0;
+    }
+    
+    .profile-section {
+        flex-direction: column;
+        gap: 1.5rem;
+        text-align: center;
+    }
+    
+    .profile-avatar {
+        width: 80px;
+        height: 80px;
+        font-size: 2rem;
+    }
+    
+    .profile-info h2 {
+        font-size: 1.5rem;
+    }
+    
+    .profile-info p {
+        font-size: 0.95rem;
+    }
+    
+    .status-title {
+        font-size: 2rem;
+    }
+    
+    .info-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .info-card {
+        padding: 1.25rem;
+    }
+    
+    .info-label {
+        font-size: 0.85rem;
+    }
+    
+    .info-value {
+        font-size: 1rem;
+    }
+    
+    .action-cards {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .action-card {
+        padding: 1.5rem;
+    }
+    
+    .action-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 1.5rem;
+    }
+    
+    .action-title {
+        font-size: 1.1rem;
+    }
+    
+    .action-button {
+        padding: 0.75rem 1.25rem;
+        font-size: 0.9rem;
+    }
+    
+    .features-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+    
+    .feature-item {
+        padding: 0.875rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .subscription-status-page {
+        padding: 0 0.5rem;
+    }
+    
+    .status-header {
+        padding: 1.5rem 0;
+    }
+    
+    .profile-avatar {
+        width: 64px;
+        height: 64px;
+        font-size: 1.5rem;
+    }
+    
+    .profile-info h2 {
+        font-size: 1.25rem;
+    }
+    
+    .profile-info p {
+        font-size: 0.875rem;
+    }
+    
+    .status-badge {
+        padding: 0.375rem 0.75rem;
+        font-size: 0.8rem;
+    }
+    
+    .status-title {
+        font-size: 1.75rem;
+    }
+    
+    .section-title {
+        font-size: 1.5rem;
+    }
+    
+    .info-card {
+        padding: 1rem;
+    }
+    
+    .info-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 1rem;
+    }
+    
+    .info-label {
+        font-size: 0.8rem;
+    }
+    
+    .info-value {
+        font-size: 0.9rem;
+    }
+    
+    .action-card {
+        padding: 1.25rem;
+    }
+    
+    .action-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1.25rem;
+    }
+    
+    .action-title {
+        font-size: 1rem;
+    }
+    
+    .action-description {
+        font-size: 0.85rem;
+    }
+    
+    .action-button {
+        padding: 0.625rem 1rem;
+        font-size: 0.85rem;
+    }
+    
+    .feature-item {
+        padding: 0.75rem;
+        font-size: 0.875rem;
+    }
+    
+    .auth-button {
+        padding: 1rem 1.5rem;
+        font-size: 0.95rem;
+    }
+}
+</style>
+
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Dark mode sync
+    const currentTheme = localStorage.getItem('theme') || 'light';
+    if (currentTheme === 'dark') {
+        document.body.classList.add('dark');
+    }
+
+    // Animate cards on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+
+    document.querySelectorAll('.glass-card').forEach(card => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        observer.observe(card);
+            });
+        });
+    </script>
+{% endblock %}

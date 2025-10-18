@@ -1,0 +1,46 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}HeyVoonak - سیستم یادگیری مطالعات موردی دامپزشکی{% endblock %}</title>
+    
+    <!-- Bon Pro Font -->
+    <link href="{% static 'fonts/bon-pro/bon-pro.css' %}" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    
+    <!-- Custom Styles -->
+    {% block extra_css %}{% endblock %}
+    
+    <!-- Developer Tools Protection -->
+    {% if not user.is_superuser %}
+    <script>
+        // تنظیم متغیر برای تشخیص ادمین
+        window.isAdmin = {{ user.is_superuser|yesno:"true,false" }};
+        
+        // اضافه کردن کلاس به body برای ادمین‌ها
+        {% if user.is_superuser %}
+        document.addEventListener('DOMContentLoaded', function() {
+            document.body.classList.add('admin-user');
+        });
+        {% endif %}
+    </script>
+    <script src="{% static 'dadash/devtools-protection.js' %}"></script>
+    {% endif %}
+    
+    <!-- XSS Protection -->
+    <script src="{% static 'dadash/xss-protection.js' %}"></script>
+</head>
+<body class="{% if user.is_superuser %}admin-user{% endif %}">
+    {% block content %}{% endblock %}
+    
+    <!-- Custom JavaScript -->
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

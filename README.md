@@ -1,93 +1,421 @@
-# heyvoonak project
+# 🏥 سیستم مدیریت یادگیری دامپزشکی (VetLMS)
 
+یک سیستم یادگیری و مدیریت کیس‌های پاتولوژی دامپزشکی با قابلیت‌های پیشرفته
 
+## 📋 فهرست مطالب
 
-## Getting started
+- [ویژگی‌ها](#ویژگی‌ها)
+- [پیش‌نیازها](#پیش‌نیازها)
+- [نصب و راه‌اندازی](#نصب-و-راه‌اندازی)
+- [ساختار پروژه](#ساختار-پروژه)
+- [تنظیمات](#تنظیمات)
+- [مستندات](#مستندات)
+- [دستورات مفید](#دستورات-مفید)
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+## ✨ ویژگی‌ها
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+### 🎓 آموزش و یادگیری
+- مدیریت کیس‌های پاتولوژی
+- سیستم اسلاید و تصاویر
+- پیگیری پیشرفت کاربران
+- سیستم امتیازدهی و نمرات
+- دسته‌بندی و فیلترینگ پیشرفته
 
-## Add your files
+### 👥 مدیریت کاربران
+- سیستم احراز هویت کامل
+- نقش‌های کاربری (Admin, Student)
+- پروفایل کاربری
+- بازیابی رمز عبور با شماره تلفن
+- سیستم اشتراک و subscription
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+### 📊 داشبورد و گزارش‌گیری
+- داشبورد مدیریتی
+- داشبورد دانشجو
+- آمار و تحلیل پیشرفت
+- سیستم Achievements
+- گزارش‌های تفصیلی
+
+### 🔔 ارتباطات
+- سیستم اعلان‌ها (Notifications)
+- ارسال پیام به کاربران
+- اعلان‌های broadcast
+
+### 🔒 امنیت
+- Middleware های امنیتی
+- محدودیت Rate Limiting
+- حفاظت در برابر حملات
+- تنظیمات CORS
+- Session Management امن
+
+## 🛠 پیش‌نیازها
+
+- Python 3.12+
+- PostgreSQL 13+ (یا SQLite برای Development)
+- pip
+- virtualenv (اختیاری)
+
+## 🚀 نصب و راه‌اندازی
+
+### 1. کلون کردن پروژه
+
+```bash
+git clone <repository-url>
+cd vetlms
+```
+
+### 2. ایجاد محیط مجازی
+
+```bash
+# ایجاد محیط مجازی
+python -m venv venv
+
+# فعال‌سازی
+# Windows
+venv\Scripts\activate
+
+# Linux/Mac
+source venv/bin/activate
+```
+
+### 3. نصب وابستگی‌ها
+
+```bash
+pip install -r requirements.txt
+```
+
+### 4. ایجاد فایل .env
+
+```bash
+# استفاده از اسکریپت خودکار
+python create_env.py
+
+# یا کپی دستی
+copy ENV_TEMPLATE.txt .env  # Windows
+cp ENV_TEMPLATE.txt .env    # Linux/Mac
+```
+
+### 5. تنظیم دیتابیس
+
+```bash
+# برای استفاده از SQLite محلی
+# در فایل .env:
+USE_SQLITE=True
+
+# یا برای PostgreSQL، تنظیمات را در .env وارد کنید
+```
+
+### 6. Migration دیتابیس
+
+```bash
+python manage.py migrate
+```
+
+### 7. ایجاد Superuser
+
+```bash
+python manage.py createsuperuser
+```
+
+### 8. جمع‌آوری فایل‌های استاتیک
+
+```bash
+python manage.py collectstatic --noinput
+```
+
+### 9. اجرای سرور
+
+```bash
+python manage.py runserver
+```
+
+سایت در آدرس `http://127.0.0.1:8000/` در دسترس خواهد بود.
+
+## 📁 ساختار پروژه
 
 ```
-cd existing_repo
-git remote add origin https://gitlab.com/jkurosh-group/heyvoonak-project.git
-git branch -M main
-git push -uf origin main
+vetlms/
+├── apps/                   # تمام اپلیکیشن‌های پروژه
+│   ├── __init__.py
+│   │
+│   ├── core/              # ماژول‌های مشترک و Utilities
+│   │   ├── __init__.py
+│   │   └── apps.py
+│   │
+│   ├── users/             # مدیریت کاربران و احراز هویت
+│   │   ├── models.py      # CustomUser, Subscription, Notification
+│   │   ├── views.py       # Authentication, Dashboard
+│   │   ├── urls.py        # URL patterns
+│   │   ├── admin.py       # Admin configuration
+│   │   ├── middleware.py  # Security middlewares
+│   │   ├── decorators.py  # Custom decorators
+│   │   ├── management/    # Management commands
+│   │   │   └── commands/
+│   │   │       ├── clear_cache.py
+│   │   │       └── show_config.py
+│   │   ├── migrations/    # Database migrations
+│   │   ├── templates/
+│   │   │   └── users/    # User templates
+│   │   └── static/
+│   │       └── users/    # User static files
+│   │
+│   └── courses/           # دوره‌ها و کیس‌های آموزشی
+│       ├── models.py      # Case, Slide, UserProgress
+│       ├── views.py       # Course views
+│       ├── api_views.py   # REST API endpoints
+│       ├── serializers.py # DRF serializers
+│       ├── urls.py        # URL patterns
+│       ├── api_urls.py    # API URLs
+│       ├── admin.py       # Admin configuration
+│       ├── management/    # Management commands
+│       ├── migrations/    # Database migrations
+│       ├── templates/
+│       │   └── courses/  # Course templates
+│       └── static/
+│           └── courses/  # Course static files
+│
+├── vetlms/                # تنظیمات اصلی Django
+│   ├── settings.py       # Project settings
+│   ├── urls.py           # Main URL configuration
+│   ├── wsgi.py           # WSGI config
+│   └── asgi.py           # ASGI config
+│
+├── templates/            # Template های عمومی
+│   ├── 403.html         # Forbidden page
+│   ├── 404.html         # Not Found page
+│   ├── 500.html         # Server Error page
+│   └── admin/           # Custom admin templates
+│
+├── static/              # فایل‌های استاتیک عمومی
+├── staticfiles/         # Collected static files
+├── media/               # User uploaded files
+├── logs/                # Log files
+│
+├── docs/                # Documentation
+│   ├── REFACTORING_GUIDE.md
+│   └── ...
+│
+├── manage.py            # Django management script
+├── requirements.txt     # Python dependencies
+├── runtime.txt          # Python version
+├── .env                 # Environment variables (gitignore)
+├── .gitignore           # Git ignore file
+├── create_env.py        # Script to create .env
+├── update_content_types.py  # Script to update ContentTypes
+└── README.md            # This file
 ```
 
-## Integrate with your tools
+## ⚙️ تنظیمات
 
-- [ ] [Set up project integrations](https://gitlab.com/jkurosh-group/heyvoonak-project/-/settings/integrations)
+### فایل .env
 
-## Collaborate with your team
+تمام تنظیمات حساس در فایل `.env` ذخیره می‌شوند:
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+```bash
+# تنظیمات اصلی
+DEBUG=True
+SECRET_KEY=your-secret-key
+ALLOW_ALL_HOSTS=False
 
-## Test and Deploy
+# دیتابیس
+DB_ENGINE=django.db.backends.postgresql
+DB_NAME=postgres
+DB_USER=your-username
+DB_PASSWORD=your-password
+DB_HOST=your-host
+DB_PORT=5432
 
-Use the built-in continuous integration in GitLab.
+# برای SQLite محلی
+USE_SQLITE=True
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+# Cache و Session
+CACHE_TIMEOUT=60
+SESSION_COOKIE_AGE=3600
+```
 
-***
+### دستورات مدیریتی سفارشی
 
-# Editing this README
+```bash
+# نمایش تنظیمات فعلی
+python manage.py show_config
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+# پاکسازی کش
+python manage.py clear_cache
 
-## Suggestions for a good README
+# ایجاد داده‌های نمونه
+python manage.py create_sample_data
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+# پاکسازی Session های قدیمی
+python manage.py clearsessions
+```
 
-## Name
-Choose a self-explaining name for your project.
+## 📚 مستندات
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+مستندات کامل در پوشه `docs/` موجود است:
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+- **ENV_GUIDE.md** - راهنمای استفاده از فایل .env
+- **DEBUG_FALSE_SETUP.md** - راهنمای تنظیمات Production
+- **CACHE_OPTIMIZATION.md** - راهنمای بهینه‌سازی کش
+- **DEPLOYMENT_README.md** - راهنمای Deploy
+- **SECURITY_README.md** - راهنمای امنیت
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+## 🔧 دستورات مفید
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+### Development
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+```bash
+# اجرای سرور توسعه
+python manage.py runserver
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+# ایجاد migration جدید
+python manage.py makemigrations
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+# اعمال migration ها
+python manage.py migrate
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+# ورود به shell
+python manage.py shell
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+# بررسی مشکلات
+python manage.py check
+```
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+### Production
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+```bash
+# جمع‌آوری فایل‌های استاتیک
+python manage.py collectstatic --noinput --clear
 
-## License
-For open source projects, say how it is licensed.
+# اجرا با Gunicorn
+gunicorn vetlms.wsgi:application --bind 0.0.0.0:8000
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+# تست با DEBUG=False
+DEBUG=False python manage.py runserver
+```
+
+### Testing
+
+```bash
+# اجرای تست‌ها
+python manage.py test
+
+# اجرای تست با coverage
+coverage run --source='.' manage.py test
+coverage report
+```
+
+### Database
+
+```bash
+# ایجاد backup
+python manage.py dumpdata > backup.json
+
+# بازیابی backup
+python manage.py loaddata backup.json
+
+# ورود به دیتابیس
+python manage.py dbshell
+
+# بررسی وضعیت migration ها
+python manage.py showmigrations
+```
+
+## 🌐 URL های اصلی
+
+- **صفحه اصلی:** `/`
+- **پنل ادمین:** `/admin/`
+- **لاگین:** `/login/`
+- **ثبت‌نام:** `/register/`
+- **بازیابی رمز:** `/password-reset/`
+- **داشبورد:** `/dashboard/`
+- **دوره‌ها:** `/courses/`
+- **API:** `/api/v1/`
+
+## 🔒 امنیت
+
+این پروژه شامل موارد امنیتی زیر است:
+
+- ✅ WhiteNoise برای serve کردن فایل‌های استاتیک
+- ✅ CSRF Protection
+- ✅ XSS Protection
+- ✅ Clickjacking Protection
+- ✅ Secure Session Management
+- ✅ Rate Limiting
+- ✅ Custom Security Middleware
+- ✅ Password Hashing با Django
+
+⚠️ **توجه:** قبل از Deploy در Production:
+1. `DEBUG=False` کنید
+2. `SECRET_KEY` را تغییر دهید
+3. `ALLOWED_HOSTS` را تنظیم کنید
+4. از HTTPS استفاده کنید
+5. دیتابیس را backup بگیرید
+
+## 🐛 عیب‌یابی
+
+### مشکلات رایج
+
+**1. CSS لود نمی‌شود:**
+```bash
+python manage.py collectstatic --noinput
+```
+
+**2. خطای Database:**
+```bash
+python manage.py migrate
+python manage.py check --database default
+```
+
+**3. خطای Permission:**
+```bash
+# Windows
+icacls media /grant Users:F /T
+icacls logs /grant Users:F /T
+```
+
+**4. Port در حال استفاده است:**
+```bash
+# استفاده از port دیگر
+python manage.py runserver 8080
+```
+
+## 📝 Changelog
+
+### نسخه 1.0.0 (اکتبر 2025)
+- ✅ سیستم مدیریت کیس‌های پاتولوژی
+- ✅ احراز هویت و بازیابی رمز عبور
+- ✅ داشبورد مدیریتی و دانشجو
+- ✅ سیستم اعلان‌ها و Subscription
+- ✅ API RESTful
+- ✅ پیاده‌سازی امنیتی
+- ✅ بهینه‌سازی Cache
+- ✅ پشتیبانی از DEBUG=False
+
+## 🤝 مشارکت
+
+برای مشارکت در این پروژه:
+
+1. Fork کنید
+2. Branch جدید ایجاد کنید (`git checkout -b feature/AmazingFeature`)
+3. تغییرات را Commit کنید (`git commit -m 'Add some AmazingFeature'`)
+4. به Branch خود Push کنید (`git push origin feature/AmazingFeature`)
+5. Pull Request ایجاد کنید
+
+## 📄 لایسنس
+
+این پروژه تحت لایسنس MIT منتشر شده است.
+
+## 👥 نویسندگان
+
+- **HeyVoonak Team** - *کار اولیه*
+
+## 🙏 تشکر
+
+- Django Framework
+- Django REST Framework
+- WhiteNoise
+- PostgreSQL/Supabase
+- همه توسعه‌دهندگان متن‌باز
+
+---
+
+**ساخته شده با ❤️ برای آموزش دامپزشکی**

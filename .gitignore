@@ -1,137 +1,34 @@
-# Byte-compiled / optimized / DLL files
+# Python
 __pycache__/
 *.py[cod]
 *$py.class
-
-# C extensions
 *.so
-
-# Distribution / packaging
 .Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-pip-wheel-metadata/
-share/python-wheels/
 *.egg-info/
-.installed.cfg
+dist/
+build/
 *.egg
-MANIFEST
 
-# PyInstaller
-*.manifest
-*.spec
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv/
 
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
-
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.nox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-*.py,cover
-.hypothesis/
-.pytest_cache/
-
-# Translations
-*.mo
-*.pot
-
-# Django stuff:
+# Django
 *.log
-local_settings.py
 db.sqlite3
 db.sqlite3-journal
+/media/
+/staticfiles/
+/static/
+local_settings.py
 
-# Flask stuff:
-instance/
-.webassets-cache
-
-# Scrapy stuff:
-.scrapy
-
-# Sphinx documentation
-docs/_build/
-
-# PyBuilder
-target/
-
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# IPython
-profile_default/
-ipython_config.py
-
-# pyenv
-.python-version
-
-# pipenv
-Pipfile.lock
-
-# PEP 582
-__pypackages__/
-
-# Celery stuff
-celerybeat-schedule
-celerybeat.pid
-
-# SageMath parsed files
-*.sage.py
-
-# Environments
+# Environment variables
 .env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
-
-# Spyder project settings
-.spyderproject
-.spyproject
-
-# Rope project settings
-.ropeproject
-
-# mkdocs documentation
-/site
-
-# mypy
-.mypy_cache/
-.dmypy.json
-dmypy.json
-
-# Pyre type checker
-.pyre/
-
-# Security
-*.key
-*.pem
-*.crt
-*.p12
-*.pfx
-secrets/
-secrets.json
-config.json
-settings.json
+.env.local
+.env.*.local
+*.env
 
 # IDE
 .vscode/
@@ -139,40 +36,89 @@ settings.json
 *.swp
 *.swo
 *~
+.DS_Store
 
 # OS
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
 Thumbs.db
+*.bak
+*.tmp
+
+# Coverage reports
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Migrations (optional - uncomment if you want to ignore)
+# */migrations/*.py
+# */migrations/*.pyc
+# !*/migrations/__init__.py
 
 # Logs
 logs/
 *.log
 
-# Media files
-media/
-uploads/
-
-# Static files
-staticfiles/
-static/
-
-# Database
-*.db
-*.sqlite
-*.sqlite3
-
-# Backup files
-*.bak
+# Database backups
+*.sql
+*.dump
 *.backup
-*.old
+
+# Compiled files
+*.pyc
+*.pyo
+
+# Node modules (if using frontend build tools)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Package files
+*.tar.gz
+*.zip
+*.rar
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Secrets
+secrets.json
+*.key
+*.pem
+*.cert
 
 # Temporary files
 *.tmp
-*.temp
+tmp/
 temp/
-tmp/ 
+
+# Test files
+.pytest_cache/
+.tox/
+
+# Documentation builds
+docs/_build/
+site/
+
+# Backup files
+*.bak
+*~
+
+# Windows specific
+desktop.ini
+$RECYCLE.BIN/
+
+# Mac specific
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Linux specific
+.directory
+.Trash-*

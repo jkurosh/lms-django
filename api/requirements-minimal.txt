@@ -1,0 +1,40 @@
+# Minimal requirements for Vercel deployment
+# فقط پکیج‌های ضروری
+
+# Django Core
+Django>=5.2.3,<5.3
+
+# Database
+psycopg2-binary>=2.9.0
+dj-database-url>=2.0.0
+
+# Static Files
+whitenoise>=6.0.0
+
+# Environment Variables
+python-dotenv>=1.0.0
+
+# Django REST Framework
+djangorestframework>=3.14.0
+
+# CORS Headers
+django-cors-headers>=4.0.0
+
+# JWT Authentication
+djangorestframework-simplejwt>=5.3.0
+
+# Security
+cryptography>=41.0.0
+
+# Data Processing
+pandas>=2.0.0
+openpyxl>=3.1.0
+
+# Payment Gateway - Zarinpal
+requests>=2.31.0
+zarinpal>=1.0.0
+zarinpal-py-sdk>=0.1.4
+
+# SMS Provider
+kavenegar>=1.1.2
+ippanel>=2.0.7

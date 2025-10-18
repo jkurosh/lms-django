@@ -1,0 +1,1160 @@
+{% extends 'dadash/base.html' %}
+{% load static %}
+
+{% block title %}پلن‌های اشتراک{% endblock %}
+
+{% block content %}
+<div class="creative-dashboard">
+    <!-- Animated Background -->
+    <div class="animated-background">
+        <div class="gradient-orb orb-1"></div>
+        <div class="gradient-orb orb-2"></div>
+        <div class="gradient-orb orb-3"></div>
+    </div>
+
+    <!-- Header Section -->
+    <header class="creative-header">
+        <div class="header-content">
+            <div class="header-left">
+                <div class="logo-section">
+                    <div class="logo-icon">
+                        <i class="fas fa-crown" style="font-size: 2rem; color: #FFD700;"></i>
+                    </div>
+                    <h1 class="header-title">پلن‌های اشتراک HeyVoonak</h1>
+                </div>
+                <p class="header-subtitle">
+                    بهترین پلن را برای یادگیری انتخاب کنید و به دنیای دامپزشکی حرفه‌ای بپیوندید
+                </p>
+            </div>
+            <div class="header-right">
+                <a href="{% url 'users:view_cart' %}" class="btn-glass">
+                    <i class="fas fa-shopping-cart"></i>
+                    سبد خرید
+                    {% if cart_count > 0 %}
+                    <span class="cart-badge-small">{{ cart_count }}</span>
+                    {% endif %}
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="creative-main">
+        {% if user_subscription %}
+        <!-- Current Subscription -->
+        <section class="stats-section">
+            <div class="content-card glass-card full-width current-sub-card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-info-circle"></i>
+                        اشتراک فعلی شما
+                    </h3>
+                    <span class="subscription-status {% if user_subscription.is_active %}active{% else %}expired{% endif %}">
+                        {{ user_subscription.get_status_display }}
+                    </span>
+                </div>
+                <div class="card-content">
+                    <div class="stats-grid">
+                        <div class="stat-card glass-card-inner">
+                            <div class="stat-icon">
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-number">{{ user_subscription.start_date|date:"Y/m/d" }}</div>
+                                <div class="stat-label">تاریخ شروع</div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card glass-card-inner">
+                            <div class="stat-icon">
+                                <i class="fas fa-calendar-times"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-number">{{ user_subscription.end_date|date:"Y/m/d" }}</div>
+                                <div class="stat-label">تاریخ پایان</div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card glass-card-inner">
+                            <div class="stat-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-number">{{ user_subscription.days_remaining }}</div>
+                                <div class="stat-label">روز باقیمانده</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        {% endif %}
+
+        <!-- Plans Section -->
+        <section class="plans-section">
+            <div class="section-header-center">
+                <h2 class="section-title">انتخاب پلن اشتراک</h2>
+                <p class="section-subtitle">با خرید اشتراک، به تمام امکانات و محتوای آموزشی دسترسی کامل پیدا کنید</p>
+            </div>
+
+            <div class="plans-grid">
+                {% for plan in plans %}
+                <div class="plan-card glass-card {% if plan.is_popular %}popular-plan{% endif %}">
+                    {% if plan.is_popular %}
+                    <div class="popular-badge">
+                        <i class="fas fa-star"></i>
+                        محبوب
+                    </div>
+                    {% endif %}
+                    
+                    <div class="plan-header">
+                        <div class="plan-icon">
+                            <i class="fas fa-{% if plan.duration_type == 'monthly' %}calendar{% elif plan.duration_type == 'quarterly' %}calendar-week{% elif plan.duration_type == 'biannual' %}calendar-alt{% else %}infinity{% endif %}"></i>
+                        </div>
+                        <h3 class="plan-name">{{ plan.name }}</h3>
+                        <p class="plan-duration">{{ plan.get_duration_type_display }}</p>
+                    </div>
+
+                    <div class="plan-pricing">
+                        {% if plan.discount_percent > 0 %}
+                            <div class="price-original">{{ plan.formatted_price }} تومان</div>
+                            <div class="discount-badge">{{ plan.discount_percent }}% تخفیف</div>
+                        {% endif %}
+                        <div class="price-final">
+                            <span class="price-amount">{{ plan.formatted_final_price }}</span>
+                            <span class="price-currency">تومان</span>
+                        </div>
+                    </div>
+
+                    <div class="plan-features">
+                        {% for feature in plan.get_features_list %}
+                        <div class="feature-item">
+                            <i class="fas fa-check-circle"></i>
+                            <span>{{ feature }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="plan-actions">
+                        <a href="{% url 'users:initiate_payment' plan.id %}" class="btn-plan btn-primary">
+                            <i class="fas fa-credit-card"></i>
+                            پرداخت آنلاین
+                        </a>
+                        <form action="{% url 'users:add_to_cart' plan.id %}" method="post" class="plan-form-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-plan btn-secondary">
+                                <i class="fas fa-shopping-cart"></i>
+                                افزودن به سبد
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="empty-plans glass-card">
+                    <i class="fas fa-box-open"></i>
+                    <p>هیچ پلن اشتراکی در حال حاضر موجود نیست.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+    </main>
+</div>
+
+<style>
+/* CSS Variables for Light & Dark Mode */
+:root {
+    --plans-bg: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    --plans-card-bg: rgba(255, 255, 255, 0.7);
+    --plans-card-border: rgba(255, 255, 255, 0.3);
+    --plans-text-primary: #1f2937;
+    --plans-text-secondary: #6b7280;
+    --plans-text-muted: #9ca3af;
+    --plans-border: rgba(255, 255, 255, 0.1);
+    --plans-border-light: rgba(0, 0, 0, 0.05);
+}
+
+.dark {
+    --plans-bg: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    --plans-card-bg: rgba(30, 41, 59, 0.7);
+    --plans-card-border: rgba(255, 255, 255, 0.1);
+    --plans-text-primary: #f8fafc;
+    --plans-text-secondary: #cbd5e1;
+    --plans-text-muted: #64748b;
+    --plans-border: rgba(255, 255, 255, 0.1);
+    --plans-border-light: rgba(255, 255, 255, 0.05);
+}
+
+/* Base Layout */
+.creative-dashboard {
+    position: relative;
+    min-height: 100vh;
+    padding-bottom: 4rem;
+    overflow: hidden;
+    transition: background-color 0.3s ease;
+}
+
+.animated-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    background: var(--plans-bg);
+    transition: background 0.5s ease;
+}
+
+.gradient-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    animation: float 20s ease-in-out infinite;
+    transition: opacity 0.5s ease;
+}
+
+.orb-1 {
+    width: 500px;
+    height: 500px;
+    background: linear-gradient(135deg, #3EA66B, #2d8a54);
+    top: -250px;
+    right: -250px;
+    opacity: 0.3;
+    animation-delay: 0s;
+}
+
+.orb-2 {
+    width: 400px;
+    height: 400px;
+    background: linear-gradient(135deg, #10b981, #059669);
+    bottom: -200px;
+    left: -200px;
+    opacity: 0.3;
+    animation-delay: 5s;
+}
+
+.orb-3 {
+    width: 300px;
+    height: 300px;
+    background: linear-gradient(135deg, #3EA66B, #10b981);
+    top: 50%;
+    left: 50%;
+    opacity: 0.2;
+    animation-delay: 10s;
+}
+
+.dark .orb-1,
+.dark .orb-2 {
+    opacity: 0.2;
+}
+
+.dark .orb-3 {
+    opacity: 0.15;
+}
+
+@keyframes float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(30px, -30px) scale(1.1); }
+    66% { transform: translate(-20px, 20px) scale(0.9); }
+}
+
+.creative-header {
+    position: relative;
+    z-index: 10;
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+}
+
+.header-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+}
+
+.logo-section {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.logo-icon {
+    width: 56px;
+    height: 56px;
+    background: linear-gradient(135deg, #3EA66B 0%, #2d8a54 100%);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 24px rgba(62, 166, 107, 0.3);
+}
+
+.logo-icon i {
+    color: #FFD700 !important;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+/* Dark Mode Toggle Icons */
+.light-icon {
+    color: #1a1a1a !important;
+    font-size: 18px !important;
+}
+
+.dark-icon {
+    color: #ffffff !important;
+    font-size: 18px !important;
+}
+
+.header-title {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--plans-text-primary);
+    margin: 0;
+    transition: color 0.3s ease;
+}
+
+.dark .header-title {
+    background: linear-gradient(135deg, #f8fafc 0%, #3EA66B 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.header-subtitle {
+    color: var(--plans-text-secondary);
+    font-size: 1rem;
+    margin: 0.5rem 0 0 0;
+    transition: color 0.3s ease;
+}
+
+.creative-main {
+    position: relative;
+    z-index: 10;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.stats-section {
+    margin-bottom: 3rem;
+}
+
+.plans-section {
+    margin-bottom: 3rem;
+}
+
+.glass-card {
+    background: var(--plans-card-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--plans-card-border);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    border-radius: 20px;
+    transition: all 0.3s ease;
+}
+
+.dark .glass-card {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* Plans Specific Styles */
+.full-width {
+    grid-column: 1 / -1;
+}
+
+.current-sub-card {
+    margin-bottom: 2rem;
+}
+
+.subscription-status {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+
+.subscription-status.active {
+    background: rgba(16, 185, 129, 0.2);
+    border: 1px solid rgba(16, 185, 129, 0.5);
+    color: #10b981;
+    transition: all 0.3s ease;
+}
+
+.dark .subscription-status.active {
+    background: rgba(16, 185, 129, 0.15);
+    border-color: rgba(16, 185, 129, 0.4);
+    color: #34d399;
+}
+
+.subscription-status.expired {
+    background: rgba(239, 68, 68, 0.2);
+    border: 1px solid rgba(239, 68, 68, 0.5);
+    color: #ef4444;
+    transition: all 0.3s ease;
+}
+
+.dark .subscription-status.expired {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: rgba(239, 68, 68, 0.4);
+    color: #f87171;
+}
+
+.glass-card-inner {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--plans-border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.dark .glass-card-inner {
+    background: rgba(30, 41, 59, 0.3);
+}
+
+/* Stat Cards */
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.card-title {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--plans-text-primary);
+    transition: color 0.3s ease;
+}
+
+.card-title i {
+    color: var(--primary);
+}
+
+.card-content {
+    padding-top: 1rem;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.stat-card {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.stat-icon {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, var(--primary) 0%, #2d8a54 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.3rem;
+}
+
+.stat-content {
+    flex: 1;
+}
+
+.stat-number {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--plans-text-primary);
+    margin-bottom: 0.3rem;
+    transition: color 0.3s ease;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: var(--plans-text-secondary);
+    transition: color 0.3s ease;
+}
+
+.section-header-center {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.section-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--plans-text-primary);
+    margin-bottom: 1rem;
+    transition: color 0.3s ease;
+}
+
+.dark .section-title {
+    background: linear-gradient(135deg, #f8fafc 0%, #3EA66B 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.section-subtitle {
+    font-size: 1.1rem;
+    color: var(--plans-text-secondary);
+    max-width: 600px;
+    margin: 0 auto;
+    transition: color 0.3s ease;
+}
+
+.plans-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.plan-card {
+    position: relative;
+    padding: 2rem;
+    background: var(--plans-card-bg);
+    border: 1px solid var(--plans-card-border);
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.plan-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(62, 166, 107, 0.2);
+}
+
+.dark .plan-card {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.dark .plan-card:hover {
+    box-shadow: 0 20px 40px rgba(62, 166, 107, 0.3);
+}
+
+.popular-plan {
+    border: 2px solid var(--primary);
+    box-shadow: 0 10px 30px rgba(62, 166, 107, 0.3);
+}
+
+.popular-badge {
+    position: absolute;
+    top: -12px;
+    right: 20px;
+    background: linear-gradient(135deg, var(--primary) 0%, #2d8a54 100%);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.plan-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--plans-border-light);
+}
+
+.plan-icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 1rem;
+    background: linear-gradient(135deg, var(--primary) 0%, #2d8a54 100%);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: white;
+}
+
+.plan-name {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: var(--plans-text-primary);
+    margin-bottom: 0.5rem;
+    transition: color 0.3s ease;
+}
+
+.plan-duration {
+    color: var(--plans-text-secondary);
+    font-size: 1rem;
+    transition: color 0.3s ease;
+}
+
+.plan-pricing {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.price-original {
+    text-decoration: line-through;
+    color: var(--plans-text-muted);
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    transition: color 0.3s ease;
+}
+
+.discount-badge {
+    display: inline-block;
+    background: #ef4444;
+    color: white;
+    padding: 0.3rem 0.8rem;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+.price-final {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.price-amount {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--primary);
+}
+
+.price-currency {
+    font-size: 1rem;
+    color: var(--plans-text-secondary);
+    transition: color 0.3s ease;
+}
+
+.plan-features {
+    margin-bottom: 2rem;
+    flex-grow: 1;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.8rem 0;
+    border-bottom: 1px solid var(--plans-border-light);
+    transition: all 0.3s ease;
+}
+
+.feature-item:last-child {
+    border-bottom: none;
+}
+
+.feature-item i {
+    color: var(--primary);
+    font-size: 1rem;
+}
+
+.feature-item span {
+    color: var(--plans-text-primary);
+    font-size: 0.95rem;
+    transition: color 0.3s ease;
+}
+
+.plan-form {
+    margin-top: auto;
+}
+
+.plan-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid var(--plans-border-light);
+}
+
+.plan-form-inline {
+    width: 100%;
+}
+
+.btn-plan {
+    width: 100%;
+    padding: 1rem;
+    background: linear-gradient(135deg, var(--primary) 0%, #2d8a54 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    text-decoration: none;
+}
+
+.btn-plan:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(62, 166, 107, 0.4);
+}
+
+.btn-plan.btn-primary {
+    background: linear-gradient(135deg, #3EA66B 0%, #2d8a54 100%);
+}
+
+.btn-plan.btn-primary:hover {
+    background: linear-gradient(135deg, #2d8a54 0%, #1e6f47 100%);
+    box-shadow: 0 12px 30px rgba(62, 166, 107, 0.5);
+}
+
+.btn-plan.btn-secondary {
+    background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+}
+
+.btn-plan.btn-secondary:hover {
+    background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+    box-shadow: 0 8px 20px rgba(107, 114, 128, 0.4);
+}
+
+.popular-plan .btn-plan.btn-primary {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.popular-plan .btn-plan.btn-primary:hover {
+    background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+    box-shadow: 0 12px 30px rgba(245, 158, 11, 0.5);
+}
+
+.btn-glass {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1.5rem;
+    background: var(--plans-card-bg);
+    border: 1px solid var(--plans-card-border);
+    border-radius: 12px;
+    color: var(--plans-text-primary);
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-glass:hover {
+    background: linear-gradient(135deg, var(--primary) 0%, #2d8a54 100%);
+    color: white;
+    transform: translateY(-2px);
+}
+
+.cart-badge-small {
+    background: #ef4444;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: bold;
+    padding: 0.2rem 0.5rem;
+    border-radius: 10px;
+    min-width: 20px;
+    height: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.empty-plans {
+    text-align: center;
+    padding: 4rem 2rem;
+    grid-column: 1 / -1;
+}
+
+.empty-plans i {
+    font-size: 4rem;
+    color: var(--plans-text-muted);
+    margin-bottom: 1rem;
+    transition: color 0.3s ease;
+}
+
+.dark .empty-plans i {
+    color: #475569;
+}
+
+.empty-plans p {
+    font-size: 1.2rem;
+    color: var(--plans-text-secondary);
+    transition: color 0.3s ease;
+}
+
+/* Animation */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.plan-card {
+    animation: fadeInUp 0.6s ease forwards;
+}
+
+.plan-card:nth-child(1) { animation-delay: 0.1s; }
+.plan-card:nth-child(2) { animation-delay: 0.2s; }
+.plan-card:nth-child(3) { animation-delay: 0.3s; }
+.plan-card:nth-child(4) { animation-delay: 0.4s; }
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .creative-main {
+        padding: 0 1.5rem;
+    }
+    
+    .plans-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+}
+
+@media (max-width: 1024px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+    
+    .creative-main {
+        padding: 0 1rem;
+    }
+    
+    .plans-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .creative-dashboard {
+        padding-bottom: 2rem;
+    }
+    
+    .creative-header {
+        padding: 1.5rem 0;
+    }
+    
+    .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+        padding: 0 1rem;
+    }
+
+    .header-title {
+        font-size: 1.5rem;
+    }
+    
+    .header-subtitle {
+        font-size: 0.95rem;
+    }
+    
+    .btn-glass {
+        padding: 0.75rem 1.25rem;
+        font-size: 0.9rem;
+    }
+
+    .creative-main {
+        padding: 0 0.75rem;
+    }
+    
+    .stats-section {
+        padding: 1.5rem 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .stat-card {
+        padding: 1.25rem;
+    }
+    
+    .stat-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1.25rem;
+    }
+    
+    .stat-label {
+        font-size: 0.85rem;
+    }
+    
+    .stat-value {
+        font-size: 1.5rem;
+    }
+
+    .plans-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .plan-card {
+        padding: 1.5rem;
+    }
+    
+    .plan-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 1.5rem;
+    }
+    
+    .plan-name {
+        font-size: 1.5rem;
+    }
+    
+    .plan-description {
+        font-size: 0.9rem;
+    }
+    
+    .price-section {
+        padding: 1rem;
+    }
+    
+    .price {
+        font-size: 2rem;
+    }
+
+    .section-title {
+        font-size: 1.75rem;
+    }
+    
+    .section-subtitle {
+        font-size: 0.95rem;
+    }
+    
+    .features-list {
+        gap: 0.75rem;
+    }
+    
+    .feature-item {
+        padding: 0.75rem;
+        font-size: 0.9rem;
+    }
+    
+    .btn-select {
+        padding: 0.875rem;
+        font-size: 0.95rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .creative-header {
+        padding: 1rem 0;
+    }
+    
+    .header-content {
+        padding: 0 0.5rem;
+    }
+    
+    .logo-icon {
+        width: 48px;
+        height: 48px;
+    }
+    
+    .logo-icon i {
+        font-size: 1.5rem;
+    }
+    
+    .header-title {
+        font-size: 1.25rem;
+    }
+    
+    .header-subtitle {
+        font-size: 0.875rem;
+    }
+    
+    .btn-glass {
+        padding: 0.625rem 1rem;
+        font-size: 0.85rem;
+    }
+    
+    .creative-main {
+        padding: 0 0.5rem;
+    }
+    
+    .stats-section {
+        padding: 1.25rem 0.75rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .section-header {
+        margin-bottom: 1rem;
+    }
+    
+    .section-title {
+        font-size: 1.5rem;
+    }
+    
+    .section-subtitle {
+        font-size: 0.875rem;
+    }
+    
+    .stat-card {
+        padding: 1rem;
+    }
+    
+    .stat-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 1.1rem;
+    }
+    
+    .stat-label {
+        font-size: 0.8rem;
+    }
+    
+    .stat-value {
+        font-size: 1.25rem;
+    }
+    
+    .plans-grid {
+        gap: 1.25rem;
+    }
+    
+    .plan-card {
+        padding: 1.25rem;
+    }
+    
+    .plan-header {
+        margin-bottom: 1rem;
+    }
+    
+    .plan-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1.25rem;
+    }
+    
+    .plan-name {
+        font-size: 1.25rem;
+    }
+    
+    .plan-description {
+        font-size: 0.85rem;
+    }
+    
+    .price-section {
+        padding: 0.875rem;
+        margin: 1rem 0;
+    }
+    
+    .original-price {
+        font-size: 0.85rem;
+    }
+    
+    .price {
+        font-size: 1.75rem;
+    }
+    
+    .duration {
+        font-size: 0.85rem;
+    }
+    
+    .discount-badge {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+    }
+    
+    .features-list {
+        gap: 0.6rem;
+        margin: 1rem 0;
+    }
+    
+    .feature-item {
+        padding: 0.6rem 0.75rem;
+        font-size: 0.85rem;
+    }
+    
+    .feature-item i {
+        font-size: 0.85rem;
+    }
+    
+    .btn-select {
+        padding: 0.75rem;
+        font-size: 0.9rem;
+    }
+    
+    .btn-plan {
+        font-size: 0.9rem;
+        padding: 0.875rem;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Dark mode sync from localStorage (set by base.html)
+    const currentTheme = localStorage.getItem('theme') || 'light';
+    if (currentTheme === 'dark') {
+        document.body.classList.add('dark');
+    }
+
+    // Listen for theme changes
+    window.addEventListener('storage', function(e) {
+        if (e.key === 'theme') {
+            if (e.newValue === 'dark') {
+                document.body.classList.add('dark');
+            } else {
+                document.body.classList.remove('dark');
+            }
+        }
+    });
+
+    // Add hover effects
+    const planCards = document.querySelectorAll('.plan-card');
+    
+    planCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.zIndex = '10';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.zIndex = '1';
+        });
+    });
+
+    // Form submission feedback
+    const forms = document.querySelectorAll('.plan-form');
+    forms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            const btn = this.querySelector('.btn-plan');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> در حال افزودن...';
+            btn.disabled = true;
+        });
+    });
+
+    // Animate cards on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+
+    document.querySelectorAll('.plan-card, .current-sub-card').forEach(card => {
+        observer.observe(card);
+    });
+});
+</script>
+{% endblock %}

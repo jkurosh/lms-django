@@ -37,11 +37,16 @@ ALLOWED_HOSTS = [
     '::1',
     'testserver',
     '.vercel.app',
+    '185.79.156.98',  # VPS IP
     '.now.sh',
+    '.onrender.com',  # Render.com domains
     'heyvoonak-project.vercel.app',  # Your specific domain
-    '*'  
-    'vetlms.onrender.com' 
+    'vetlms.onrender.com',  # Render domain
 ]
+
+# در DEBUG=False همه host ها را مجاز کن (فقط برای تست - در production خطرناک است)
+if not DEBUG and os.environ.get('ALLOW_ALL_HOSTS', 'False').lower() == 'true':
+    ALLOWED_HOSTS = ['*']
 
 # Add your Vercel domain
 if os.environ.get('VERCEL_DOMAIN'):
@@ -54,10 +59,15 @@ IS_VERCEL = os.environ.get('VERCEL', False)
 # Application definition
 
 # Custom User Model
-AUTH_USER_MODEL = 'dadash_app.CustomUser'
+AUTH_USER_MODEL = 'users.CustomUser'
+
+# Login/Logout URLs
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/dashboard/'
+LOGOUT_REDIRECT_URL = '/'
 
 INSTALLED_APPS = [
-    # اپ‌های پیش‌فرض جنگو
+    # Django Core Apps
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -65,41 +75,51 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # Third party apps
+    # Third Party Apps
     'rest_framework',
+    'rest_framework_simplejwt',
     'corsheaders',
     'django_filters',
 
-    # اپ خودت
-    'cases',   # اسم اپت
-    'dadash_app',   # اپ heyvoonak
+    # Project Apps
+    'apps.core',      # Core utilities
+    'apps.users',     # User management
+    'apps.courses',   # Courses and cases
 ]
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# Cache configuration - فعال برای rate limiting
+# Cache configuration - کش حداقلی برای سبک‌سازی
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
         'LOCATION': 'unique-snowflake',
-        'TIMEOUT': 300,
+        'TIMEOUT': 60,  # کاهش زمان کش از 5 دقیقه به 1 دقیقه
         'OPTIONS': {
-            'MAX_ENTRIES': 1000,
+            'MAX_ENTRIES': 300,  # کاهش تعداد ورودی‌های کش
         }
     }
 }
+
+# تنظیمات Session برای کاهش کش
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # ذخیره در دیتابیس بجای کش
+SESSION_COOKIE_AGE = 3600  # 1 ساعت بجای 2 هفته
+SESSION_SAVE_EVERY_REQUEST = False  # جلوگیری از ذخیره مداوم session
 
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
-    'dadash_app.middleware.RequestPrivacyMiddleware',  # Middleware اصلاح شده
-    'dadash_app.middleware.LightNetworkSecurityMiddleware',  # Middleware اصلاح شده
-    # 'dadash_app.middleware.SecurityMiddleware',  # Middleware امنیتی سفارشی - غیرفعال
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # WhiteNoise for serving static files
+    'apps.users.middleware.XSSProtectionMiddleware',  # XSS Protection
+    'apps.users.middleware.NoCacheMiddleware',  # Prevent excessive caching
+    'apps.users.middleware.RequestPrivacyMiddleware',  # Privacy middleware
+    'apps.users.middleware.LightNetworkSecurityMiddleware',  # Security middleware
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'apps.users.middleware.RateLimitMiddleware',  # Rate Limiting - DDoS Protection (after auth)
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -116,6 +136,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'apps.users.context_processors.cart_context',
             ],
         },
     },
@@ -215,22 +236,51 @@ STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
 
-# Vercel deployment - static files will be served from Vercel's CDN
+# Static files configuration با WhiteNoise
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# WhiteNoise configuration - برای serve کردن static files در DEBUG=False
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# اگر مشکل داشت، از این استفاده کنید:
+# STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+
+# Vercel deployment
 if os.environ.get('VERCEL'):
-    STATIC_ROOT = BASE_DIR / 'staticfiles'
-    # Disable collectstatic for Vercel
+    # Disable compression for Vercel
     STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
-else:
-    STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Media files (User uploaded files)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
+# تنظیمات برای کاهش کش در مرورگر
+# XSS Protection Headers
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = 'DENY'
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# Additional Security Headers
+SECURE_HSTS_SECONDS = 31536000  # 1 year
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/5.2/howto/static-files/
+
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+    BASE_DIR / 'apps' / 'users' / 'static',
+    BASE_DIR / 'apps' / 'courses' / 'static',
+]
+
+# Media files
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 # Security Settings - Basic configuration
 # https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -396,10 +446,133 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
     ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 20
 }
+
+# JWT Settings
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'UPDATE_LAST_LOGIN': True,
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': SECRET_KEY,
+    'AUTH_HEADER_TYPES': ('Bearer',),
+}
+
+# Faraz SMS API Settings
+FARAZ_SMS_API_KEY = os.environ.get('FARAZ_SMS_API_KEY', 'YTAxYjQxMTYtNWYyZC00ZDkzLTg4ZjAtNjk1NTMxYWVhM2NkNzZlNDY4MDQwNzllNWZlY2QxYzM2NGI5ZWQ4OWYxZmE=')
+FARAZ_SMS_SENDER_NUMBER = os.environ.get('FARAZ_SMS_SENDER_NUMBER', '3000505')
+
+# کدهای پترن فراز اس‌ام‌اس (از پنل خود دریافت کنید)
+FARAZ_PATTERN_VERIFICATION = os.environ.get('FARAZ_PATTERN_VERIFICATION', '')  # پترن کد تایید
+FARAZ_PATTERN_PASSWORD_RESET = os.environ.get('FARAZ_PATTERN_PASSWORD_RESET', '')  # پترن بازیابی رمز
+FARAZ_PATTERN_PURCHASE = os.environ.get('FARAZ_PATTERN_PURCHASE', '')  # پترن خرید موفق
+FARAZ_PATTERN_LOGIN = os.environ.get('FARAZ_PATTERN_LOGIN', '')  # پترن ورود
+
+# ==================================
+# تنظیمات زرین‌پال (Zarinpal SDK)
+# ==================================
+ZARINPAL_MERCHANT_ID = os.environ.get('ZARINPAL_MERCHANT_ID', '3809dbea-74a8-44e0-abf9-b0c954226326')
+ZARINPAL_ACCESS_TOKEN = os.environ.get('ZARINPAL_ACCESS_TOKEN', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiMTliNGU3MTk5NzJjYWQzZDVjMWMyNTQ0MzMzODY0ZGE4NmY3MzJiZmNiMTYyNDA5ZGI1MTYxNDRkZTA0ZmFlM2JkN2NhYWFlZGY2Yzc0YmMiLCJpYXQiOjE3NjA2MTUxOTkuMTY2ODMsIm5iZiI6MTc2MDYxNTE5OS4xNjY4NDUsImV4cCI6MTkxODM4MTU5OS4xMDgwMDksInN1YiI6Ijc4MjAwNCIsInNjb3BlcyI6W119.iHH-MQPd5brjyvLqfhetGGOUhOXQjH8bSKaCVcWs1-lQ1o_3Qh5CFosanjVfIzFiNjyBnMTLdGwa8TRQZEnoDEKrZupLqKvsbGo-Fc8I1TAJW75V2Emw05ETP9y82vQCgO5FunXTizHOtMaAUJoxSmy73XsDasP11ITqj5KUUZ3W_7BQfUqyWpFzz9K-eU33IKYdwuvMo0SqLa692Z4E5Mz1Aagt7H3BMUphfmyMqTqsivFQ7eC4QhtNloCNdjeshJ6ob4MBvpDfq7Xz9QoojFgleOGDwAdFOpEmMwQQucksOaDmerzwzQKDb_7L_-ZtLzB_XOsE14CjDPm1kx8Lwe0Zc2O7edvNKKHwERRLPMxLLs9hXcobB3_tCYklTSB0sRuJWkFta2DFUCPn7pgXN_0U69kwBJ_2QbsWS5PV_xU128OFNNNs6QUK9zFqVPmSTuLSustmzptYYk5-6l6AXMlvtRzrZJ1IzXTO_rLBFOgWA9LpajZACcIaXCzrkZZDP9WaVz27pWQxgVpY6FaTcTF96Y3_WS-8Wrxbt_m2_-ZbZaYNFzJv4TRXDWPZDYkxOhLmkCLm-TC9cNkMvVyk4yikShcARYry5CUMOOalEwgPOmMI76Djx_ZXL3RuqWVQ_rM6HJEMmYmKQ3rqEaDW8OsCS9UTiIJ_Pfxv3ytH8u4')
+ZARINPAL_SANDBOX = os.environ.get('ZARINPAL_SANDBOX', 'False').lower() == 'true'  # True برای تست، False برای واقعی
+
+# ==========================================
+# تنظیمات بهینه‌سازی برای سبک‌سازی سایت
+# ==========================================
+
+# تنظیمات Template در Development
+if DEBUG:
+    TEMPLATES[0]['OPTIONS']['debug'] = True
+    # Note: APP_DIRS=True already handles template loading
+    # Don't set loaders when APP_DIRS is True
+
+# بهینه‌سازی Database Queries
+# جلوگیری از persistent connections در محیط توسعه
+CONN_MAX_AGE = 0  # بدون connection pooling برای سبک‌تر بودن
+
+# تنظیمات Cookie برای کاهش حجم
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_SAMESITE = 'Lax'
+
+# حذف Middleware های غیرضروری در Production
+if not DEBUG:
+    # حذف middleware های سنگین
+    MIDDLEWARE = [m for m in MIDDLEWARE if 'Debug' not in m]
+
+# تنظیمات Message Framework
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
+
+# غیرفعال کردن برخی features برای سبک‌تری
+DATA_UPLOAD_MAX_MEMORY_SIZE = 2621440  # 2.5 MB (کاهش از 10 MB)
+FILE_UPLOAD_MAX_MEMORY_SIZE = 2621440  # 2.5 MB
+
+# تنظیمات Email (اگر استفاده می‌شود)
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # برای توسعه
+
+# جلوگیری از کش زیاد در development
+if DEBUG:
+    # غیرفعال کردن کامل کش در development
+    CACHES['default']['TIMEOUT'] = 0
+    
+# بهینه‌سازی Static Files
+# حذف sourcemaps و فایل‌های اضافی
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+]
+
+# جلوگیری از جمع‌آوری فایل‌های غیرضروری
+STATICFILES_IGNORE_PATTERNS = [
+    '*.scss',
+    '*.sass',
+    '*.less',
+    '*.coffee',
+    '*.ts',
+    '*.jsx',
+    '*.map',
+    'node_modules/*',
+    '.git/*',
+    '__pycache__/*',
+]
+
+# Settings loaded successfully - removed print for Windows compatibility
+
+# =====================================
+# ZARINPAL PAYMENT GATEWAY SETTINGS
+# =====================================
+ZARINPAL_MERCHANT_ID = os.environ.get('ZARINPAL_MERCHANT_ID', 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX')
+ZARINPAL_ACCESS_TOKEN = os.environ.get('ZARINPAL_ACCESS_TOKEN', '')  # برای refund و transactions
+ZARINPAL_SANDBOX = os.environ.get('ZARINPAL_SANDBOX', 'True').lower() == 'true'
+ZARINPAL_CALLBACK_URL = os.environ.get('ZARINPAL_CALLBACK_URL', 'http://127.0.0.1:8000/payment/callback/')
+
+# =====================================
+# KAVENEGAR SMS SETTINGS
+# =====================================
+KAVENEGAR_API_KEY = os.environ.get('KAVENEGAR_API_KEY', 'your-api-key')
+KAVENEGAR_SENDER_NUMBER = os.environ.get('KAVENEGAR_SENDER_NUMBER', '10004346')
+KAVENEGAR_OTP_TEMPLATE = os.environ.get('KAVENEGAR_OTP_TEMPLATE', 'verify')
+KAVENEGAR_WELCOME_MESSAGE = 'سلام {username} عزیز! به هی‌ونک خوش آمدید.'
+KAVENEGAR_PAYMENT_SUCCESS_MESSAGE = 'پرداخت شما با موفقیت انجام شد. مبلغ: {amount} تومان - کد پیگیری: {ref_id}'
+KAVENEGAR_SUBSCRIPTION_RENEWAL_MESSAGE = 'اشتراک {subscription_type} شما تا تاریخ {end_date} تمدید شد.'
+
+# =====================================
+# RATE LIMITING SETTINGS (DDoS Protection)
+# =====================================
+RATE_LIMIT_ENABLED = True
+RATE_LIMIT_MAX_REQUESTS = 500  # حداکثر 500 درخواست عمومی
+RATE_LIMIT_WINDOW_SECONDS = 60  # در هر 60 ثانیه
+RATE_LIMIT_BLOCK_DURATION = 300  # مسدود کردن برای 5 دقیقه (300 ثانیه)
 

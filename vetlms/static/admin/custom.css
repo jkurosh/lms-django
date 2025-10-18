@@ -1,0 +1,122 @@
+/* Admin custom styles */
+:root {
+  --brand: #0ea5e9;
+  --brand-dark: #0284c7;
+  --bg: #0b1220;
+  --panel: #0f172a;
+  --muted: #94a3b8;
+  --text: #e2e8f0;
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --radius: 10px;
+}
+
+html, body {
+  font-family: "Vazirmatn", system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+}
+
+/* Layout */
+#header {
+  background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+  border-bottom: none;
+}
+
+#branding h1, #branding h1 a:link, #branding h1 a:visited {
+  color: white !important;
+  letter-spacing: .3px;
+}
+
+#user-tools, #user-tools a { color: #eef9ff !important; }
+
+.module, .module caption, .module h2, .app-auth .module h2 {
+  background: var(--panel);
+  color: var(--text);
+  border-radius: var(--radius);
+  border: 1px solid #1e293b;
+}
+
+.module caption, .module h2 { border-bottom: 1px solid #1e293b; }
+
+/* Buttons */
+.button, input[type="submit"], .submit-row input, .deletelink, .button.default {
+  background: var(--brand);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  transition: transform .05s ease, filter .2s ease;
+}
+
+.button:hover, input[type="submit"]:hover, .submit-row input:hover, .button.default:hover {
+  filter: brightness(1.05);
+}
+
+.button:active, input[type="submit"]:active, .submit-row input:active {
+  transform: translateY(1px);
+}
+
+.deletelink { background: var(--danger); }
+
+/* Forms */
+fieldset.module.aligned, .inline-group .module, .inline-group .tabular, .aligned .form-row {
+  background: var(--panel);
+  color: var(--text);
+  border-radius: var(--radius);
+}
+
+input, select, textarea {
+  background: #0b1220;
+  color: var(--text);
+  border-radius: 8px !important;
+  border: 1px solid #273445 !important;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: 0;
+  border-color: var(--brand) !important;
+  box-shadow: 0 0 0 3px rgba(14,165,233,.25);
+}
+
+/* Help text and panels - enforce dark bg with white text */
+.help, .help *, .helptext, .inline-group .help, .aligned .form-row .help, .module .description {
+  color: #000000 !important;
+}
+.submit-row, .form-row .help, .inline-group .help, .object-tools {
+  background: var(--panel) !important;
+}
+.aligned .form-row div.help, .aligned .form-row p.help, .help, p.help, div.help, .module .description {
+  background: var(--panel) !important;
+  color: #000000 !important;
+  border-radius: 8px;
+  padding: 8px 10px;
+  border: 1px solid #1e293b;
+}
+
+
+/* Changelist */
+.change-list .actions select { border-radius: 8px; }
+
+table#result_list {
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+table#result_list thead th {
+  background: #0b1220;
+  color: var(--muted);
+}
+
+table#result_list tbody tr:nth-child(odd) { background: #0e1627; }
+table#result_list tbody tr:nth-child(even) { background: #0c1322; }
+table#result_list tbody tr:hover { background: #0e1a30; }
+
+/* Messages */
+.messagelist li.success { background: rgba(34,197,94,.15); border-left: 4px solid var(--success); }
+.messagelist li.warning { background: rgba(245,158,11,.15); border-left: 4px solid var(--warning); }
+.messagelist li.error { background: rgba(239,68,68,.15); border-left: 4px solid var(--danger); }
+
+/* Login */
+body.login #container { border-radius: var(--radius); }
+
+

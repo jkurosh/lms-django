@@ -18,10 +18,10 @@
 
 {% block nav-global %}
 <div style="display: flex; align-items: center; gap: 1rem; margin-left: auto;">
-    <a href="{% url 'heyvoonak:admin_panel' %}" style="background: #3EA66B; color: white; padding: 0.5rem 1rem; border-radius: 8px; text-decoration: none; font-size: 0.875rem; font-weight: 500; transition: all 0.2s ease;">
+    <a href="{% url 'users:admin_panel' %}" style="background: #3EA66B; color: white; padding: 0.5rem 1rem; border-radius: 8px; text-decoration: none; font-size: 0.875rem; font-weight: 500; transition: all 0.2s ease;">
         <i class="fas fa-tachometer-alt"></i> داشبورد جدید
     </a>
-    <a href="{% url 'heyvoonak:designali_dashboard' %}" style="background: #4B6A9D; color: white; padding: 0.5rem 1rem; border-radius: 8px; text-decoration: none; font-size: 0.875rem; font-weight: 500; transition: all 0.2s ease;">
+    <a href="{% url 'users:designali_dashboard' %}" style="background: #4B6A9D; color: white; padding: 0.5rem 1rem; border-radius: 8px; text-decoration: none; font-size: 0.875rem; font-weight: 500; transition: all 0.2s ease;">
         <i class="fas fa-user"></i> پنل کاربری
     </a>
 </div>
@@ -400,7 +400,7 @@
 <div class="module" style="margin-top: 2rem;">
     <h2>دسترسی سریع</h2>
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-top: 1rem;">
-        <a href="{% url 'heyvoonak:admin_panel' %}" style="display: block; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; text-decoration: none; color: var(--foreground); transition: all 0.2s ease; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);">
+        <a href="{% url 'users:admin_panel' %}" style="display: block; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; text-decoration: none; color: var(--foreground); transition: all 0.2s ease; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);">
             <div style="display: flex; align-items: center; gap: 1rem;">
                 <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #3EA66B 0%, #2d8a54 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem;">
                     <i class="fas fa-tachometer-alt"></i>
@@ -412,7 +412,7 @@
             </div>
         </a>
         
-        <a href="{% url 'heyvoonak:designali_dashboard' %}" style="display: block; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; text-decoration: none; color: var(--foreground); transition: all 0.2s ease; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);">
+        <a href="{% url 'users:designali_dashboard' %}" style="display: block; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; text-decoration: none; color: var(--foreground); transition: all 0.2s ease; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);">
             <div style="display: flex; align-items: center; gap: 1rem;">
                 <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #4B6A9D 0%, #3a5480 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem;">
                     <i class="fas fa-user"></i>
