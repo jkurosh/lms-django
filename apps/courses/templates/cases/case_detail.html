@@ -3,18 +3,19 @@
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>{{ case.title }} - مطالعات موردی</title>
     <!-- Bon Pro Font -->
     <link href="{% static 'fonts/bon-pro/bon-pro.css' %}" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'dadash/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'dadash/responsive.css' %}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" media="print" onload="this.media='all'">
     <noscript>
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     </noscript>
     <style>
         :root {
-            --primary: #3EA66B;
+            --primary: #2d8a54;
             --primary-dark: #2d8a54;
             --secondary: #4B6A9D;
             --accent: #f59e0b;
@@ -31,16 +32,22 @@
             --info: #3b82f6;
         }
 
-        .dark {
-            --background: #0f172a;
-            --foreground: #f8fafc;
-            --card: rgba(30, 41, 59, 0.95);
-            --card-foreground: #f8fafc;
-            --border: rgba(255, 255, 255, 0.1);
-            --muted: rgba(51, 65, 85, 0.8);
-            --muted-foreground: #cbd5e1;
-        }
-
+       @font-face {
+    font-family: 'Bon Pro';
+    src: url('bon-Medium.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+body {
+    font-family: 'Bon Pro', 'Bon Pro Numerals';
+    background-color: var(--background);
+    color: var(--foreground);
+    margin: 0;
+    padding: 0;
+    direction: rtl;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
         * {
             margin: 0;
             padding: 0;
@@ -55,10 +62,6 @@
             position: relative;
             min-height: 100vh;
             transition: background 0.3s ease, color 0.3s ease;
-        }
-
-        body.dark {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
         }
 
         body::before {
@@ -78,13 +81,6 @@
             transition: opacity 0.3s ease;
         }
 
-        body.dark::before {
-            background: 
-                radial-gradient(circle at 30% 50%, rgba(62, 166, 107, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 70% 80%, rgba(16, 185, 129, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 50% 20%, rgba(59, 130, 246, 0.08) 0%, transparent 50%);
-            opacity: 0.7;
-        }
 
         @keyframes gradientShift {
             0%, 100% { transform: translate(0, 0) rotate(0deg); }
@@ -111,63 +107,36 @@
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: white;
             padding: 0.5rem 0;
-            box-shadow: 0 4px 20px rgba(62, 166, 107, 0.3);
+            box-shadow: 0 4px 20px rgb(255, 255, 255);
             position: sticky;
             top: 0;
             z-index: 100;
             display: flex;
-            justify-content: flex-start;
+          /*  justify-content: flex-start; */
             align-items: center;
             backdrop-filter: blur(10px);
         }
 
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 1rem;
-            max-width: 100%;
-            width: 100%;
-            padding: 0 1rem;
-        }
+      .header-content {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 0 2rem !important;
+}
 
-        .header-left {
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            gap: 1rem;
-        }
+.header-left {
+    margin-right: auto !important;     /* لوگو و خانه → کاملاً راست */
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
 
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
+.header-right {
+    margin-left: auto !important;      /* پروفایل → کاملاً چپ */
+    display: flex;
+    align-items: center;
+}
 
-        /* Dark Mode Toggle */
-        .dark-mode-toggle {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            color: white;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            font-size: 1.1rem;
-        }
-
-        .dark-mode-toggle:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: scale(1.1);
-        }
-
-        .dark-mode-toggle:active {
-            transform: scale(0.95);
-        }
 
         .logo {
             display: flex;
@@ -254,40 +223,6 @@
             margin: 0;
         }
 
-        /* Dark mode for buttons and text elements */
-        .dark .back-btn {
-            background: var(--card);
-            color: var(--foreground);
-            border-color: rgba(62, 166, 107, 0.3);
-        }
-
-        .dark .back-btn:hover {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-        }
-
-        .dark .section-title,
-        .dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
-            color: var(--foreground);
-        }
-
-        .dark p, .dark span, .dark div {
-            color: var(--foreground);
-        }
-
-        .dark .meta-item {
-            color: var(--muted-foreground);
-        }
-
-        .dark .retry-info {
-            background: rgba(59, 130, 246, 0.2);
-            color: var(--info);
-        }
-
-        .dark .diagnosis-info {
-            background: rgba(245, 158, 11, 0.2);
-            color: var(--warning);
-        }
 
         /* Case Info Card */
         .case-info {
@@ -306,21 +241,6 @@
             overflow: hidden;
         }
 
-        .dark .case-info {
-            background: var(--card);
-            box-shadow: 
-                0 10px 40px rgba(0, 0, 0, 0.3),
-                0 2px 10px rgba(0, 0, 0, 0.2),
-                inset 0 1px 0 rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(62, 166, 107, 0.2);
-        }
-
-        .dark .case-info:hover {
-            box-shadow: 
-                0 20px 60px rgba(0, 0, 0, 0.4),
-                0 5px 15px rgba(0, 0, 0, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
-        }
 
         .case-info::before {
             content: '';
@@ -360,56 +280,6 @@
             color: var(--foreground);
         }
 
-        /* Dark mode for all sections */
-        .dark .test-form,
-        .dark .test-results-section,
-        .dark .diagnosis-section,
-        .dark .result-section {
-            background: var(--card);
-            box-shadow: 
-                0 10px 40px rgba(0, 0, 0, 0.3),
-                0 2px 10px rgba(0, 0, 0, 0.2),
-                inset 0 1px 0 rgba(255, 255, 255, 0.05);
-            border-color: rgba(62, 166, 107, 0.2);
-        }
-
-        .dark .user-diagnosis,
-        .dark .explanations {
-            background: var(--muted);
-        }
-
-        .dark .explanation-item {
-            background: rgba(51, 65, 85, 0.5);
-            border-color: rgba(62, 166, 107, 0.2);
-        }
-
-        .dark #diagnosis-input {
-            background: var(--card);
-            color: var(--foreground);
-            border-color: rgba(62, 166, 107, 0.3);
-        }
-
-        .dark #diagnosis-input:focus {
-            border-color: var(--primary);
-        }
-
-        /* Dark mode for table */
-        .dark table {
-            color: var(--foreground);
-        }
-
-        .dark table thead {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-        }
-
-        .dark table tbody tr {
-            background: rgba(51, 65, 85, 0.3);
-            border-bottom-color: rgba(62, 166, 107, 0.1);
-        }
-
-        .dark table tbody tr:hover {
-            background: rgba(51, 65, 85, 0.5);
-        }
 
         .case-meta {
             display: flex;
@@ -452,28 +322,12 @@
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .dark .test-selection {
-            background: var(--card);
-            box-shadow: 
-                0 10px 40px rgba(0, 0, 0, 0.3),
-                0 2px 10px rgba(0, 0, 0, 0.2),
-                inset 0 1px 0 rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(62, 166, 107, 0.2);
-        }
-
         .test-selection:hover {
             box-shadow: 
                 0 20px 60px rgba(62, 166, 107, 0.2),
                 0 5px 15px rgba(0, 0, 0, 0.1),
                 inset 0 1px 0 rgba(255, 255, 255, 0.9);
             transform: translateY(-3px);
-        }
-
-        .dark .test-selection:hover {
-            box-shadow: 
-                0 20px 60px rgba(0, 0, 0, 0.4),
-                0 5px 15px rgba(0, 0, 0, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
         }
 
         .test-selection h3 {
@@ -600,28 +454,12 @@
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .dark .left-panel, .dark .right-panel {
-            background: var(--card);
-            box-shadow: 
-                0 10px 40px rgba(0, 0, 0, 0.3),
-                0 2px 10px rgba(0, 0, 0, 0.2),
-                inset 0 1px 0 rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(62, 166, 107, 0.2);
-        }
-
         .left-panel:hover, .right-panel:hover {
             box-shadow: 
                 0 20px 60px rgba(62, 166, 107, 0.15),
                 0 5px 15px rgba(0, 0, 0, 0.08),
                 inset 0 1px 0 rgba(255, 255, 255, 0.9);
             transform: translateY(-3px);
-        }
-
-        .dark .left-panel:hover, .dark .right-panel:hover {
-            box-shadow: 
-                0 20px 60px rgba(0, 0, 0, 0.4),
-                0 5px 15px rgba(0, 0, 0, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
         }
 
         .left-panel h3, .right-panel h3 {
@@ -654,17 +492,6 @@
             overflow: hidden;
         }
 
-        .dark .observations-container button {
-            background: linear-gradient(135deg, rgba(51, 65, 85, 0.6) 0%, rgba(30, 41, 59, 0.8) 100%);
-            border-color: rgba(62, 166, 107, 0.3);
-            color: var(--foreground);
-        }
-
-        .dark .observations-container button:hover {
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(37, 99, 235, 0.3) 100%);
-            border-color: rgba(59, 130, 246, 0.5);
-        }
-
         .observations-container button::before {
             content: '';
             position: absolute;
@@ -689,11 +516,11 @@
         }
 
         .observations-container button.selected {
-            background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
             color: white;
-            border-color: var(--success);
+            border-color: #3b82f6;
             transform: translateX(-5px);
-            box-shadow: 0 8px 20px rgba(34, 197, 94, 0.3);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
             animation: successPulse 0.5s ease;
         }
 
@@ -728,7 +555,7 @@
             border-radius: 16px;
             padding: 2rem;
             margin-bottom: 2rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 6px -1px rgb(255, 255, 255);
             border: 1px solid var(--border);
         }
 
@@ -749,7 +576,7 @@
             border-radius: 16px;
             padding: 2rem;
             margin-bottom: 2rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 6px -1px rgb(255, 255, 255);
             border: 1px solid var(--border);
         }
 
@@ -859,17 +686,20 @@
             width: 100%;
             min-height: 120px;
             padding: 1rem;
-            border: 2px solid var(--border);
+            border: 2px solid #10b981;
             border-radius: 12px;
             font-size: 1rem;
             font-family: inherit;
             resize: vertical;
             transition: border-color 0.2s ease;
+            color: #1f2937;
+            background: #ffffff;
         }
 
         #diagnosis-input:focus {
             outline: none;
-            border-color: var(--primary);
+            border-color: #059669;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
         }
 
         /* Result Section */
@@ -922,86 +752,6 @@
             margin-top: 4rem;
         }
 
-        .dark .footer {
-            background: #1e293b;
-            border-top: 1px solid rgba(62, 166, 107, 0.2);
-        }
-
-        .dark .footer-section h4 {
-            color: #f8fafc;
-        }
-
-        .dark .footer-section p {
-            color: #cbd5e1;
-        }
-
-        .dark .footer-bottom {
-            color: #cbd5e1;
-            border-top-color: rgba(255, 255, 255, 0.1);
-        }
-
-        /* Dark mode global fixes */
-        .dark .main {
-            color: var(--foreground);
-        }
-
-        .dark .container {
-            color: var(--foreground);
-        }
-
-        .dark .test-selection-desc {
-            color: var(--muted-foreground);
-        }
-
-        .dark .case-navigation {
-            border-top-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .dark .dropdown-menu {
-            background: var(--card);
-            border-color: rgba(62, 166, 107, 0.2);
-        }
-
-        .dark .dropdown-item {
-            color: var(--foreground);
-        }
-
-        .dark .dropdown-item:hover {
-            background: rgba(62, 166, 107, 0.2);
-        }
-
-        .dark .dropdown-divider {
-            border-top-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .dark .dropdown-header {
-            border-bottom-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .dark .user-name,
-        .dark .user-email,
-        .dark .user-role {
-            color: var(--foreground);
-        }
-
-        /* Ensure all text is readable */
-        .dark * {
-            color: inherit;
-        }
-
-        .dark input,
-        .dark textarea,
-        .dark select {
-            background: var(--card);
-            color: var(--foreground);
-            border-color: rgba(62, 166, 107, 0.3);
-        }
-
-        .dark input::placeholder,
-        .dark textarea::placeholder {
-            color: var(--muted-foreground);
-        }
-
         .footer-content {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -1042,136 +792,8 @@
             color: #94a3b8;
         }
 
-        /* User Profile Styles */
-        .user-dropdown {
-            position: relative;
-        }
-
-        .user-profile-header {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.375rem 0.75rem;
-            border-radius: 8px;
-            transition: all 0.2s ease;
-            cursor: pointer;
-            background: white;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .user-profile-header:hover {
-            background: rgba(255, 255, 255, 0.9);
-            transform: translateY(-1px);
-        }
-
-        .user-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: #3EA66B;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 0.75rem;
-            font-weight: 600;
-            border: none;
-        }
-
-        .user-info {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .user-name {
-            font-size: 0.75rem;
-            font-weight: 500;
-            color: #0f172a;
-        }
-
-        .user-role {
-            font-size: 0.75rem;
-            color: #64748b;
-        }
-
-        .dropdown-menu {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            min-width: 200px;
-            z-index: 1000;
-            display: none;
-            margin-top: 0.5rem;
-        }
-
-        .dropdown-header {
-            padding: 1rem;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .dropdown-header .user-info .user-name {
-            font-weight: 600;
-            color: #0f172a;
-            margin-bottom: 0.25rem;
-        }
-
-        .dropdown-header .user-info .user-email {
-            font-size: 0.875rem;
-            color: #64748b;
-        }
-
-        .dropdown-menu.show {
-            display: block !important;
-            opacity: 1 !important;
-            visibility: visible !important;
-        }
-
-        .dropdown-menu {
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .dropdown-item {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.75rem 1rem;
-            color: #0f172a;
-            text-decoration: none;
-            transition: all 0.2s ease;
-            font-size: 0.875rem;
-        }
-
-        .dropdown-item:hover {
-            background-color: #f1f5f9;
-        }
-
-        .dropdown-item.logout {
-            color: #ef4444;
-        }
-
-        .dropdown-item.logout:hover {
-            background-color: rgba(239, 68, 68, 0.1);
-        }
-
-        .dropdown-divider {
-            height: 1px;
-            background-color: #e2e8f0;
-            margin: 0.5rem 0;
-        }
-
         /* Responsive */
         @media (max-width: 768px) {
-            .header-content {
-                flex-direction: column;
-                text-align: center;
-            }
-
             .nav ul {
                 gap: 1rem;
             }
@@ -1191,20 +813,6 @@
             .container {
                 padding: 0 0.5rem;
             }
-
-            .user-profile-header .user-info {
-                display: none;
-            }
-            
-            .user-avatar {
-                width: 32px;
-                height: 32px;
-                font-size: 0.75rem;
-            }
-            
-            .user-profile-header {
-                padding: 0.25rem;
-            }
         }
 
         @media (max-width: 480px) {
@@ -1217,71 +825,7 @@
 <body>
     {% csrf_token %}
     <!-- Header -->
-    <header class="header">
-        <div class="container">
-            <div class="header-content">
-                <!-- Left side - User Profile -->
-                <div class="header-left">
-                    <!-- Dark Mode Toggle -->
-                    <button id="darkModeToggle" class="dark-mode-toggle" onclick="toggleDarkMode()" title="تغییر حالت">
-                        <i class="fas fa-moon" id="darkModeIcon"></i>
-                    </button>
-                    
-                    {% if user.is_authenticated %}
-                        <div class="user-dropdown">
-                            <div class="user-profile-header" id="profileBtn">
-                                <div class="user-avatar">
-                                    <i class="fas fa-user"></i>
-                                </div>
-                                <div class="user-info">
-                                    <div class="user-name">{{ user.first_name|default:user.username }}</div>
-                                    <div class="user-role">دانشجوی دامپزشکی</div>
-                                </div>
-                            </div>
-                            <div class="dropdown-menu" id="userMenu">
-                                <div class="dropdown-header">
-                                    <div class="user-info">
-                                        <div class="user-name">{{ user.first_name|default:user.username }}</div>
-                                        <div class="user-email">{{ user.phone_number|default:user.email }}</div>
-                                    </div>
-                                </div>
-                                <div class="dropdown-divider"></div>
-                                <a href="{% url 'users:designali_dashboard' %}" class="dropdown-item">
-                                    <i class="fas fa-tachometer-alt"></i>
-                                    داشبورد
-                                </a>
-                                <a href="#" class="dropdown-item">
-                                    <i class="fas fa-user"></i>
-                                    پروفایل
-                                </a>
-                                <div class="dropdown-divider"></div>
-                                <a href="{% url 'users:logout' %}" class="dropdown-item">
-                                    <i class="fas fa-sign-out-alt"></i>
-                                    خروج
-                                </a>
-                            </div>
-                        </div>
-                    {% else %}
-                        <div class="auth-buttons">
-                            <a href="{% url 'users:login' %}" class="btn btn-outline">ورود</a>
-                            <a href="{% url 'users:register' %}" class="btn btn-primary">ثبت نام</a>
-                        </div>
-                    {% endif %}
-                </div>
-                
-                <!-- Right side - Home button and Logo -->
-                <div class="header-right">
-                    <div class="header-nav">
-                        <a href="{% url 'users:designali_dashboard' %}">خانه</a>
-                    </div>
-                <div class="logo">
-                        <i class="fas fa-paw"></i>
-                        <span>HeyVoonak</span>
-                </div>
-                </div>
-            </div>
-        </div>
-    </header>
+    {% include 'cases/includes/header_navigation.html' %}
 
     <!-- Main Content -->
     <main class="main">
@@ -1299,7 +843,7 @@
             <div class="case-info">
                 <div class="case-description">
                     <h3><i class="fas fa-clipboard-list"></i> پیشینه کیس</h3>
-                    <p>{{ case.history }}</p>
+                    <p style="white-space: pre-wrap;">{{ case.history|linebreaksbr }}</p>
                 </div>
             </div>
 
@@ -1364,14 +908,14 @@
                     <!-- باکس تشخیص -->
                     <div id="diagnosis-container" style="display: none; margin: 20px 0;">
                         <div style="
-                            background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
-                            border: 2px solid #3b82f6;
+                            background: linear-gradient(135deg, #ffffff 0%, #ffffff 100%);
+                            border: 2px solid #33945C;
                             border-radius: 12px;
                             padding: 25px;
                             color: white;
                             margin-bottom: 20px;
                         ">
-                            <h4 style="color: #3b82f6; margin: 0 0 15px 0; font-size: 1.2rem;">
+                            <h4 style="color: #10b981; margin: 0 0 15px 0; font-size: 1.2rem;">
                                 <i class="fas fa-stethoscope" style="margin-left: 8px;"></i>
                                 تشخیص خود را وارد کنید
                             </h4>
@@ -1380,10 +924,10 @@
                                     width: 100%;
                                     height: 100px;
                                     padding: 15px;
-                                    border: 2px solid #374151;
+                                    border: 2px solid #10b981;
                                     border-radius: 8px;
-                                    background: #1f2937;
-                                    color: white;
+                                    background: #ffffff;
+                                    color: #1f2937;
                                     font-size: 1rem;
                                     resize: vertical;
                                     margin-bottom: 15px;
@@ -1444,9 +988,9 @@
                                         <i class="fas fa-check-circle" style="margin-left: 6px;"></i>
                                         پاسخ صحیح:
                                     </h5>
-                                    <p style="margin: 0; color: #d1fae5;">
+                                    <p style="margin: 0; color: #d1fae5; white-space: pre-wrap;">
                                         بر اساس علائم و نتایج آزمایش‌ها، تشخیص نهایی این کیس عبارت است از:
-                                        <strong>{{ correct_diagnosis }}</strong>
+                                        <strong>{{ correct_diagnosis|linebreaksbr }}</strong>
                                     </p>
                                 </div>
                                 
@@ -1460,8 +1004,8 @@
                                         <i class="fas fa-info-circle" style="margin-left: 6px;"></i>
                                         توضیحات تکمیلی:
                                     </h5>
-                                    <p style="margin: 0; color: #dbeafe;">
-                                        {{ diagnosis_explanation }}
+                                    <p style="margin: 0; color: #dbeafe; white-space: pre-wrap;">
+                                        {{ diagnosis_explanation|linebreaksbr }}
                                     </p>
                                 </div>
                             </div>
@@ -1506,11 +1050,11 @@
 
             <!-- Diagnosis Section -->
             <div id="diagnosis-section" class="diagnosis-section hidden">
-                <h3><i class="fas fa-stethoscope"></i> تشخیص نهایی</h3>
+                <h3 style="color: #10b981;"><i class="fas fa-stethoscope"></i> تشخیص نهایی</h3>
                 <div class="diagnosis-content">
                     <div class="diagnosis-info">
-                        <i class="fas fa-exclamation-triangle"></i>
-                <p>شما 3 بار تلاش کردید. حالا تشخیص نهایی خود را وارد کنید:</p>
+                        <i class="fas fa-exclamation-triangle" style="color: #10b981;"></i>
+                <p style="color: #065f46;">شما 3 بار تلاش کردید. حالا تشخیص نهایی خود را وارد کنید:</p>
                     </div>
                     <div class="diagnosis-form">
                 <textarea id="diagnosis-input" placeholder="تشخیص خود را وارد کنید..." onkeydown="if(event.key === 'Enter' && event.ctrlKey) { submitDiagnosis(event); return false; }"></textarea>
@@ -1577,21 +1121,9 @@
     </footer>
 
     <script>
-        // Dark Mode Toggle Function
-        function toggleDarkMode() {
-            const body = document.body;
-            const darkModeIcon = document.getElementById('darkModeIcon');
-            
-            body.classList.toggle('dark');
-            
-            if (body.classList.contains('dark')) {
-                localStorage.setItem('theme', 'dark');
-                darkModeIcon.className = 'fas fa-sun';
-            } else {
-                localStorage.setItem('theme', 'light');
-                darkModeIcon.className = 'fas fa-moon';
-            }
-        }
+        // User authentication status - defined in separate script to avoid linter errors
+        window.isUserAuthenticated = {% if user.is_authenticated %}true{% else %}false{% endif %};
+        
 
         // User menu toggle function
         function toggleUserMenu() {
@@ -1608,42 +1140,23 @@
         document.addEventListener('DOMContentLoaded', function() {
             console.log('DOM loaded, setting up event listeners');
             
-            // Dark Mode Sync
-            const currentTheme = localStorage.getItem('theme') || 'light';
-            const darkModeIcon = document.getElementById('darkModeIcon');
-            
-            if (currentTheme === 'dark') {
-                document.body.classList.add('dark');
-                if (darkModeIcon) {
-                    darkModeIcon.className = 'fas fa-sun';
-                }
-            } else {
-                if (darkModeIcon) {
-                    darkModeIcon.className = 'fas fa-moon';
-                }
-            }
-            
-            // Listen for theme changes from other pages
-            window.addEventListener('storage', function(e) {
-                if (e.key === 'theme') {
-                    if (e.newValue === 'dark') {
-                        document.body.classList.add('dark');
-                        if (darkModeIcon) {
-                            darkModeIcon.className = 'fas fa-sun';
-                        }
-                    } else {
-                        document.body.classList.remove('dark');
-                        if (darkModeIcon) {
-                            darkModeIcon.className = 'fas fa-moon';
-                        }
-                    }
-                }
-            });
             
             // Event listener برای دکمه ارسال تشخیص inline
             const submitDiagnosisBtn = document.getElementById('submit-diagnosis-inline');
             if (submitDiagnosisBtn) {
-                submitDiagnosisBtn.addEventListener('click', submitDiagnosisInline);
+                submitDiagnosisBtn.addEventListener('click', function(e) {
+                    submitDiagnosisInline(e);
+                });
+            }
+            
+            // جلوگیری از submit فرم در صورت فشردن Enter
+            const diagnosisForm = document.getElementById('test-form-element');
+            if (diagnosisForm) {
+                diagnosisForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                });
             }
             
             // Desktop profile button
@@ -1681,6 +1194,7 @@
         let correctObservations = 0;
         let totalObservations = 0;
         let selectionCount = 0; // شمارنده انتخاب‌ها
+        let observationStates = {}; // ذخیره وضعیت هر observation (correct/incorrect)
 
         // دریافت داده‌های تست از سرور
         const testDataElement = document.getElementById('test-data');
@@ -1721,6 +1235,7 @@
             }
             
             currentTestType = testType;
+            window.currentTestType = testType;
             
             // پیدا کردن تست مربوطه
             const test = testData.find(t => t.title === testType.toLowerCase());
@@ -1758,8 +1273,16 @@
             // پاک کردن مشاهدات قبلی
             const obsDiv = document.getElementById("observations");
             obsDiv.innerHTML = "";
-            selectedObservations = [];
-            selectionCount = 0; // ریست شمارنده انتخاب‌ها
+            
+            // 🔥 FIX: به جای ریست، از testSelections بخوان
+            const testType = test.title;
+            if (window.testSelections && window.testSelections[testType]) {
+                selectedObservations = [...window.testSelections[testType]];
+                selectionCount = selectedObservations.length;
+            } else {
+                selectedObservations = [];
+                selectionCount = 0;
+            }
             
             // مخفی کردن باکس تشخیص
             const diagnosisContainer = document.getElementById('diagnosis-container');
@@ -1814,64 +1337,100 @@
                         <span>${obs}</span>
                     `;
                     
-                    // اضافه کردن انیمیشن hover
+                    // اضافه کردن انیمیشن hover (فقط اگر selected نباشد)
                     obsItem.addEventListener('mouseenter', function() {
-                        this.style.background = '#f3f4f6';
-                        this.style.borderColor = '#3ea66b';
-                        this.style.transform = 'translateX(4px)';
-                    });
-                    
-                    obsItem.addEventListener('mouseleave', function() {
-                        this.style.background = '#f9fafb';
-                        this.style.borderColor = '#e5e7eb';
-                        this.style.transform = 'translateX(0)';
-                    });
-                    
-                    // اضافه کردن کلیک برای انتخاب
-                    obsItem.addEventListener('click', function() {
-                        // اگر قبلاً کلیک شده، هیچ کاری نکن (رنگ حفظ می‌شود)
+                        // اگر قبلاً ثبت شده (correct/incorrect) یا selected است، hover نده
                         if (this.classList.contains('correct') || this.classList.contains('incorrect')) {
                             return;
                         }
-                        
-                        // حذف فقط کلاس selected از آیتم‌های دیگر (نه رنگ‌ها)
-                        document.querySelectorAll('.observation-item').forEach(item => {
-                            if (item !== this) {
-                                item.classList.remove('selected');
-                            }
-                        });
-                        
-                        // انتخاب مشاهده جدید
-                        this.classList.add('selected');
-                        
-                        // بررسی صحیح بودن مشاهده
-                        console.log('Checking observation:', obs);
-                        console.log('Correct observations:', test.correct_observations);
-                        const isCorrect = test.correct_observations.includes(obs);
-                        console.log('Is correct:', isCorrect);
-                        
-                        // اضافه کردن کلاس مناسب
-                        if (isCorrect) {
-                            this.classList.add('correct');
+                        // اگر selected است، رنگ آبی را کمی تیره کن
+                        if (this.classList.contains('selected')) {
+                            this.style.background = 'linear-gradient(135deg, #2563eb 0%, #1e40af 100%)';
+                            this.style.transform = 'translateX(-7px)';
                         } else {
-                            this.classList.add('incorrect');
+                            this.style.background = '#f3f4f6';
+                            this.style.borderColor = '#3ea66b';
+                            this.style.transform = 'translateX(4px)';
+                        }
+                    });
+                    
+                    obsItem.addEventListener('mouseleave', function() {
+                        // اگر قبلاً ثبت شده (correct/incorrect)، تغییری نده
+                        if (this.classList.contains('correct') || this.classList.contains('incorrect')) {
+                            return;
+                        }
+                        // اگر selected است، رنگ آبی را نگه دار
+                        if (this.classList.contains('selected')) {
+                            this.style.background = 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)';
+                            this.style.transform = 'translateX(-5px)';
+                        } else {
+                            this.style.background = '#f9fafb';
+                            this.style.borderColor = '#e5e7eb';
+                            this.style.transform = 'translateX(0)';
+                        }
+                    });
+                    
+                    // اضافه کردن کلیک برای انتخاب (قابل لغو)
+                    obsItem.addEventListener('click', function() {
+                        // اگر قبلاً رنگ‌ها نمایش داده شده (بعد از ثبت)، اجازه تغییر نده
+                        const isSubmitted = this.classList.contains('correct') || this.classList.contains('incorrect');
+                        if (isSubmitted) {
+                            return;
                         }
                         
-                        // ذخیره انتخاب
-                        if (!selectedObservations.includes(obs)) {
-                            selectedObservations.push(obs);
-                            selectionCount++; // افزایش شمارنده انتخاب‌ها
+                        // اگر قبلاً انتخاب شده، لغو کن
+                        if (this.classList.contains('selected')) {
+                            this.classList.remove('selected');
+                            // بازگشت به حالت عادی - همه استایل‌ها
+                            this.style.background = '#f9fafb';
+                            this.style.color = '#374151';
+                            this.style.borderColor = '#e5e7eb';
+                            this.style.transform = 'translateX(0)';
+                            this.style.boxShadow = 'none';
+                            // بازگشت رنگ همه span ها به حالت عادی
+                            const spans = this.querySelectorAll('span');
+                            spans.forEach((s, idx) => {
+                                if (idx === 0) {
+                                    // شماره گزینه - سبز
+                                    s.style.color = '#3ea66b';
+                                } else {
+                                    // متن گزینه - مشکی
+                                    s.style.color = '#374151';
+                                }
+                            });
+                            const index = selectedObservations.indexOf(obs);
+                            if (index > -1) {
+                                selectedObservations.splice(index, 1);
+                                selectionCount--;
+                            }
+                        } else {
+                            // انتخاب مشاهده جدید - رنگ آبی اعمال کن
+                            this.classList.add('selected');
+                            this.style.background = 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)';
+                            this.style.color = 'white';
+                            this.style.borderColor = '#3b82f6';
+                            this.style.transform = 'translateX(-5px)';
+                            this.style.boxShadow = '0 8px 20px rgba(59, 130, 246, 0.3)';
+                            // تغییر رنگ span به سفید
+                            const spans = this.querySelectorAll('span');
+                            spans.forEach(s => {
+                                s.style.color = 'white';
+                            });
+                            if (!selectedObservations.includes(obs)) {
+                                selectedObservations.push(obs);
+                                selectionCount++;
+                            }
                         }
                         
-                        // بررسی آیا 3 انتخاب انجام شده یا نه
-                        if (selectionCount >= 3) {
-                            showDiagnosisInput();
+                        // 🔥 FIX: ذخیره فوری در testSelections
+                        const testTypeForSave = window.currentTestType || currentTestType;
+                        if (window.testSelections && testTypeForSave) {
+                            window.testSelections[testTypeForSave] = [...selectedObservations];
+                            console.log('💾 Saved to testSelections:', testTypeForSave, selectedObservations.length);
                         }
                         
-                        // ذخیره در دیتابیس (اگر کاربر لاگین کرده)
-                        {% if user.is_authenticated %}
-                        saveProgress(obs, test.correct_observations.includes(obs));
-                        {% endif %}
+                        // بررسی آیا حداقل 1 انتخاب انجام شده یا نه (برای نمایش دکمه ثبت)
+                        updateSubmitButton();
                     });
                     
                     obsItem.classList.add('observation-item');
@@ -1879,6 +1438,88 @@
                 });
                 
                 obsDiv.appendChild(observationsList);
+                
+                // اضافه کردن دکمه ثبت
+                const submitButton = document.createElement("button");
+                submitButton.id = `submit-observations-${testType}`;
+                submitButton.style.cssText = `
+                    width: 100%;
+                    margin-top: 1rem;
+                    padding: 0.875rem 1.5rem;
+                    background: linear-gradient(135deg, #3ea66b 0%, #2d8a54 100%);
+                    color: white;
+                    border: none;
+                    border-radius: 8px;
+                    font-size: 1rem;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                    display: none;
+                `;
+                submitButton.innerHTML = `
+                    <i class="fas fa-check-circle" style="margin-left: 8px;"></i>
+                    ثبت انتخاب‌ها
+                `;
+                submitButton.addEventListener('click', function() {
+                    submitObservations(testType, test);
+                });
+                submitButton.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-2px)';
+                    this.style.boxShadow = '0 4px 12px rgba(62, 166, 107, 0.4)';
+                });
+                submitButton.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = 'none';
+                });
+                obsDiv.appendChild(submitButton);
+                
+                // 🔥 FIX: Restore کردن انتخاب‌های قبلی (بعد از ایجاد دکمه)
+                if (selectedObservations.length > 0) {
+                    console.log('🔄 Restoring', selectedObservations.length, 'previous selections for', testType);
+                    const allObsItems = obsDiv.querySelectorAll('.observation-item');
+                    const hasSubmitted = observationStates[testType] && Object.keys(observationStates[testType]).length > 0;
+                    
+                    allObsItems.forEach((item, index) => {
+                        const obsText = test.observations[index];
+                        if (selectedObservations.includes(obsText)) {
+                            // اگر قبلاً ثبت شده، رنگ را نمایش بده
+                            if (hasSubmitted && observationStates[testType] && observationStates[testType][obsText]) {
+                                const state = observationStates[testType][obsText];
+                                item.classList.add(state.class);
+                                console.log('🎨 Restored color for:', obsText, '→', state.class);
+                            } else {
+                                // اگر هنوز ثبت نشده، فقط selected را نمایش بده و رنگ آبی اعمال کن
+                                item.classList.add('selected');
+                                item.style.background = 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)';
+                                item.style.color = 'white';
+                                item.style.borderColor = '#3b82f6';
+                                item.style.transform = 'translateX(-5px)';
+                                item.style.boxShadow = '0 8px 20px rgba(59, 130, 246, 0.3)';
+                                // تغییر رنگ span به سفید
+                                const spans = item.querySelectorAll('span');
+                                spans.forEach(s => {
+                                    s.style.color = 'white';
+                                });
+                            }
+                            
+                            console.log('✅ Restored:', obsText);
+                        }
+                    });
+                    
+                    // اگر قبلاً ثبت شده، دکمه ثبت را مخفی کن
+                    if (hasSubmitted) {
+                        submitButton.style.display = 'none';
+                    } else {
+                        // اگر هنوز ثبت نشده و انتخاب‌هایی وجود دارد، دکمه ثبت را نمایش بده
+                        if (selectionCount > 0) {
+                            submitButton.style.display = 'block';
+                            console.log('✅ Showing submit button - selectionCount:', selectionCount);
+                        }
+                    }
+                } else {
+                    // اگر هیچ انتخابی وجود ندارد، دکمه را مخفی کن
+                    submitButton.style.display = 'none';
+                }
                 
                 // اضافه کردن راهنمای مشاهدات
                 const guide = document.createElement("div");
@@ -1891,7 +1532,7 @@
                     color: #6b7280;
                 `;
                 guide.innerHTML = `
-                    <strong>راهنما:</strong> روی هر گزینه تشخیصی کلیک کنید تا انتخاب شود
+                    <strong>راهنما:</strong> گزینه‌های تشخیص را انتخاب کنید و سپس دکمه ثبت را بزنید
                 `;
                 obsDiv.appendChild(guide);
             } else {
@@ -1993,13 +1634,21 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    ${test.rows.map(row => `
+                                    ${test.rows.map(row => {
+                                        // تبدیل مقدار به خطوط جداگانه اگر چند خطی باشد
+                                        // حفظ تمام خطوط (حتی خالی) و نمایش با <br>
+                                        const valueLines = (row.value || '').split('\n');
+                                        const valueDisplay = valueLines.length > 1 
+                                            ? valueLines.map(v => v.trim() === '' ? '<br>' : v.trim()).join('<br>')
+                                            : (row.value || '');
+                                        return `
                                         <tr>
                                             <td>${row.name}</td>
-                                            <td><strong>${row.value}</strong></td>
+                                            <td style="white-space: pre-wrap; word-wrap: break-word;"><strong>${valueDisplay}</strong></td>
                                             <td>${row.reference}</td>
                                         </tr>
-                                    `).join('')}
+                                    `;
+                                    }).join('')}
                                 </tbody>
                             </table>
                         </div>
@@ -2023,6 +1672,74 @@
         let currentSlideIndex = 0;
         let allSlides = [];
 
+        // تابع به‌روزرسانی دکمه ثبت
+        function updateSubmitButton() {
+            const testType = window.currentTestType || currentTestType || '';
+            const submitButton = document.getElementById(`submit-observations-${testType}`);
+            if (submitButton) {
+                if (selectionCount > 0) {
+                    submitButton.style.display = 'block';
+                } else {
+                    submitButton.style.display = 'none';
+                }
+            }
+        }
+        
+        // تابع ثبت مشاهدات و نمایش رنگ‌ها
+        function submitObservations(testType, test) {
+            // نمایش رنگ‌ها برای انتخاب‌های انجام شده
+            document.querySelectorAll('.observation-item').forEach((item, index) => {
+                const obsText = test.observations[index];
+                if (selectedObservations.includes(obsText)) {
+                    const isCorrect = test.correct_observations.includes(obsText);
+                    if (isCorrect) {
+                        item.classList.add('correct');
+                        item.classList.remove('selected');
+                    } else {
+                        item.classList.add('incorrect');
+                        item.classList.remove('selected');
+                    }
+                }
+            });
+            
+            // ذخیره وضعیت
+            if (!observationStates[testType]) {
+                observationStates[testType] = {};
+            }
+            selectedObservations.forEach(obs => {
+                const isCorrect = test.correct_observations.includes(obs);
+                observationStates[testType][obs] = {
+                    isCorrect: isCorrect,
+                    class: isCorrect ? 'correct' : 'incorrect'
+                };
+            });
+            
+            // ذخیره global
+            if (window.testSelections && testType) {
+                window.testSelections[testType] = [...selectedObservations];
+                window.observationStates = observationStates;
+            }
+            
+            // مخفی کردن دکمه ثبت
+            const submitButton = document.getElementById(`submit-observations-${testType}`);
+            if (submitButton) {
+                submitButton.style.display = 'none';
+            }
+            
+            // اگر حداقل 1 انتخاب انجام شده، نمایش باکس تشخیص
+            if (selectionCount >= 1) {
+                showDiagnosisInput();
+            }
+            
+            // ذخیره در دیتابیس (اگر کاربر لاگین کرده)
+            if (window.isUserAuthenticated) {
+                selectedObservations.forEach(obs => {
+                    const isCorrect = test.correct_observations.includes(obs);
+                    saveProgress(obs, isCorrect);
+                });
+            }
+        }
+
         // تابع نمایش باکس تشخیص inline
         function showDiagnosisInput() {
             const diagnosisContainer = document.getElementById('diagnosis-container');
@@ -2037,11 +1754,8 @@
             // پاک کردن متن قبلی
             document.getElementById('diagnosis-text-inline').value = '';
             
-            // فوکوس روی textarea
-            document.getElementById('diagnosis-text-inline').focus();
-            
-            // اسکرول به باکس تشخیص
-            diagnosisContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            // فوکوس روی textarea (بدون اسکرول)
+            // document.getElementById('diagnosis-text-inline').focus();
         }
         
         // تابع ارسال تشخیص inline
@@ -2292,11 +2006,6 @@
                     console.log('Response data:', data);
                     if (data.status === 'success') {
                         console.log('Progress saved successfully');
-                        if (isCorrect) {
-                            showNotification('مشاهده صحیح انتخاب شد!', 'success');
-                        } else {
-                            showNotification('مشاهده اشتباه انتخاب شد', 'warning');
-                        }
                     } else {
                         console.error('Server error:', data.error);
                         showNotification('خطا: ' + (data.error || 'خطای نامشخص'), 'error');
@@ -2826,8 +2535,15 @@
         }
 
         .observation-item.selected {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+            color: white !important;
+            border-color: #3b82f6 !important;
+            transform: translateX(-5px) !important;
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3) !important;
+        }
+        
+        .observation-item.selected span {
+            color: white !important;
         }
 
         /* Test Report Styling */
@@ -3056,7 +2772,7 @@
         }
 
         .diagnosis-section h3 {
-            color: #1f2937;
+            color: #10b981;
             margin-bottom: 1rem;
             font-size: 1.25rem;
             font-weight: 600;
@@ -3066,18 +2782,19 @@
             width: 100%;
             min-height: 120px;
             padding: 1rem;
-            border: 2px solid #e2e8f0;
+            border: 2px solid #10b981;
             border-radius: 0.75rem;
             font-size: 1rem;
             font-family: inherit;
             resize: vertical;
             margin-bottom: 1rem;
+            color: #065f46;
         }
 
         .diagnosis-section textarea:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #059669;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
         }
 
         .diagnosis-btn {
@@ -3386,6 +3103,114 @@
             }
         }
     </style>
+
+
+
+<!-- State Manager بهبود یافته - نسخه 2.0 -->
+<script>
+(function() {
+    // ذخیره‌ساز مرکزی
+    window.testSelections = window.testSelections || {};
+    
+    // ذخیره تابع اصلی displayTests
+    const originalDisplayTests = window.displayTests;
+    if (!originalDisplayTests) {
+        console.error('⚠️ displayTests function not found!');
+        return;
+    }
+    
+    // Override displayTests
+    window.displayTests = function(test) {
+        const testType = test.title;
+        console.log('🔄 Switching to:', testType);
+        
+        // ذخیره انتخاب‌های تست فعلی قبل از تغییر
+        if (window.currentTestType && window.selectedObservations) {
+            window.testSelections[window.currentTestType] = [...window.selectedObservations];
+            console.log('💾 Saved', window.currentTestType, ':', window.testSelections[window.currentTestType].length, 'items');
+        }
+        
+        // فراخوانی تابع اصلی
+        originalDisplayTests.call(this, test);
+        
+        // بازگرداندن انتخاب‌های این تست
+        setTimeout(() => {
+            if (window.testSelections[testType] && window.testSelections[testType].length > 0) {
+                const obsDiv = document.getElementById("observations");
+                if (obsDiv) {
+                    console.log('♻️ Restoring', testType, ':', window.testSelections[testType].length, 'items');
+                    
+                    // بازگرداندن checkbox ها
+                    window.testSelections[testType].forEach(obs => {
+                        const checkbox = obsDiv.querySelector('input[type="checkbox"][value="' + obs + '"]');
+                        if (checkbox && !checkbox.checked) {
+                            checkbox.checked = true;
+                            if (checkbox.parentElement) {
+                                checkbox.parentElement.classList.add('selected');
+                            }
+                        }
+                    });
+                    
+                    // به‌روزرسانی selectedObservations
+                    if (typeof window.selectedObservations !== 'undefined') {
+                        window.selectedObservations = [...window.testSelections[testType]];
+                    }
+                    
+                    // به‌روزرسانی شمارنده
+                    if (typeof window.selectionCount !== 'undefined') {
+                        window.selectionCount = window.testSelections[testType].length;
+                    }
+                    
+                    if (typeof window.updateSelectionCount === 'function') {
+                        window.updateSelectionCount();
+                    }
+                    
+                    console.log('✅', testType, 'restored successfully!');
+                }
+            } else {
+                console.log('📝', testType, 'has no saved selections');
+            }
+        }, 150);
+    };
+    
+    // Override toggleObservation
+    const originalToggleObservation = window.toggleObservation;
+    if (originalToggleObservation) {
+        window.toggleObservation = function(checkbox) {
+            // فراخوانی تابع اصلی
+            originalToggleObservation.call(this, checkbox);
+            
+            // ذخیره فوری state
+            const testType = window.currentTestType;
+            if (testType && window.selectedObservations) {
+                window.testSelections[testType] = [...window.selectedObservations];
+                console.log('💾 Auto-saved', testType, ':', window.testSelections[testType].length, 'items');
+            }
+        };
+    }
+    
+    // تابع‌های helper
+    window.getAllSelections = function() {
+        return window.testSelections;
+    };
+    
+    window.resetAllSelections = function() {
+        window.testSelections = {};
+        window.selectedObservations = [];
+        console.log('🗑️ All selections cleared');
+    };
+    
+    window.getTestSelection = function(testType) {
+        return window.testSelections[testType] || [];
+    };
+    
+    console.log('✅ State Manager v2.0 فعال شد!');
+    console.log('📋 دستورات موجود:');
+    console.log('   - getAllSelections() : دیدن همه انتخاب‌ها');
+    console.log('   - getTestSelection("cbc") : دیدن انتخاب‌های یک تست');
+    console.log('   - resetAllSelections() : پاک کردن همه');
+})();
+</script>
 
 </body>
 </html>

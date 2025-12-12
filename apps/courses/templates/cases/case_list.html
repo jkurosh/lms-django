@@ -17,7 +17,22 @@
             --card: #ffffff;
             --card-foreground: #0f172a;
         }
-
+       @font-face {
+    font-family: 'Bon Pro';
+    src: url('bon-Medium.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+body {
+    font-family: 'Bon Pro', 'Bon Pro Numerals';
+    background-color: var(--background);
+    color: var(--foreground);
+    margin: 0;
+    padding: 0;
+    direction: rtl;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
         .dark {
             --background: #0f172a;
             --foreground: #f8fafc;
@@ -553,84 +568,7 @@
 
 {% block content %}
     <!-- Navigation -->
-    <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-white border-b border-gray-200">
-        <div class="container mx-auto px-4">
-            <div class="flex items-center justify-between h-16">
-                <!-- Logo -->
-                <div class="flex items-center space-x-2 space-x-reverse">
-                    <div class="bg-primary rounded-lg p-2">
-                        <i class="fas fa-stethoscope text-white text-xl"></i>
-                    </div>
-                    <span class="text-xl font-bold text-secondary">Heyvoonak</span>
-                </div>
-
-                <!-- Desktop Menu -->
-                <div class="hidden md:flex items-center space-x-6 space-x-reverse">
-                    <a href="{% url 'users:dadash_home' %}" class="text-foreground hover:text-primary transition-colors">خانه</a>
-                    <a href="{% url 'users:categories_page' %}" class="text-foreground hover:text-primary transition-colors">دسته‌بندی‌ها</a>
-                    <a href="{% url 'courses:case_list' %}" class="text-primary font-semibold">مطالعات موردی</a>
-                    
-                    <!-- User Profile Section -->
-                    {% if user.is_authenticated %}
-                        <div class="user-dropdown">
-                            <div class="user-profile-header" id="profileBtn">
-                                <div class="user-avatar">
-                                    <i class="fas fa-user"></i>
-                                </div>
-                                <div class="user-info">
-                                    <div class="user-name">{{ user.first_name|default:user.username }}</div>
-                                    <div class="user-role">دانشجوی دامپزشکی</div>
-                                </div>
-                            </div>
-                            <div class="dropdown-menu" id="userMenu">
-                                <div class="dropdown-header">
-                                    <div class="user-info">
-                                        <div class="user-name">{{ user.first_name|default:user.username }}</div>
-                                        <div class="user-email">{{ user.phone_number|default:user.email }}</div>
-                                    </div>
-                                </div>
-                                <div class="dropdown-divider"></div>
-                                <a href="{% url 'users:designali_dashboard' %}" class="dropdown-item">
-                                    <i class="fas fa-tachometer-alt"></i>
-                                    داشبورد
-                                </a>
-                                <a href="{% url 'users:profile_settings' %}" class="dropdown-item">
-                                    <i class="fas fa-user-cog"></i>
-                                    پروفایل
-                                </a>
-                                <div class="dropdown-divider"></div>
-                                <a href="{% url 'users:logout' %}" class="dropdown-item logout">
-                                    <i class="fas fa-sign-out-alt"></i>
-                                    خروج
-                                </a>
-                            </div>
-                        </div>
-                    {% else %}
-                        <button class="btn btn-outline">ورود</button>
-                        <button class="btn btn-primary">شروع کنید</button>
-                    {% endif %}
-                </div>
-
-                <!-- Mobile Menu Button -->
-                <button id="mobile-menu-btn" class="md:hidden p-2">
-                    <i class="fas fa-bars text-xl"></i>
-                </button>
-            </div>
-
-            <!-- Mobile Menu -->
-            <div id="mobile-menu" class="mobile-menu md:hidden absolute top-full left-0 right-0 bg-background border-t border-border shadow-lg">
-                <div class="p-4 space-y-4">
-                    <a href="{% url 'users:dadash_home' %}" class="block text-foreground hover:text-primary transition-colors">خانه</a>
-                    <a href="{% url 'users:categories_page' %}" class="block text-foreground hover:text-primary transition-colors">دسته‌بندی‌ها</a>
-                    <a href="{% url 'courses:case_list' %}" class="block text-primary font-semibold">مطالعات موردی</a>
-                    <div class="flex space-x-2 space-x-reverse">
-                        <button class="btn btn-outline flex-1">ورود</button>
-                        <button class="btn btn-primary flex-1">شروع کنید</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </nav>
+    {% include 'cases/includes/header_navigation.html' %}
 
     <!-- Mobile Category Buttons -->
     <div class="mobile-category-buttons">
@@ -664,12 +602,6 @@
             </div>
             <div class="flex-1 overflow-auto">
                 <div class="space-y-1 p-4 pt-0">
-                    <button 
-                        class="btn w-full justify-start text-sm py-1 px-2 h-auto {% if not selected_category %}btn-primary{% else %}btn-ghost{% endif %}"
-                        onclick="filterByCategory('all')"
-                    >
-                        همه دسته‌بندی‌ها
-                </button>
                     {% for category in categories %}
                     <button 
                         class="btn w-full justify-start text-sm py-1 px-2 h-auto {% if selected_category and selected_category.id == category.id %}btn-primary{% else %}btn-ghost{% endif %}"
@@ -790,13 +722,7 @@
 
 {% block extra_js %}
 <script>
-        // Mobile menu toggle
-        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-        const mobileMenu = document.getElementById('mobile-menu');
-        
-        mobileMenuBtn.addEventListener('click', () => {
-            mobileMenu.classList.toggle('active');
-        });
+        // Mobile menu toggle is handled in header_navigation.html include
 
         // Navbar scroll effect
         const navbar = document.getElementById('navbar');

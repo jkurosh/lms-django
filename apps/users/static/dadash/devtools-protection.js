@@ -2,6 +2,39 @@
 (function() {
     'use strict';
     
+    // تابع تشخیص موبایل
+    function isMobileDevice() {
+        // بررسی User Agent
+        const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+        
+        // بررسی دستگاه‌های موبایل
+        const mobileRegex = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini|mobile|tablet/i;
+        if (mobileRegex.test(userAgent.toLowerCase())) {
+            return true;
+        }
+        
+        // بررسی از طریق Touch Events
+        if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+            // بررسی عرض صفحه - اگر کمتر از 768px باشد احتمالاً موبایل است
+            if (window.innerWidth <= 768) {
+                return true;
+            }
+        }
+        
+        // بررسی orientation برای موبایل
+        if (typeof window.orientation !== 'undefined') {
+            return true;
+        }
+        
+        return false;
+    }
+    
+    // اگر دستگاه موبایل است، محافظت را غیرفعال کن
+    if (isMobileDevice()) {
+        console.log('%c📱 Developer Tools Protection Disabled for Mobile Devices', 'color: #00aaff; font-size: 14px; font-weight: bold;');
+        return;
+    }
+    
     // بررسی اینکه آیا کاربر ادمین است یا نه
     function isAdmin() {
         // بررسی از طریق Django template context

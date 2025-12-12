@@ -15,12 +15,22 @@ class ZarinpalSDKService:
         self.merchant_id = getattr(settings, 'ZARINPAL_MERCHANT_ID', '')
         self.sandbox = getattr(settings, 'ZARINPAL_SANDBOX', False)
         
-        # ایجاد client instance
-        try:
-            self.client = ZarinPal(merchant_id=self.merchant_id)
-        except Exception as e:
-            print(f"Error initializing Zarinpal client: {e}")
-            self.client = None
+        # ایجاد client instance - فقط در صورت نیاز (lazy initialization)
+        self.client = None
+    
+    def _get_client(self):
+        """Lazy initialization of ZarinPal client"""
+        if self.client is None and self.merchant_id:
+            try:
+                config_dict = {
+                    'merchant_id': self.merchant_id,
+                    'sandbox': self.sandbox,
+                }
+                self.client = ZarinPal(config_dict)
+            except Exception as e:
+                print(f"Error initializing Zarinpal client: {e}")
+                self.client = None
+        return self.client
     
     def create_payment(self, amount, callback_url, description, mobile=None, email=None):
         """
@@ -37,7 +47,8 @@ class ZarinpalSDKService:
             dict: شامل authority و payment_url در صورت موفقیت
         """
         try:
-            if not self.client:
+            client = self._get_client()
+            if not client:
                 return {'success': False, 'error': 'Zarinpal client not initialized'}
             
             # ساخت دیتا
@@ -53,11 +64,11 @@ class ZarinpalSDKService:
                 payment_data['email'] = email
             
             # ارسال درخواست
-            response = self.client.request(payment_data)
+            response = client.request(payment_data)
             
             if response and 'authority' in response:
                 authority = response['authority']
-                payment_url = self.client.get_payment_link(authority)
+                payment_url = client.get_payment_link(authority)
                 
                 return {
                     'success': True,
@@ -87,7 +98,8 @@ class ZarinpalSDKService:
             dict: شامل ref_id, card_pan در صورت موفقیت
         """
         try:
-            if not self.client:
+            client = self._get_client()
+            if not client:
                 return {'success': False, 'error': 'Zarinpal client not initialized'}
             
             verify_data = {
@@ -95,7 +107,7 @@ class ZarinpalSDKService:
                 'authority': authority
             }
             
-            response = self.client.verify(verify_data)
+            response = client.verify(verify_data)
             
             if response and 'ref_id' in response:
                 return {
@@ -124,10 +136,11 @@ class ZarinpalSDKService:
         دریافت تراکنش‌های تایید نشده
         """
         try:
-            if not self.client:
+            client = self._get_client()
+            if not client:
                 return {'success': False, 'error': 'Zarinpal client not initialized'}
             
-            response = self.client.un_verified()
+            response = client.un_verified()
             
             return {
                 'success': True,

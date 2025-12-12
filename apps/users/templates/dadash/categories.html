@@ -3,7 +3,7 @@
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="description" content="دسته‌بندی‌های مطالعات موردی دامپزشکی">
     <title>دسته‌بندی‌ها - Heyvoonak</title>
@@ -22,16 +22,22 @@
             --card: #ffffff;
             --card-foreground: #0f172a;
         }
-
-        .dark {
-            --background: #1a1a1a;
-            --foreground: #e5e7eb;
-            --muted: #374151;
-            --muted-foreground: #9ca3af;
-            --border: #4b5563;
-            --card: #374151;
-            --card-foreground: #e5e7eb;
-        }
+@font-face {
+    font-family: 'Bon Pro';
+    src: url('bon-Regular.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+body {
+    font-family: 'Bon Pro', 'Bon Pro Numerals';
+    background-color: var(--background);
+    color: var(--foreground);
+    margin: 0;
+    padding: 0;
+    direction: rtl;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
 
         body {
             font-family: 'Vazir', 'Tahoma', sans-serif;
@@ -48,41 +54,6 @@
             padding: 0 1rem;
         }
 
-        /* Dark Mode Toggle - Optimized */
-        .dark-mode-toggle {
-            background: var(--muted);
-            border: 1px solid var(--border);
-            color: var(--foreground);
-            padding: 0.5rem;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-            font-size: 1.1rem;
-            margin-right: 1rem;
-        }
-
-        .dark-mode-toggle:hover {
-            background: var(--primary);
-            color: white;
-        }
-
-        .light-icon {
-            display: block;
-            color: #f59e0b;
-        }
-
-        .dark-icon {
-            display: none;
-            color: #fbbf24;
-        }
-
-        .dark .light-icon {
-            display: none;
-        }
-
-        .dark .dark-icon {
-            display: block;
-        }
 
         /* User Profile Styles */
         .user-dropdown {
@@ -538,155 +509,7 @@
 </head>
 <body>
     <!-- Navigation -->
-    <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300" style="background-color: var(--card); border-bottom: 1px solid var(--border);">
-        <div class="container mx-auto px-4">
-            <div class="flex items-center justify-between h-16">
-                <!-- Logo -->
-                <div class="flex items-center space-x-2 space-x-reverse">
-                    <div class="bg-primary rounded-lg p-2">
-                        <i class="fas fa-stethoscope text-white text-xl"></i>
-                    </div>
-                    <span class="text-xl font-bold text-secondary">Heyvoonak</span>
-                    <!-- Dark Mode Toggle -->
-                    <button id="dark-mode-toggle" class="dark-mode-toggle" title="تغییر حالت تاریک/روشن">
-                        <i class="fas fa-moon light-icon"></i>
-                        <i class="fas fa-sun dark-icon"></i>
-                    </button>
-                </div>
-
-                <!-- Desktop Menu -->
-                <div class="hidden md:flex items-center space-x-6 space-x-reverse">
-                    <a href="{% url 'users:dadash_home' %}" class="text-foreground hover:text-primary transition-colors">خانه</a>
-                    <a href="{% url 'users:landing_page' %}" class="text-foreground hover:text-primary transition-colors">لندینگ</a>
-                    <a href="{% url 'courses:case_list' %}" class="text-foreground hover:text-primary transition-colors">مطالعات موردی</a>
-                    
-                    <!-- User Profile Section -->
-                    {% if user.is_authenticated %}
-                        <div class="user-dropdown">
-                            <div class="user-profile-header" id="profileBtn">
-                                <div class="user-avatar">
-                                    <i class="fas fa-user"></i>
-                                </div>
-                                <div class="user-info">
-                                    <div class="user-name">{{ user.first_name|default:user.username }}</div>
-                                    <div class="user-role">دانشجوی دامپزشکی</div>
-                                </div>
-                            </div>
-                            <div class="dropdown-menu" id="userMenu">
-                                <div class="dropdown-header">
-                                    <div class="user-info">
-                                        <div class="user-name">{{ user.first_name|default:user.username }}</div>
-                                        <div class="user-email">{{ user.phone_number|default:user.email }}</div>
-                                    </div>
-                                </div>
-                                <div class="dropdown-divider"></div>
-                                <a href="{% url 'users:designali_dashboard' %}" class="dropdown-item">
-                                    <i class="fas fa-tachometer-alt"></i>
-                                    داشبورد
-                                </a>
-                                <a href="{% url 'users:profile_settings' %}" class="dropdown-item">
-                                    <i class="fas fa-user-cog"></i>
-                                    پروفایل
-                                </a>
-                                <div class="dropdown-divider"></div>
-                                <a href="{% url 'users:logout' %}" class="dropdown-item logout">
-                                    <i class="fas fa-sign-out-alt"></i>
-                                    خروج
-                                </a>
-                            </div>
-                        </div>
-                    {% else %}
-                        <a href="{% url 'users:login' %}" class="btn btn-outline">ورود</a>
-                        <a href="{% url 'users:register' %}" class="btn btn-primary">شروع کنید</a>
-                    {% endif %}
-                </div>
-
-                <!-- Mobile Menu Button -->
-                <div class="md:hidden flex items-center gap-2">
-                    {% if user.is_authenticated %}
-                        <div class="user-dropdown">
-                            <div class="user-profile-header" id="profileBtnMobile">
-                                <div class="user-avatar">
-                                    <i class="fas fa-user"></i>
-                                </div>
-                                <div class="user-info">
-                                    <div class="user-name">{{ user.first_name|default:user.username }}</div>
-                                    <div class="user-role">دانشجوی دامپزشکی</div>
-                                </div>
-                            </div>
-                            <div class="dropdown-menu" id="userMenuMobile">
-                                <div class="dropdown-header">
-                                    <div class="user-info">
-                                        <div class="user-name">{{ user.first_name|default:user.username }}</div>
-                                        <div class="user-email">{{ user.phone_number|default:user.email }}</div>
-                                    </div>
-                                </div>
-                                <div class="dropdown-divider"></div>
-                                <a href="{% url 'users:designali_dashboard' %}" class="dropdown-item">
-                                    <i class="fas fa-tachometer-alt"></i>
-                                    داشبورد
-                                </a>
-                                <a href="{% url 'users:profile_settings' %}" class="dropdown-item">
-                                    <i class="fas fa-user-cog"></i>
-                                    پروفایل
-                                </a>
-                                <div class="dropdown-divider"></div>
-                                <a href="{% url 'users:logout' %}" class="dropdown-item logout">
-                                    <i class="fas fa-sign-out-alt"></i>
-                                    خروج
-                                </a>
-                            </div>
-                        </div>
-                    {% endif %}
-                    <button id="mobile-menu-btn" class="p-2">
-                    <i class="fas fa-bars text-xl"></i>
-                </button>
-                </div>
-            </div>
-
-            <!-- Mobile Menu -->
-            <div id="mobile-menu" class="mobile-menu md:hidden absolute top-full left-0 right-0 border-t shadow-lg" style="background-color: var(--card); border-color: var(--border);">
-                <!-- User Profile Menu for Mobile -->
-                {% if user.is_authenticated %}
-                    <div class="p-4 border-b" style="border-color: var(--border);">
-                        <div class="flex items-center gap-3 mb-4">
-                            <div class="w-10 h-10 bg-gradient-to-r from-primary to-primary-dark rounded-full flex items-center justify-center text-white">
-                                <i class="fas fa-user"></i>
-                            </div>
-                            <div>
-                                <div class="font-semibold text-foreground">{{ user.first_name|default:user.username }}</div>
-                                <div class="text-sm text-muted-foreground">آنلاین</div>
-                            </div>
-                        </div>
-                        <div class="space-y-2">
-                            <a href="{% url 'users:designali_dashboard' %}" class="flex items-center gap-3 p-3 rounded-lg transition-colors" style="color: var(--foreground);">
-                                <i class="fas fa-tachometer-alt" style="color: var(--primary);"></i>
-                                <span>داشبورد</span>
-                            </a>
-                            <a href="{% url 'users:profile_settings' %}" class="flex items-center gap-3 p-3 rounded-lg transition-colors" style="color: var(--foreground);">
-                                <i class="fas fa-user-cog" style="color: var(--primary);"></i>
-                                <span>پروفایل</span>
-                            </a>
-                            <a href="{% url 'users:logout' %}" class="flex items-center gap-3 p-3 rounded-lg transition-colors" style="color: #ef4444;">
-                                <i class="fas fa-sign-out-alt" style="color: #ef4444;"></i>
-                                <span>لاگ اوت</span>
-                            </a>
-                        </div>
-                    </div>
-                {% endif %}
-                
-                <div class="p-4 space-y-4">
-                    <a href="{% url 'users:dadash_home' %}" class="block text-foreground hover:text-primary transition-colors">خانه</a>
-                    <a href="{% url 'users:landing_page' %}" class="block text-foreground hover:text-primary transition-colors">لندینگ</a>
-                    <a href="{% url 'courses:case_list' %}" class="block text-foreground hover:text-primary transition-colors">مطالعات موردی</a>
-                    <div class="flex space-x-2 space-x-reverse">
-                        <button class="btn btn-outline flex-1">ورود</button>
-                        <button class="btn btn-primary flex-1">شروع کنید</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </nav>
+    {% include 'cases/includes/header_navigation.html' %}
 
     <!-- Main Content -->
     <main class="main-content">
@@ -750,21 +573,6 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Dark mode functionality
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'dark') {
-                document.body.classList.add('dark');
-            }
-
-            // Dark mode toggle
-            const darkModeToggle = document.getElementById('dark-mode-toggle');
-            if (darkModeToggle) {
-                darkModeToggle.addEventListener('click', function() {
-                    document.body.classList.toggle('dark');
-                    const isDark = document.body.classList.contains('dark');
-                    localStorage.setItem('theme', isDark ? 'dark' : 'light');
-                });
-            }
 
         // Mobile menu toggle
         const mobileMenuBtn = document.getElementById('mobile-menu-btn');

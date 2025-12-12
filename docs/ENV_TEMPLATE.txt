@@ -1,181 +1,0 @@
-# ==========================================
-# فایل تنظیمات محیطی (.env)
-# این فایل را با نام .env در ریشه پروژه کپی کنید
-# ==========================================
-
-# ==========================================
-# تنظیمات اصلی Django
-# ==========================================
-
-# حالت Debug (True برای توسعه، False برای تولید)
-DEBUG=True
-
-# کلید مخفی Django (در production حتماً تغییر دهید!)
-SECRET_KEY=django-insecure-=&rrzi6gyf7eu&j69y$@6$tydpl$h+fqv&oiimhab#f(p$4cd4
-
-# اجازه دسترسی به تمام host ها (فقط برای تست)
-ALLOW_ALL_HOSTS=False
-
-# ==========================================
-# تنظیمات دیتابیس
-# ==========================================
-
-# نوع دیتابیس: postgresql / mysql / sqlite3
-DB_ENGINE=django.db.backends.postgresql
-
-# تنظیمات PostgreSQL (Supabase)
-DB_NAME=postgres
-DB_USER=postgres.nbqolrbepqcesypulsea
-DB_PASSWORD=DOHqCHoTRQMIPIOm
-DB_HOST=aws-1-us-east-2.pooler.supabase.com
-DB_PORT=6543
-
-# برای استفاده از SQLite (توسعه محلی)
-USE_SQLITE=False
-
-# ==========================================
-# تنظیمات Deployment
-# ==========================================
-
-# Vercel
-VERCEL=False
-VERCEL_DOMAIN=
-
-# Render
-RENDER=False
-
-# ==========================================
-# تنظیمات امنیتی
-# ==========================================
-
-# HTTPS (در production True کنید)
-SECURE_SSL_REDIRECT=False
-
-# HSTS (در production فعال کنید)
-SECURE_HSTS_SECONDS=0
-
-# ==========================================
-# تنظیمات Email (اختیاری)
-# ==========================================
-
-EMAIL_HOST=smtp.gmail.com
-EMAIL_PORT=587
-EMAIL_USE_TLS=True
-EMAIL_HOST_USER=your-email@gmail.com
-EMAIL_HOST_PASSWORD=your-app-password
-
-# ==========================================
-# تنظیمات Cache و Session
-# ==========================================
-
-# زمان کش (ثانیه) - 0 برای غیرفعال کردن
-CACHE_TIMEOUT=60
-
-# عمر Session (ثانیه) - 3600 = 1 ساعت
-SESSION_COOKIE_AGE=3600
-
-# ==========================================
-# تنظیمات Media و Static
-# ==========================================
-
-# آدرس CDN (اختیاری)
-STATIC_URL=/static/
-MEDIA_URL=/media/
-
-# ==========================================
-# تنظیمات CORS (برای Frontend جداگانه)
-# ==========================================
-
-# آدرس‌های مجاز
-CORS_ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
-
-# ==========================================
-# تنظیمات Logging
-# ==========================================
-
-# سطح Log: DEBUG / INFO / WARNING / ERROR / CRITICAL
-LOG_LEVEL=WARNING
-
-# ==========================================
-# تنظیمات پیشرفته
-# ==========================================
-
-# محدودیت حجم آپلود (بایت) - 2621440 = 2.5 MB
-MAX_UPLOAD_SIZE=2621440
-
-# تعداد Worker برای Gunicorn
-GUNICORN_WORKERS=3
-
-# Timeout برای Gunicorn (ثانیه)
-GUNICORN_TIMEOUT=60
-
-# ==========================================
-# ✨ دستورات کپی کردن
-# ==========================================
-
-# Windows PowerShell:
-# Copy-Item ENV_TEMPLATE.txt .env
-
-# Windows CMD:
-# copy ENV_TEMPLATE.txt .env
-
-# Linux/Mac:
-# cp ENV_TEMPLATE.txt .env
-
-# ==========================================
-# 📝 یادداشت‌های مهم
-# ==========================================
-
-# 🔒 امنیت:
-# - SECRET_KEY را در production تغییر دهید
-# - DEBUG را در production False کنید
-# - ALLOWED_HOSTS را تنظیم کنید
-# - رمزهای عبور را در .env نگه دارید (نه در git)
-
-# 🗄️ دیتابیس:
-# - برای توسعه محلی: USE_SQLITE=True
-# - برای production: از PostgreSQL استفاده کنید
-# - از دیتابیس جداگانه برای توسعه و تولید استفاده کنید
-
-# 🚀 Deployment:
-# - VERCEL=True برای Vercel
-# - RENDER=True برای Render
-# - SECURE_SSL_REDIRECT=True برای HTTPS
-# - DEBUG=False در production
-
-# 📧 Email:
-# - برای Gmail: از App Password استفاده کنید
-# - دو مرحله‌ای را فعال کنید
-# - https://myaccount.google.com/apppasswords
-
-# ⚡ Performance:
-# - CACHE_TIMEOUT=0 برای توسعه (بدون کش)
-# - CACHE_TIMEOUT=300 برای production (5 دقیقه)
-# - SESSION_COOKIE_AGE=3600 (1 ساعت)
-
-# 🔐 Secret Key جدید:
-# برای تولید SECRET_KEY جدید:
-# python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
-
-# ==========================================
-# 🎯 تنظیمات برای محیط‌های مختلف
-# ==========================================
-
-# 🏠 Development (محلی):
-DEBUG=True
-USE_SQLITE=True
-ALLOW_ALL_HOSTS=True
-CACHE_TIMEOUT=0
-
-# 🧪 Testing:
-DEBUG=True
-USE_SQLITE=True
-ALLOW_ALL_HOSTS=False
-
-# 🚀 Production:
-DEBUG=False
-DB_ENGINE=django.db.backends.postgresql
-SECURE_SSL_REDIRECT=True
-CACHE_TIMEOUT=300
-ALLOW_ALL_HOSTS=False
-

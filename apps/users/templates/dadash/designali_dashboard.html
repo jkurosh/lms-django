@@ -120,38 +120,6 @@
             color: var(--primary);
         }
 
-        .notification-btn {
-            position: relative;
-            transition: color 0.3s ease;
-        }
-
-        .notification-btn.has-unread i {
-            color: #ef4444 !important;
-            animation: pulse 2s infinite;
-        }
-
-        .notification-btn.has-unread {
-            color: #ef4444;
-        }
-
-         .notification-count {
-             position: absolute;
-             top: -2px;
-             right: -2px;
-             background: #ef4444;
-             color: white;
-             font-size: 0.75rem;
-             font-weight: 600;
-             padding: 0.125rem 0.375rem;
-             border-radius: 10px;
-             min-width: 20px;
-             text-align: center;
-         }
-
-         .notification-count.zero {
-             display: none;
-         }
-         
          .cart-nav-btn {
              position: relative;
              text-decoration: none;
@@ -186,6 +154,22 @@
         .user-dropdown {
             position: relative;
         }
+        @font-face {
+    font-family: 'Bon Pro';
+    src: url('bon-Medium.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+body {
+    font-family: 'Bon Pro', 'Bon Pro Numerals';
+    background-color: var(--background);
+    color: var(--foreground);
+    margin: 0;
+    padding: 0;
+    direction: rtl;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
 
         .user-avatar {
             width: 36px;
@@ -458,50 +442,6 @@
             justify-content: center;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
-
-        .dark-mode-toggle {
-            background: var(--muted);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 8px 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-left: 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 40px;
-            height: 40px;
-        }
-
-        .dark-mode-toggle:hover {
-            background: var(--primary);
-            color: white;
-            transform: scale(1.05);
-        }
-
-        .dark-mode-toggle i {
-            font-size: 16px;
-        }
-
-        .light-icon {
-            display: block;
-            color: #f59e0b;
-        }
-
-        .dark-icon {
-            display: none;
-            color: #fbbf24;
-        }
-
-        .dark .light-icon {
-            display: none;
-        }
-
-        .dark .dark-icon {
-            display: block;
-        }
-
 
         /* Content Grid */
         .content-grid {
@@ -1190,62 +1130,7 @@
 {% block content %}
 <div class="dashboard-container">
     <!-- Header -->
-    <nav class="navbar">
-        <div class="navbar-container">
-            <div class="navbar-left">
-                <div class="logo">
-                    <div class="logo-icon">
-                        <i class="fas fa-paw"></i>
-                    </div>
-                    <span class="logo-text">HeyVoonak</span>
-                </div>
-            </div>
-            
-             <div class="navbar-right">
-                 <button id="dark-mode-toggle" class="dark-mode-toggle" title="تغییر حالت تاریک/روشن">
-                     <i class="fas fa-moon light-icon"></i>
-                     <i class="fas fa-sun dark-icon"></i>
-                 </button>
-                 <a href="{% url 'users:view_cart' %}" class="nav-btn cart-nav-btn" title="سبد خرید">
-                     <i class="fas fa-shopping-cart"></i>
-                     {% if cart.items_count > 0 %}
-                     <span class="cart-count">{{ cart.items_count }}</span>
-                     {% endif %}
-                 </a>
-                 <button class="nav-btn notification-btn" title="اعلان‌ها">
-                     <i class="fas fa-bell"></i>
-                     <span class="notification-count">5</span>
-                 </button>
-                 <div class="user-dropdown">
-                    <button class="user-avatar dropdown-toggle" onclick="toggleUserDropdown()">
-                        <i class="fas fa-user"></i>
-                    </button>
-                    <div class="dropdown-menu" id="userDropdown">
-                        <div class="dropdown-header">
-                            <div class="user-info">
-                                <div class="user-name">{{ user.first_name|default:user.username }}</div>
-                                <div class="user-email">{{ user.phone_number|default:user.email }}</div>
-                            </div>
-                        </div>
-                        <div class="dropdown-divider"></div>
-                        <a href="/profile/" class="dropdown-item">
-                            <i class="fas fa-user-cog"></i>
-                            پروفایل
-                        </a>
-                        <a href="/settings/" class="dropdown-item">
-                            <i class="fas fa-cog"></i>
-                            تنظیمات
-                        </a>
-                        <div class="dropdown-divider"></div>
-                        <a href="/logout/" class="dropdown-item logout">
-                            <i class="fas fa-sign-out-alt"></i>
-                            خروج
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </nav>
+    {% include 'cases/includes/header_navigation.html' %}
 
     <!-- Main Content -->
     <main class="main-content">
@@ -1253,10 +1138,6 @@
         <div class="tab-navigation">
             <div class="tab-buttons">
                 <button class="tab-btn active" onclick="switchTab('home')">خانه</button>
-                <button class="tab-btn disabled" disabled>برنامه‌ها</button>
-                <button class="tab-btn disabled" disabled>فایل‌ها</button>
-                <button class="tab-btn disabled" disabled>پروژه‌ها</button>
-                <button class="tab-btn disabled" disabled>آموزش</button>
             </div>
         </div>
 
@@ -1395,7 +1276,7 @@
                                             <i class="fas fa-play"></i>
                                             شروع مطالعه
                                         </a>
-                                        <button class="btn btn-secondary btn-sm" onclick="removeBookmark({{ bookmark.id }})">
+                                        <button class="btn btn-secondary btn-sm" onclick="removeBookmark({ bookmarkid })">
                                             <i class="fas fa-trash"></i>
                                             حذف از ذخیره
                                         </button>
@@ -1714,26 +1595,6 @@
             card.classList.add('animate-in');
         });
         
-        // Update notification button appearance
-        function updateNotificationButton(unreadCount) {
-            const notificationBtn = document.querySelector('.notification-btn');
-            const notificationCount = document.querySelector('.notification-count');
-            
-            if (unreadCount > 0) {
-                // Has unread notifications - make it red with pulse animation
-                notificationBtn.classList.add('has-unread');
-                notificationCount.textContent = unreadCount;
-                notificationCount.classList.remove('zero');
-            } else {
-                // No unread notifications - normal state
-                notificationBtn.classList.remove('has-unread');
-                notificationCount.classList.add('zero');
-            }
-        }
-
-        // Simulate notification count (replace with real data)
-        const unreadCount = 3; // This should come from your backend
-        updateNotificationButton(unreadCount);
         
         // Load notifications
         loadUserNotifications();
@@ -1743,20 +1604,8 @@
     });
 
     // Dark mode functionality
-    const darkModeToggle = document.getElementById('dark-mode-toggle');
+   
     const body = document.body;
 
-    // Check for saved theme preference or default to light mode
-    const currentTheme = localStorage.getItem('theme') || 'light';
-    if (currentTheme === 'dark') {
-        body.classList.add('dark');
-    }
-
-    // Toggle dark mode
-    darkModeToggle.addEventListener('click', () => {
-        body.classList.toggle('dark');
-        const isDark = body.classList.contains('dark');
-        localStorage.setItem('theme', isDark ? 'dark' : 'light');
-    });
 </script>
 {% endblock %}

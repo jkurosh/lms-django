@@ -514,3 +514,51 @@ class CartItem(models.Model):
     def total_price(self):
         """قیمت کل این آیتم"""
         return self.plan.final_price * self.quantity
+
+
+class OTPVerification(models.Model):
+    """
+    مدل ذخیره کدهای OTP برای تایید شماره موبایل و بازیابی رمز
+    """
+    PURPOSE_CHOICES = [
+        ('register', 'ثبت‌نام'),
+        ('login', 'ورود'),
+        ('password_reset', 'بازیابی رمز عبور'),
+    ]
+    
+    phone_number = models.CharField(max_length=11, verbose_name='شماره موبایل')
+    code = models.CharField(max_length=6, verbose_name='کد تایید')
+    purpose = models.CharField(max_length=20, choices=PURPOSE_CHOICES, verbose_name='هدف')
+    is_verified = models.BooleanField(default=False, verbose_name='تایید شده')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='تاریخ ایجاد')
+    verified_at = models.DateTimeField(null=True, blank=True, verbose_name='تاریخ تایید')
+    expires_at = models.DateTimeField(verbose_name='تاریخ انقضا')
+    attempts = models.IntegerField(default=0, verbose_name='تعداد تلاش')
+    
+    class Meta:
+        db_table = 'otp_verifications'
+        verbose_name = 'کد تایید OTP'
+        verbose_name_plural = 'کدهای تایید OTP'
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['phone_number', 'purpose']),
+            models.Index(fields=['expires_at']),
+        ]
+    
+    def save(self, *args, **kwargs):
+        if not self.expires_at:
+            # کد به مدت 2 دقیقه معتبر است
+            self.expires_at = timezone.now() + timedelta(minutes=2)
+        super().save(*args, **kwargs)
+    
+    def is_expired(self):
+        """بررسی انقضای کد"""
+        return timezone.now() > self.expires_at
+    
+    def increment_attempts(self):
+        """افزایش تعداد تلاش‌ها"""
+        self.attempts += 1
+        self.save()
+    
+    def __str__(self):
+        return f"{self.phone_number} - {self.get_purpose_display()}"

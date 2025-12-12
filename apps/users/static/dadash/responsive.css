@@ -1,0 +1,676 @@
+/* ==========================================
+   🎨 Responsive CSS برای تمام صفحات
+   ========================================== */
+
+/* Base Responsive Settings */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    overflow-x: hidden;
+    width: 100%;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* ==========================================
+   📱 Mobile First - Base Styles
+   ========================================== */
+
+/* Container Responsive */
+.container,
+.auth-container,
+.dashboard-container,
+.case-container,
+.admin-container {
+    width: 100%;
+    max-width: 100%;
+    padding: 0.5rem;
+    margin: 0 auto;
+}
+
+/* Header Responsive */
+header,
+.header,
+.page-header,
+.auth-header {
+    padding: 0.75rem !important;
+    text-align: center;
+}
+
+.logo-section h1,
+.logo-text {
+    font-size: 1.5rem !important;
+}
+
+.logo-subtitle {
+    font-size: 0.875rem !important;
+}
+
+/* Navigation Responsive */
+nav,
+.navbar,
+.nav-menu {
+    flex-direction: column;
+    width: 100%;
+}
+
+.nav-links,
+.menu-items {
+    flex-direction: column;
+    width: 100%;
+}
+
+.nav-item,
+.menu-item {
+    width: 100%;
+    margin: 0.25rem 0 !important;
+}
+
+/* Form Responsive */
+.form-row {
+    flex-direction: column !important;
+}
+
+.form-group,
+.input-group {
+    width: 100% !important;
+    margin-bottom: 1rem;
+}
+
+.form-input,
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="tel"],
+input[type="number"],
+textarea,
+select {
+    width: 100% !important;
+    font-size: 16px !important; /* جلوگیری از zoom در iOS */
+    padding: 0.75rem !important;
+}
+
+.form-label {
+    font-size: 0.9rem !important;
+}
+
+button,
+.btn,
+.button {
+    width: 100% !important;
+    padding: 0.875rem 1rem !important;
+    font-size: 1rem !important;
+    margin: 0.5rem 0 !important;
+}
+
+/* Card Responsive */
+.card,
+.case-card,
+.stat-card,
+.info-card {
+    width: 100% !important;
+    margin: 0.5rem 0 !important;
+    padding: 1rem !important;
+}
+
+.card-grid,
+.cards-grid,
+.grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+}
+
+/* Table Responsive */
+table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+}
+
+table thead {
+    display: none; /* مخفی کردن header در موبایل */
+}
+
+table tr {
+    display: block;
+    margin-bottom: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 0.5rem;
+}
+
+table td {
+    display: block;
+    text-align: right;
+    padding: 0.5rem;
+    border: none;
+}
+
+table td:before {
+    content: attr(data-label);
+    font-weight: bold;
+    display: inline-block;
+    width: 50%;
+}
+
+/* Sidebar Responsive */
+.sidebar,
+.side-menu {
+    position: fixed;
+    left: -100%;
+    top: 0;
+    width: 80%;
+    max-width: 300px;
+    height: 100vh;
+    transition: left 0.3s ease;
+    z-index: 1000;
+}
+
+.sidebar.active {
+    left: 0;
+}
+
+/* Hamburger Menu */
+.hamburger-menu {
+    display: block !important;
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 1001;
+    background: var(--primary-color, #007bff);
+    color: white;
+    border: none;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.hamburger-menu span {
+    display: block;
+    width: 25px;
+    height: 3px;
+    background: white;
+    margin: 5px 0;
+    border-radius: 2px;
+}
+
+/* Modal Responsive */
+.modal,
+.popup,
+.dialog {
+    width: 95% !important;
+    max-width: 95% !important;
+    margin: 2.5% auto !important;
+    padding: 1rem !important;
+}
+
+.modal-content {
+    padding: 1rem !important;
+}
+
+.modal-header h2,
+.modal-header h3 {
+    font-size: 1.25rem !important;
+}
+
+/* Dashboard Stats */
+.stats-grid,
+.dashboard-stats {
+    grid-template-columns: 1fr !important;
+}
+
+.stat-box {
+    margin: 0.5rem 0 !important;
+}
+
+/* Case Detail Responsive */
+.case-detail-container {
+    padding: 0.5rem !important;
+}
+
+.tabs-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.tab-buttons {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.tab-button {
+    flex-shrink: 0;
+    min-width: 100px;
+    font-size: 0.875rem !important;
+    padding: 0.5rem 0.75rem !important;
+}
+
+.observations-grid {
+    grid-template-columns: 1fr !important;
+}
+
+.observation-item {
+    font-size: 0.9rem !important;
+    padding: 0.75rem !important;
+}
+
+/* Admin Panel Responsive */
+.admin-grid {
+    grid-template-columns: 1fr !important;
+}
+
+.admin-section {
+    margin: 1rem 0 !important;
+}
+
+/* Typography Responsive */
+h1 {
+    font-size: 1.75rem !important;
+}
+
+h2 {
+    font-size: 1.5rem !important;
+}
+
+h3 {
+    font-size: 1.25rem !important;
+}
+
+h4 {
+    font-size: 1.1rem !important;
+}
+
+p, li {
+    font-size: 0.95rem !important;
+    line-height: 1.6 !important;
+}
+
+/* Spacing Responsive */
+.section,
+.content-section {
+    padding: 1rem 0.5rem !important;
+    margin: 0.5rem 0 !important;
+}
+
+/* Flex Responsive */
+.flex-row {
+    flex-direction: column !important;
+}
+
+.flex-item {
+    width: 100% !important;
+    margin: 0.5rem 0 !important;
+}
+
+/* Image Gallery */
+.image-gallery,
+.gallery-grid {
+    grid-template-columns: 1fr !important;
+}
+
+/* Alerts & Messages */
+.alert,
+.message,
+.notification {
+    width: 95% !important;
+    margin: 0.5rem auto !important;
+    padding: 0.75rem !important;
+    font-size: 0.9rem !important;
+}
+
+/* Footer Responsive */
+footer,
+.footer {
+    padding: 1rem 0.5rem !important;
+    text-align: center;
+}
+
+.footer-links {
+    flex-direction: column;
+}
+
+.footer-link {
+    margin: 0.5rem 0 !important;
+}
+
+/* ==========================================
+   📱 Specific Mobile Fixes
+   ========================================== */
+
+/* Fix for Fixed Elements */
+.fixed-header,
+.sticky-header {
+    position: relative !important;
+}
+
+/* Fix for Overflow */
+.no-scroll-mobile {
+    overflow-x: hidden !important;
+}
+
+/* Touch Friendly Buttons */
+button,
+.btn,
+a.button {
+    min-height: 44px; /* iOS guideline */
+    touch-action: manipulation;
+}
+
+/* Prevent Text Selection on Buttons */
+button,
+.btn {
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+}
+
+/* ==========================================
+   🎯 Password Reset Page
+   ========================================== */
+.reset-container {
+    width: 95% !important;
+    padding: 1rem !important;
+    margin: 1rem auto !important;
+}
+
+.reset-step {
+    padding: 1rem !important;
+}
+
+.otp-inputs {
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.otp-input {
+    width: 45px !important;
+    height: 45px !important;
+    font-size: 1.25rem !important;
+    margin: 0.25rem !important;
+}
+
+/* ==========================================
+   🎯 Register & Login Pages
+   ========================================== */
+.auth-form {
+    width: 100% !important;
+    padding: 1rem !important;
+}
+
+.password-strength {
+    margin-top: 0.5rem !important;
+}
+
+.checkbox-label {
+    font-size: 0.85rem !important;
+}
+
+/* ==========================================
+   🎯 Dashboard Pages
+   ========================================== */
+.dashboard-header {
+    flex-direction: column;
+    align-items: flex-start !important;
+}
+
+.dashboard-nav {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.quick-stats {
+    grid-template-columns: 1fr !important;
+}
+
+/* ==========================================
+   🎯 Categories Page
+   ========================================== */
+.category-grid {
+    grid-template-columns: 1fr !important;
+}
+
+.category-card {
+    width: 100% !important;
+}
+
+/* ==========================================
+   🎯 Case List Page
+   ========================================== */
+.cases-grid {
+    grid-template-columns: 1fr !important;
+}
+
+.case-card {
+    width: 100% !important;
+}
+
+.case-filters {
+    flex-direction: column;
+}
+
+.filter-item {
+    width: 100% !important;
+    margin: 0.5rem 0 !important;
+}
+
+/* ==========================================
+   📱 Tablet (481px - 768px)
+   ========================================== */
+@media (min-width: 481px) {
+    .container {
+        padding: 1rem;
+    }
+
+    .card-grid,
+    .grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+
+    .otp-input {
+        width: 50px !important;
+        height: 50px !important;
+        margin: 0.5rem !important;
+    }
+
+    h1 {
+        font-size: 2rem !important;
+    }
+
+    h2 {
+        font-size: 1.75rem !important;
+    }
+}
+
+/* ==========================================
+   💻 Desktop Small (769px - 1024px)
+   ========================================== */
+@media (min-width: 769px) {
+    .container {
+        max-width: 960px;
+        padding: 1.5rem;
+    }
+
+    .hamburger-menu {
+        display: none !important;
+    }
+
+    .sidebar {
+        position: relative;
+        left: 0;
+        width: 250px;
+        height: auto;
+    }
+
+    .form-row {
+        flex-direction: row !important;
+    }
+
+    .form-group {
+        width: auto !important;
+    }
+
+    button,
+    .btn {
+        width: auto !important;
+        min-width: 150px;
+    }
+
+    .card-grid,
+    .grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
+
+    table thead {
+        display: table-header-group;
+    }
+
+    table tr {
+        display: table-row;
+        margin: 0;
+        border: none;
+    }
+
+    table td {
+        display: table-cell;
+        border: 1px solid #ddd;
+    }
+
+    table td:before {
+        display: none;
+    }
+
+    .flex-row {
+        flex-direction: row !important;
+    }
+
+    .flex-item {
+        width: auto !important;
+    }
+
+    .modal {
+        width: 80% !important;
+        max-width: 600px !important;
+    }
+
+    h1 {
+        font-size: 2.5rem !important;
+    }
+
+    h2 {
+        font-size: 2rem !important;
+    }
+}
+
+/* ==========================================
+   💻 Desktop Large (1025px+)
+   ========================================== */
+@media (min-width: 1025px) {
+    .container {
+        max-width: 1200px;
+        padding: 2rem;
+    }
+
+    .card-grid,
+    .grid {
+        grid-template-columns: repeat(4, 1fr) !important;
+    }
+
+    .sidebar {
+        width: 280px;
+    }
+
+    .modal {
+        max-width: 800px !important;
+    }
+}
+
+/* ==========================================
+   🌙 Dark Mode Adjustments
+   ========================================== */
+@media (prefers-color-scheme: dark) {
+    table tr {
+        border-color: #444;
+    }
+
+    table td {
+        border-color: #444;
+    }
+}
+
+/* ==========================================
+   📱 iOS Specific Fixes
+   ========================================== */
+@supports (-webkit-touch-callout: none) {
+    /* iOS specific styles */
+    input,
+    textarea,
+    select {
+        font-size: 16px !important; /* Prevent zoom */
+    }
+
+    .modal {
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+/* ==========================================
+   🔧 Utility Classes
+   ========================================== */
+.mobile-only {
+    display: block !important;
+}
+
+.desktop-only {
+    display: none !important;
+}
+
+@media (min-width: 769px) {
+    .mobile-only {
+        display: none !important;
+    }
+
+    .desktop-only {
+        display: block !important;
+    }
+}
+
+.text-center-mobile {
+    text-align: center;
+}
+
+@media (min-width: 769px) {
+    .text-center-mobile {
+        text-align: inherit;
+    }
+}
+
+/* ==========================================
+   📐 Print Styles
+   ========================================== */
+@media print {
+    .no-print,
+    .hamburger-menu,
+    .sidebar,
+    nav,
+    footer {
+        display: none !important;
+    }
+
+    body {
+        font-size: 12pt;
+    }
+
+    .container {
+        width: 100%;
+        max-width: none;
+    }
+}
+

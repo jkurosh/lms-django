@@ -1,0 +1,656 @@
+/* HeyVoonak Django Admin Dark Theme - No White Colors */
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --primary: #3EA66B;
+  --primary-dark: #2d8a54;
+  --secondary: #4B6A9D;
+  --background: #1a1a1a;
+  --foreground: #e5e7eb;
+  --muted: #374151;
+  --muted-foreground: #9ca3af;
+  --border: #4b5563;
+  --card: #374151;
+  --card-foreground: #e5e7eb;
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --info: #3b82f6;
+  --radius: 12px;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* Global Styles - Force Dark Theme */
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  font-family: 'Vazirmatn', 'Vazir', 'Tahoma', sans-serif !important;
+  background-color: var(--background) !important;
+  color: var(--foreground) !important;
+  direction: rtl !important;
+  margin: 0;
+  padding: 0;
+}
+
+/* Force ALL backgrounds to be dark - Complete override */
+* {
+  background-color: var(--card) !important;
+  color: var(--foreground) !important;
+  border-color: var(--border) !important;
+}
+
+/* Specific overrides for common elements */
+body, #container, .module, .module h2, .module h3, .module caption,
+.content, .content-main, .breadcrumbs, .actions, .paginator,
+.messagelist, .errornote, .success, .warning, .error,
+table, thead, tbody, tr, td, th, .form-row, .form-row input,
+.form-row select, .form-row textarea, .help, .help-text,
+.object-tools, .object-tools a, .submit-row, .submit-row input,
+.deletelink, .addlink, .changelink, .viewlink, .inline-related,
+.inline-related h3, .inline-related .form-row,
+.inline-group, .inline-group .module, .inline-group .module h2,
+#changelist, #changelist-filter, #changelist-filter h2,
+#changelist-filter h3, #changelist-filter ul, #changelist-filter li,
+#changelist-filter a, #changelist-filter input,
+#changelist-filter select, #changelist-filter option,
+#changelist-filter .selected, #changelist-filter .selected a,
+#changelist-filter .selected li, #changelist-filter .selected ul,
+#changelist-filter .selected h2, #changelist-filter .selected h3,
+#changelist-filter .selected input, #changelist-filter .selected select,
+#changelist-filter .selected option, #changelist-filter .selected textarea,
+#changelist-filter .selected button, #changelist-filter .selected .button,
+#changelist-filter .selected .submit-row, #changelist-filter .selected .actions,
+#changelist-filter .selected .paginator, #changelist-filter .selected .messagelist,
+#changelist-filter .selected .errornote, #changelist-filter .selected .success,
+#changelist-filter .selected .warning, #changelist-filter .selected .error,
+#changelist-filter .selected .help, #changelist-filter .selected .help-text,
+#changelist-filter .selected .object-tools, #changelist-filter .selected .object-tools a,
+#changelist-filter .selected .inline-related, #changelist-filter .selected .inline-related h3,
+#changelist-filter .selected .inline-related .form-row, #changelist-filter .selected .inline-group,
+#changelist-filter .selected .inline-group .module, #changelist-filter .selected .inline-group .module h2,
+#changelist-filter .selected .inline-group .module .form-row, #changelist-filter .selected .inline-group .module .form-row input,
+#changelist-filter .selected .inline-group .module .form-row select, #changelist-filter .selected .inline-group .module .form-row textarea,
+#changelist-filter .selected .inline-group .module .form-row .help, #changelist-filter .selected .inline-group .module .form-row .help-text,
+#changelist-filter .selected .inline-group .module .form-row .submit-row, #changelist-filter .selected .inline-group .module .form-row .submit-row input,
+#changelist-filter .selected .inline-group .module .form-row .actions, #changelist-filter .selected .inline-group .module .form-row .actions select,
+#changelist-filter .selected .inline-group .module .form-row .actions option, #changelist-filter .selected .inline-group .module .form-row .actions button,
+#changelist-filter .selected .inline-group .module .form-row .actions .button, #changelist-filter .selected .inline-group .module .form-row .actions .addlink,
+#changelist-filter .selected .inline-group .module .form-row .actions .changelink, #changelist-filter .selected .inline-group .module .form-row .actions .viewlink,
+#changelist-filter .selected .inline-group .module .form-row .actions .deletelink, #changelist-filter .selected .inline-group .module .form-row .actions .paginator,
+#changelist-filter .selected .inline-group .module .form-row .actions .paginator a, #changelist-filter .selected .inline-group .module .form-row .actions .paginator .this-page,
+#changelist-filter .selected .inline-group .module .form-row .actions .paginator .next, #changelist-filter .selected .inline-group .module .form-row .actions .paginator .previous,
+#changelist-filter .selected .inline-group .module .form-row .actions .paginator .first, #changelist-filter .selected .inline-group .module .form-row .actions .paginator .last,
+#changelist-filter .selected .inline-group .module .form-row .actions .paginator .page, #changelist-filter .selected .inline-group .module .form-row .actions .paginator .page a,
+#changelist-filter .selected .inline-group .module .form-row .actions .paginator .page .this-page, #changelist-filter .selected .inline-group .module .form-row .actions .paginator .page .next,
+#changelist-filter .selected .inline-group .module .form-row .actions .paginator .page .previous, #changelist-filter .selected .inline-group .module .form-row .actions .paginator .page .first,
+#changelist-filter .selected .inline-group .module .form-row .actions .paginator .page .last, #changelist-filter .selected .inline-group .module .form-row .actions .paginator .page .page-number,
+#changelist-filter .selected .inline-group .module .form-row .actions .paginator .page .page-number a, #changelist-filter .selected .inline-group .module .form-row .actions .paginator .page .page-number .this-page,
+#changelist-filter .selected .inline-group .module .form-row .actions .paginator .page .page-number .next, #changelist-filter .selected .inline-group .module .form-row .actions .paginator .page .page-number .previous,
+#changelist-filter .selected .inline-group .module .form-row .actions .paginator .page .page-number .first, #changelist-filter .selected .inline-group .module .form-row .actions .paginator .page .page-number .last {
+  background-color: var(--card) !important;
+  color: var(--foreground) !important;
+  border-color: var(--border) !important;
+}
+
+/* Navigation Sidebar - Force Dark */
+#nav-sidebar, #nav-sidebar ul, #nav-sidebar li, #nav-sidebar a,
+#nav-sidebar input, #nav-sidebar select, #nav-sidebar option,
+#nav-sidebar .selected, #nav-sidebar .selected a, #nav-sidebar .selected li,
+#nav-sidebar .selected ul, #nav-sidebar .selected h2, #nav-sidebar .selected h3,
+#nav-sidebar .selected input, #nav-sidebar .selected select, #nav-sidebar .selected option,
+#nav-sidebar .selected textarea, #nav-sidebar .selected button, #nav-sidebar .selected .button,
+#nav-sidebar .selected .submit-row, #nav-sidebar .selected .actions, #nav-sidebar .selected .paginator,
+#nav-sidebar .selected .messagelist, #nav-sidebar .selected .errornote, #nav-sidebar .selected .success,
+#nav-sidebar .selected .warning, #nav-sidebar .selected .error, #nav-sidebar .selected .help,
+#nav-sidebar .selected .help-text, #nav-sidebar .selected .object-tools, #nav-sidebar .selected .object-tools a,
+#nav-sidebar .selected .inline-related, #nav-sidebar .selected .inline-related h3, #nav-sidebar .selected .inline-related .form-row,
+#nav-sidebar .selected .inline-group, #nav-sidebar .selected .inline-group .module, #nav-sidebar .selected .inline-group .module h2,
+#nav-sidebar .selected .inline-group .module .form-row, #nav-sidebar .selected .inline-group .module .form-row input,
+#nav-sidebar .selected .inline-group .module .form-row select, #nav-sidebar .selected .inline-group .module .form-row textarea,
+#nav-sidebar .selected .inline-group .module .form-row .help, #nav-sidebar .selected .inline-group .module .form-row .help-text,
+#nav-sidebar .selected .inline-group .module .form-row .submit-row, #nav-sidebar .selected .inline-group .module .form-row .submit-row input,
+#nav-sidebar .selected .inline-group .module .form-row .actions, #nav-sidebar .selected .inline-group .module .form-row .actions select,
+#nav-sidebar .selected .inline-group .module .form-row .actions option, #nav-sidebar .selected .inline-group .module .form-row .actions button,
+#nav-sidebar .selected .inline-group .module .form-row .actions .button, #nav-sidebar .selected .inline-group .module .form-row .actions .addlink,
+#nav-sidebar .selected .inline-group .module .form-row .actions .changelink, #nav-sidebar .selected .inline-group .module .form-row .actions .viewlink,
+#nav-sidebar .selected .inline-group .module .form-row .actions .deletelink, #nav-sidebar .selected .inline-group .module .form-row .actions .paginator,
+#nav-sidebar .selected .inline-group .module .form-row .actions .paginator a, #nav-sidebar .selected .inline-group .module .form-row .actions .paginator .this-page,
+#nav-sidebar .selected .inline-group .module .form-row .actions .paginator .next, #nav-sidebar .selected .inline-group .module .form-row .actions .paginator .previous,
+#nav-sidebar .selected .inline-group .module .form-row .actions .paginator .first, #nav-sidebar .selected .inline-group .module .form-row .actions .paginator .last,
+#nav-sidebar .selected .inline-group .module .form-row .actions .paginator .page, #nav-sidebar .selected .inline-group .module .form-row .actions .paginator .page a,
+#nav-sidebar .selected .inline-group .module .form-row .actions .paginator .page .this-page, #nav-sidebar .selected .inline-group .module .form-row .actions .paginator .page .next,
+#nav-sidebar .selected .inline-group .module .form-row .actions .paginator .page .previous, #nav-sidebar .selected .inline-group .module .form-row .actions .paginator .page .first,
+#nav-sidebar .selected .inline-group .module .form-row .actions .paginator .page .last, #nav-sidebar .selected .inline-group .module .form-row .actions .paginator .page .page-number,
+#nav-sidebar .selected .inline-group .module .form-row .actions .paginator .page .page-number a, #nav-sidebar .selected .inline-group .module .form-row .actions .paginator .page .page-number .this-page,
+#nav-sidebar .selected .inline-group .module .form-row .actions .paginator .page .page-number .next, #nav-sidebar .selected .inline-group .module .form-row .actions .paginator .page .page-number .previous,
+#nav-sidebar .selected .inline-group .module .form-row .actions .paginator .page .page-number .first, #nav-sidebar .selected .inline-group .module .form-row .actions .paginator .page .page-number .last {
+  background-color: var(--muted) !important;
+  color: var(--foreground) !important;
+  border-color: var(--border) !important;
+}
+
+/* Navigation Links Styling */
+#nav-sidebar a {
+  color: var(--foreground) !important;
+  text-decoration: none !important;
+  padding: 0.75rem 1rem !important;
+  display: block !important;
+  border-radius: 6px !important;
+  margin: 0.25rem 0 !important;
+  transition: all 0.2s ease !important;
+  background-color: var(--muted) !important;
+}
+
+#nav-sidebar a:hover {
+  background-color: var(--border) !important;
+  color: var(--foreground) !important;
+  transform: translateX(4px) !important;
+}
+
+#nav-sidebar a.selected, #nav-sidebar .selected a {
+  background-color: var(--primary) !important;
+  color: white !important;
+}
+
+/* Navigation Headers */
+#nav-sidebar h2, #nav-sidebar h3 {
+  color: var(--primary) !important;
+  font-weight: 600 !important;
+  margin: 1.5rem 0 0.5rem 0 !important;
+  padding: 0.5rem 1rem !important;
+  background-color: var(--muted) !important;
+  border-radius: 6px !important;
+  border-left: 4px solid var(--primary) !important;
+}
+
+/* Header Styling */
+#header {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%) !important;
+  border-bottom: none !important;
+  box-shadow: var(--shadow) !important;
+  padding: 1rem 2rem !important;
+}
+
+#branding h1, #branding h1 a:link, #branding h1 a:visited {
+  color: white !important;
+  font-weight: 700 !important;
+  font-size: 1.5rem !important;
+  text-decoration: none !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.75rem !important;
+}
+
+#branding h1:before {
+  content: "🎓" !important;
+  font-size: 1.75rem !important;
+}
+
+#user-tools {
+  color: white !important;
+}
+
+#user-tools a:link, #user-tools a:visited {
+  color: white !important;
+  text-decoration: none !important;
+  font-weight: 500 !important;
+  padding: 0.5rem 1rem !important;
+  border-radius: 8px !important;
+  transition: all 0.2s ease !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+#user-tools a:hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Main Content Area */
+#content {
+  background-color: var(--background) !important;
+  padding: 2rem !important;
+  min-height: calc(100vh - 80px) !important;
+}
+
+#content-main {
+  background-color: var(--card) !important;
+  border-radius: var(--radius) !important;
+  box-shadow: var(--shadow-lg) !important;
+  border: 1px solid var(--border) !important;
+  padding: 2rem !important;
+}
+
+/* Module Styling */
+.module {
+  background: var(--card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius) !important;
+  box-shadow: var(--shadow) !important;
+  margin-bottom: 2rem !important;
+  overflow: hidden !important;
+}
+
+.module h2, .module h3, .module caption {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%) !important;
+  color: white !important;
+  margin: 0 !important;
+  padding: 1rem 1.5rem !important;
+  font-weight: 600 !important;
+  border-bottom: 1px solid var(--border) !important;
+}
+
+.module h2:before, .module caption:before {
+  content: "📊 " !important;
+  margin-left: 0.5rem !important;
+}
+
+.module .form-row {
+  background-color: var(--card) !important;
+  border-bottom: 1px solid var(--border) !important;
+  padding: 1rem 1.5rem !important;
+}
+
+.module .form-row:last-child {
+  border-bottom: none !important;
+}
+
+.module .form-row label {
+  color: var(--foreground) !important;
+  font-weight: 600 !important;
+  margin-bottom: 0.5rem !important;
+  display: block !important;
+}
+
+/* Form Elements - Complete Override */
+input[type="text"], input[type="password"], input[type="email"], 
+input[type="number"], input[type="url"], input[type="date"], 
+input[type="time"], input[type="datetime-local"], 
+input[type="search"], input[type="checkbox"], input[type="radio"],
+select, textarea, option {
+  background-color: var(--muted) !important;
+  color: var(--foreground) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 6px !important;
+  padding: 0.75rem 1rem !important;
+  font-size: 1rem !important;
+  transition: all 0.2s ease !important;
+}
+
+/* Checkbox specific styling */
+input[type="checkbox"] {
+  background-color: var(--muted) !important;
+  border: 2px solid var(--border) !important;
+  width: 18px !important;
+  height: 18px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+input[type="checkbox"]:checked {
+  background-color: var(--primary) !important;
+  border-color: var(--primary) !important;
+}
+
+/* Filter input specific */
+#nav-filter {
+  background-color: var(--muted) !important;
+  color: var(--foreground) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 6px !important;
+  padding: 0.75rem 1rem !important;
+  font-size: 1rem !important;
+  width: 100% !important;
+}
+
+#nav-filter::placeholder {
+  color: var(--muted-foreground) !important;
+}
+
+input[type="text"]:focus, input[type="password"]:focus, 
+input[type="email"]:focus, input[type="number"]:focus, 
+input[type="url"]:focus, input[type="date"]:focus, 
+input[type="time"]:focus, input[type="datetime-local"]:focus, 
+select:focus, textarea:focus {
+  outline: none !important;
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 3px rgba(62, 166, 107, 0.1) !important;
+  background-color: var(--card) !important;
+}
+
+/* Buttons */
+.button, input[type="submit"], input[type="button"], 
+.deletelink, .addlink, .changelink, .viewlink {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 6px !important;
+  padding: 0.75rem 1.5rem !important;
+  font-weight: 600 !important;
+  text-decoration: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  transition: all 0.2s ease !important;
+  cursor: pointer !important;
+}
+
+.button:hover, input[type="submit"]:hover, input[type="button"]:hover,
+.deletelink:hover, .addlink:hover, .changelink:hover, .viewlink:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(62, 166, 107, 0.3) !important;
+}
+
+.deletelink {
+  background: linear-gradient(135deg, var(--error) 0%, #dc2626 100%) !important;
+}
+
+.deletelink:hover {
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3) !important;
+}
+
+/* Tables - Complete Override */
+table, table *, table td, table th, table tr, table thead, table tbody, table tfoot {
+  background-color: var(--card) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--foreground) !important;
+}
+
+table {
+  border-radius: var(--radius) !important;
+  overflow: hidden !important;
+  box-shadow: var(--shadow) !important;
+}
+
+thead, thead th, thead td {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%) !important;
+  color: white !important;
+  font-weight: 600 !important;
+  padding: 1rem !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+tbody, tbody tr, tbody td, tbody th {
+  background-color: var(--card) !important;
+  color: var(--foreground) !important;
+  border-bottom: 1px solid var(--border) !important;
+}
+
+tbody tr:nth-child(even), tbody tr:nth-child(even) td {
+  background-color: var(--muted) !important;
+  color: var(--foreground) !important;
+}
+
+tbody tr:hover, tbody tr:hover td {
+  background-color: var(--border) !important;
+  color: var(--foreground) !important;
+}
+
+tbody td, tbody th {
+  color: var(--foreground) !important;
+  padding: 1rem !important;
+  border-bottom: 1px solid var(--border) !important;
+  background-color: inherit !important;
+}
+
+/* Changelist specific */
+#changelist, #changelist table, #changelist tbody, #changelist thead,
+#changelist tr, #changelist td, #changelist th, #changelist tfoot {
+  background-color: var(--card) !important;
+  color: var(--foreground) !important;
+  border-color: var(--border) !important;
+}
+
+#changelist tbody tr, #changelist tbody tr td {
+  background-color: var(--card) !important;
+  color: var(--foreground) !important;
+}
+
+#changelist tbody tr:nth-child(even), #changelist tbody tr:nth-child(even) td {
+  background-color: var(--muted) !important;
+  color: var(--foreground) !important;
+}
+
+#changelist tbody tr:hover, #changelist tbody tr:hover td {
+  background-color: var(--border) !important;
+  color: var(--foreground) !important;
+}
+
+/* Breadcrumbs */
+.breadcrumbs {
+  background-color: var(--card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius) !important;
+  padding: 1rem 1.5rem !important;
+  margin-bottom: 1.5rem !important;
+  box-shadow: var(--shadow) !important;
+}
+
+.breadcrumbs a {
+  color: var(--primary) !important;
+  text-decoration: none !important;
+  font-weight: 500 !important;
+}
+
+.breadcrumbs a:hover {
+  color: var(--primary-dark) !important;
+  text-decoration: underline !important;
+}
+
+/* Messages */
+.messagelist {
+  background-color: var(--card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius) !important;
+  box-shadow: var(--shadow) !important;
+  margin-bottom: 1.5rem !important;
+}
+
+.messagelist li {
+  padding: 1rem 1.5rem !important;
+  border-bottom: 1px solid var(--border) !important;
+}
+
+.messagelist li:last-child {
+  border-bottom: none !important;
+}
+
+.messagelist li.success {
+  background-color: rgba(34, 197, 94, 0.1) !important;
+  color: var(--success) !important;
+  border-left: 4px solid var(--success) !important;
+}
+
+.messagelist li.warning {
+  background-color: rgba(245, 158, 11, 0.1) !important;
+  color: var(--warning) !important;
+  border-left: 4px solid var(--warning) !important;
+}
+
+.messagelist li.error {
+  background-color: rgba(239, 68, 68, 0.1) !important;
+  color: var(--error) !important;
+  border-left: 4px solid var(--error) !important;
+}
+
+/* Pagination */
+.paginator {
+  background-color: var(--card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius) !important;
+  padding: 1rem !important;
+  margin-top: 1.5rem !important;
+  box-shadow: var(--shadow) !important;
+}
+
+.paginator a, .paginator .this-page {
+  color: var(--primary) !important;
+  text-decoration: none !important;
+  padding: 0.5rem 0.75rem !important;
+  margin: 0 0.25rem !important;
+  border-radius: 4px !important;
+  background-color: var(--muted) !important;
+  transition: all 0.2s ease !important;
+}
+
+.paginator a:hover {
+  background-color: var(--primary) !important;
+  color: white !important;
+}
+
+.paginator .this-page {
+  background-color: var(--primary) !important;
+  color: white !important;
+}
+
+/* Object Tools */
+.object-tools {
+  background-color: var(--card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius) !important;
+  padding: 1rem !important;
+  margin-bottom: 1.5rem !important;
+  box-shadow: var(--shadow) !important;
+}
+
+.object-tools a {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%) !important;
+  color: white !important;
+  text-decoration: none !important;
+  padding: 0.75rem 1.5rem !important;
+  border-radius: 6px !important;
+  font-weight: 600 !important;
+  transition: all 0.2s ease !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+}
+
+.object-tools a:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(62, 166, 107, 0.3) !important;
+}
+
+/* Help Text */
+.help, .help-text {
+  background-color: var(--muted) !important;
+  color: var(--muted-foreground) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 6px !important;
+  padding: 1rem !important;
+  margin-top: 0.5rem !important;
+  font-size: 0.875rem !important;
+}
+
+/* Error Messages */
+.errornote {
+  background-color: rgba(239, 68, 68, 0.1) !important;
+  color: var(--error) !important;
+  border: 1px solid var(--error) !important;
+  border-radius: 6px !important;
+  padding: 1rem !important;
+  margin-bottom: 1rem !important;
+}
+
+/* Inline Related */
+.inline-related {
+  background-color: var(--card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius) !important;
+  margin-bottom: 1.5rem !important;
+  box-shadow: var(--shadow) !important;
+}
+
+.inline-related h3 {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%) !important;
+  color: white !important;
+  margin: 0 !important;
+  padding: 1rem 1.5rem !important;
+  font-weight: 600 !important;
+  border-bottom: 1px solid var(--border) !important;
+}
+
+/* Submit Row */
+.submit-row {
+  background-color: var(--card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius) !important;
+  padding: 1.5rem !important;
+  margin-top: 2rem !important;
+  box-shadow: var(--shadow) !important;
+}
+
+.submit-row input {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 6px !important;
+  padding: 0.75rem 2rem !important;
+  font-weight: 600 !important;
+  font-size: 1rem !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.submit-row input:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(62, 166, 107, 0.3) !important;
+}
+
+/* Actions */
+.actions {
+  background-color: var(--card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius) !important;
+  padding: 1rem !important;
+  margin-bottom: 1.5rem !important;
+  box-shadow: var(--shadow) !important;
+}
+
+.actions select {
+  background-color: var(--muted) !important;
+  color: var(--foreground) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 6px !important;
+  padding: 0.5rem 1rem !important;
+  margin-left: 0.5rem !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  #content {
+    padding: 1rem !important;
+  }
+  
+  #content-main {
+    padding: 1rem !important;
+  }
+  
+  .module {
+    margin-bottom: 1rem !important;
+  }
+  
+  .module h2, .module caption {
+    padding: 0.75rem 1rem !important;
+    font-size: 1rem !important;
+  }
+  
+  .module .form-row {
+    padding: 0.75rem 1rem !important;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0f172a;
+    --foreground: #f8fafc;
+    --muted: #1e293b;
+    --muted-foreground: #94a3b8;
+    --border: #334155;
+    --card: #1e293b;
+    --card-foreground: #f8fafc;
+  }
+}

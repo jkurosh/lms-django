@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.views import LoginView
+from django.views.decorators.csrf import csrf_exempt
 from .models import CustomUser, Notification, Subscription, Cart
 from .decorators import require_authentication, require_staff, rate_limit, secure_headers, subscription_required_or_admin
 from django.contrib import messages
@@ -232,6 +233,75 @@ def admin_panel(request):
 
     return render(request, 'dadash/admin_panel.html', context)
 
+@csrf_exempt
+def check_username_availability(request):
+    """API برای بررسی در دسترس بودن نام کاربری"""
+    if request.method == 'POST':
+        try:
+            import json
+            data = json.loads(request.body)
+            username = data.get('username', '').strip()
+            
+            if not username:
+                return JsonResponse({'available': True, 'message': ''})
+            
+            if len(username) < 3:
+                return JsonResponse({
+                    'available': False,
+                    'message': 'نام کاربری باید حداقل ۳ کاراکتر باشد'
+                })
+            
+            if CustomUser.objects.filter(username=username).exists():
+                return JsonResponse({
+                    'available': False,
+                    'message': 'این نام کاربری قبلاً استفاده شده است'
+                })
+            
+            return JsonResponse({
+                'available': True,
+                'message': 'نام کاربری در دسترس است'
+            })
+        except Exception as e:
+            return JsonResponse({'available': False, 'message': 'خطا در بررسی'}, status=500)
+    
+    return JsonResponse({'available': False, 'message': 'متد نامعتبر'}, status=405)
+
+
+@csrf_exempt
+def check_phone_availability(request):
+    """API برای بررسی در دسترس بودن شماره تلفن"""
+    if request.method == 'POST':
+        try:
+            import json
+            data = json.loads(request.body)
+            phone_number = data.get('phone_number', '').strip()
+            
+            if not phone_number:
+                return JsonResponse({'available': True, 'message': ''})
+            
+            # بررسی فرمت
+            if not phone_number.isdigit() or len(phone_number) != 11 or not phone_number.startswith('09'):
+                return JsonResponse({
+                    'available': False,
+                    'message': 'فرمت شماره تلفن باید 09xxxxxxxxx باشد'
+                })
+            
+            if CustomUser.objects.filter(phone_number=phone_number).exists():
+                return JsonResponse({
+                    'available': False,
+                    'message': 'این شماره تلفن قبلاً استفاده شده است'
+                })
+            
+            return JsonResponse({
+                'available': True,
+                'message': 'شماره تلفن در دسترس است'
+            })
+        except Exception as e:
+            return JsonResponse({'available': False, 'message': 'خطا در بررسی'}, status=500)
+    
+    return JsonResponse({'available': False, 'message': 'متد نامعتبر'}, status=405)
+
+
 def register_view(request):
     """صفحه ثبت‌نام"""
     if request.method == 'POST':
@@ -264,6 +334,7 @@ def register_view(request):
                 'phone_number': phone_number,
                 'first_name': first_name,
                 'last_name': last_name,
+                'is_landing_page': False,
             })
         
         # بررسی فرمت شماره تلفن
@@ -274,6 +345,7 @@ def register_view(request):
                 'phone_number': phone_number,
                 'first_name': first_name,
                 'last_name': last_name,
+                'is_landing_page': False,
             })
         
         # بررسی طول نام کاربری
@@ -284,6 +356,7 @@ def register_view(request):
                 'phone_number': phone_number,
                 'first_name': first_name,
                 'last_name': last_name,
+                'is_landing_page': False,
             })
         
         # بررسی طول رمز عبور
@@ -294,6 +367,7 @@ def register_view(request):
                 'phone_number': phone_number,
                 'first_name': first_name,
                 'last_name': last_name,
+                'is_landing_page': False,
             })
         
         # بررسی مطابقت رمزهای عبور
@@ -304,6 +378,7 @@ def register_view(request):
                 'phone_number': phone_number,
                 'first_name': first_name,
                 'last_name': last_name,
+                'is_landing_page': False,
             })
         
         # بررسی تکراری بودن نام کاربری
@@ -314,6 +389,7 @@ def register_view(request):
                 'phone_number': phone_number,
                 'first_name': first_name,
                 'last_name': last_name,
+                'is_landing_page': False,
             })
         
         # بررسی تکراری بودن شماره تلفن
@@ -324,6 +400,7 @@ def register_view(request):
                 'phone_number': phone_number,
                 'first_name': first_name,
                 'last_name': last_name,
+                'is_landing_page': False,
             })
         
         # اگر همه چیز درست بود، کاربر را ایجاد کن
@@ -367,19 +444,19 @@ def register_view(request):
                 'phone_number': phone_number,
                 'first_name': first_name,
                 'last_name': last_name,
+                'is_landing_page': False,
             })
     
-    return render(request, 'dadash/register.html')
+    return render(request, 'dadash/register.html', {'is_landing_page': False})
 
 def logout_view(request):
     """خروج از سیستم"""
     logout(request)
-    messages.success(request, 'با موفقیت از سیستم خارج شدید.')
     return redirect('users:landing_page')
 
 def dadash_home(request):
     """صفحه اصلی heyvoonak - لندینگ پیج"""
-    return render(request, 'dadash/landing.html')
+    return render(request, 'dadash/landing.html', {'is_landing_page': True})
 
 def categories_home(request):
     """صفحه اصلی کتگوری‌ها"""
@@ -453,7 +530,7 @@ def cardiology(request):
 
 def landing_page(request):
     """لندینگ پیج جدید BBros"""
-    return render(request, 'dadash/landing.html')
+    return render(request, 'dadash/landing.html', {'is_landing_page': True})
 
 def get_subcategories_api(request, category_id):
     """API برای دریافت subcategories یک دسته‌بندی"""
@@ -1291,6 +1368,7 @@ def password_reset_view(request):
     """صفحه بازیابی رمز عبور"""
     return render(request, 'dadash/password_reset.html')
 
+@csrf_exempt  # 🔥 FIX: غیرفعال کردن CSRF برای API
 def verify_phone_api(request):
     """API برای تایید شماره تلفن و ارسال کد OTP"""
     if request.method != 'POST':
@@ -1298,9 +1376,8 @@ def verify_phone_api(request):
     
     try:
         import json
-        from apps.users.services.sms_service import SMSService
-        from apps.users.auth_models import OTPVerification
-        from datetime import datetime, timedelta
+        from apps.users.services.sms_service import sms_service  # 🔥 FIX: استفاده از instance موجود
+        from apps.users.models import OTPVerification
         
         data = json.loads(request.body)
         phone_number = data.get('phone_number', '').strip()
@@ -1328,12 +1405,12 @@ def verify_phone_api(request):
         recent_otp = OTPVerification.objects.filter(
             phone_number=phone_number,
             purpose='password_reset',
-            created_at__gte=datetime.now() - timedelta(minutes=2)
+            created_at__gte=timezone.now() - timedelta(minutes=2)
         ).order_by('-created_at').first()
         
         if recent_otp and not recent_otp.is_verified:
             # اگر کد قبلی هنوز معتبر است
-            remaining_time = 120 - int((datetime.now() - recent_otp.created_at).total_seconds())
+            remaining_time = 120 - int((timezone.now() - recent_otp.created_at).total_seconds())
             if remaining_time > 0:
                 return JsonResponse({
                     'success': False,
@@ -1342,8 +1419,7 @@ def verify_phone_api(request):
                 }, status=429)
         
         # ارسال کد OTP
-        sms_service = SMSService()
-        result = sms_service.send_password_reset_code(phone_number)
+        result = sms_service.send_otp_and_cache(phone_number, purpose='password_reset')  # 🔥 FIX: استفاده مستقیم از instance
         
         if result['success']:
             return JsonResponse({
@@ -1365,6 +1441,7 @@ def verify_phone_api(request):
             'message': 'خطا در پردازش درخواست'
         }, status=500)
 
+@csrf_exempt  # 🔥 FIX: غیرفعال کردن CSRF برای API
 def verify_otp_api(request):
     """API برای تایید کد OTP"""
     if request.method != 'POST':
@@ -1372,8 +1449,7 @@ def verify_otp_api(request):
     
     try:
         import json
-        from apps.users.auth_models import OTPVerification
-        from datetime import datetime, timedelta
+        from apps.users.models import OTPVerification
         
         data = json.loads(request.body)
         phone_number = data.get('phone_number', '').strip()
@@ -1392,7 +1468,7 @@ def verify_otp_api(request):
                 code=otp_code,
                 purpose='password_reset',
                 is_verified=False,
-                created_at__gte=datetime.now() - timedelta(minutes=2)
+                created_at__gte=timezone.now() - timedelta(minutes=2)
             ).order_by('-created_at').first()
             
             if not otp:
@@ -1403,7 +1479,7 @@ def verify_otp_api(request):
             
             # تایید کد
             otp.is_verified = True
-            otp.verified_at = datetime.now()
+            otp.verified_at = timezone.now()
             otp.save()
             
             # یافتن کاربر
@@ -1428,6 +1504,7 @@ def verify_otp_api(request):
             'message': 'خطا در بررسی کد تایید'
         }, status=500)
 
+@csrf_exempt  # 🔥 FIX: غیرفعال کردن CSRF برای API
 def change_password_api(request):
     """API برای تغییر رمز عبور بعد از تایید OTP"""
     if request.method != 'POST':
@@ -1435,8 +1512,7 @@ def change_password_api(request):
     
     try:
         import json
-        from apps.users.auth_models import OTPVerification
-        from datetime import datetime, timedelta
+        from apps.users.models import OTPVerification
         
         data = json.loads(request.body)
         phone_number = data.get('phone_number', '').strip()
@@ -1459,7 +1535,7 @@ def change_password_api(request):
             phone_number=phone_number,
             purpose='password_reset',
             is_verified=True,
-            verified_at__gte=datetime.now() - timedelta(minutes=2)
+            verified_at__gte=timezone.now() - timedelta(minutes=2)
         ).order_by('-verified_at').first()
         
         if not verified_otp:

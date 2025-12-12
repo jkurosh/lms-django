@@ -1,0 +1,35 @@
+# فایل .gitignore برای Docker
+# این فایل را به .gitignore اصلی پروژه اضافه کنید
+
+# Environment files
+.env
+.env.local
+.env.production
+*.env
+
+# Backup files
+backups/
+*.sql
+*.dump
+
+# SSL Certificates
+nginx/ssl/
+*.pem
+*.key
+*.crt
+
+# Logs
+logs/
+*.log
+
+# Docker volumes (در صورت استفاده از bind mounts)
+postgres_data/
+static_volume/
+media_volume/
+
+# Temporary files
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+

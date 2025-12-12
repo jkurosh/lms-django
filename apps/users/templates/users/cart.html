@@ -958,22 +958,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Dark mode sync from localStorage (set by base.html)
-    const currentTheme = localStorage.getItem('theme') || 'light';
-    if (currentTheme === 'dark') {
-        document.body.classList.add('dark');
-    }
-
-    // Listen for theme changes
-    window.addEventListener('storage', function(e) {
-        if (e.key === 'theme') {
-            if (e.newValue === 'dark') {
-                document.body.classList.add('dark');
-            } else {
-                document.body.classList.remove('dark');
-            }
-        }
-    });
 
     // Add smooth scroll
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {

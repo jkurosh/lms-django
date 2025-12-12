@@ -1,1197 +1,729 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="fa" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ثبت نام - HeyVoonak</title>
-    <!-- Bon Pro Font -->
-    <link href="{% static 'fonts/bon-pro/bon-pro.css' %}" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        :root {
-            --primary: #3EA66B;
-            --primary-dark: #2d8a54;
-            --secondary: #4B6A9D;
-            --background: #1a1a1a;
-            --foreground: #e5e7eb;
-            --muted: #374151;
-            --muted-foreground: #9ca3af;
-            --border: #4b5563;
-            --card: #374151;
-            --card-foreground: #e5e7eb;
-            --error: #ef4444;
-            --success: #22c55e;
+
+{% block title %}ثبت نام - HeyVoonak{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary: #3EA66B;
+        --primary-dark: #2d8a54;
+        --secondary: #4B6A9D;
+        --bg: #f0f9ff;
+        --card: #ffffff;
+        --text: #1e293b;
+        --text-muted: #64748b;
+        --border: #e2e8f0;
+        --radius: 20px;
+        --shadow: 0 25px 50px rgba(0, 0, 0, 0.09);
+    }
+
+    body {
+        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+    }
+
+    .auth-container {
+        width: 100%;
+        max-width: 480px;
+        background: var(--card);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        animation: fadeInUp 0.7s ease-out;
+        margin: 2rem auto;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(40px);
         }
 
-        .dark {
-            --background: #0f172a;
-            --foreground: #f8fafc;
-            --muted: #1e293b;
-            --muted-foreground: #94a3b8;
-            --border: #334155;
-            --card: #1e293b;
-            --card-foreground: #f8fafc;
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .auth-header {
+        background: linear-gradient(135deg, var(--secondary), var(--primary));
+        padding: 3rem 2rem 2.5rem;
+        text-align: center;
+        color: white;
+    }
+
+    .logo-icon {
+        width: 80px;
+        height: 80px;
+        background: rgba(255, 255, 255, 0.25);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        backdrop-filter: blur(10px);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .logo-icon i {
+        font-size: 2.3rem;
+    }
+
+    .logo-text {
+        font-size: 1.9rem;
+        font-weight: 800;
+        margin-bottom: 0.4rem;
+    }
+
+    .logo-subtitle {
+        font-size: 1rem;
+        opacity: 0.95;
+    }
+
+    .auth-form {
+        padding: 2rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.6rem;
+    }
+
+    .form-label {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .input-group {
+        position: relative;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 1rem 3.5rem 1rem 1rem;
+        border: 2px solid var(--border);
+        border-radius: 14px;
+        font-size: 1rem;
+        background: #fff;
+        transition: all 0.3s ease;
+    }
+
+    .form-input:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 5px rgba(62, 166, 107, 0.15);
+    }
+
+    .password-toggle {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        font-size: 1.25rem;
+        cursor: pointer;
+        padding: 0.4rem;
+        border-radius: 8px;
+        transition: all 0.2s;
+    }
+
+    .password-toggle:hover {
+        color: var(--primary);
+        background: rgba(62, 166, 107, 0.1);
+    }
+
+    .input-icon {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+        font-size: 1.15rem;
+        pointer-events: none;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.2rem;
+    }
+
+    .checkbox-label {
+        font-size: 0.92rem;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+    }
+
+    .checkbox-label a {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .checkbox-label a:hover {
+        text-decoration: underline;
+    }
+
+    .submit-btn {
+        width: 100%;
+        background: linear-gradient(135deg, var(--secondary), var(--primary));
+        color: white;
+        border: none;
+        padding: 1.1rem;
+        border-radius: 14px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        margin-top: 1rem;
+    }
+
+    .submit-btn:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 40px rgba(62, 166, 107, 0.35);
+    }
+
+    .submit-btn.loading {
+        opacity: 0.8;
+        position: relative;
+        color: transparent;
+    }
+
+    .submit-btn.loading::after {
+        content: '';
+        position: absolute;
+        width: 26px;
+        height: 26px;
+        border: 3px solid #fff;
+        border-top-color: transparent;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    @keyframes spin {
+        to {
+            transform: translate(-50%, -50%) rotate(360deg);
+        }
+    }
+
+    .auth-footer {
+        text-align: center;
+        padding: 1.5rem;
+        color: var(--text-muted);
+        font-size: 0.95rem;
+    }
+
+    .auth-footer a {
+        color: var(--primary);
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+    .password-strength {
+        margin-top: 0.6rem;
+    }
+
+    .strength-bar {
+        height: 6px;
+        background: #e2e8f0;
+        border-radius: 3px;
+        overflow: hidden;
+    }
+
+    .strength-fill {
+        height: 100%;
+        width: 0;
+        transition: width 0.4s;
+        border-radius: 3px;
+    }
+
+    .strength-fill.weak {
+        width: 25%;
+        background: #ef4444;
+    }
+
+    .strength-fill.fair {
+        width: 50%;
+        background: #f59e0b;
+    }
+
+    .strength-fill.good {
+        width: 75%;
+        background: #3b82f6;
+    }
+
+    .strength-fill.strong {
+        width: 100%;
+        background: var(--primary);
+    }
+
+    .strength-text {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        margin-top: 0.4rem;
+    }
+
+    .error-message,
+    .success-message {
+        padding: 0.9rem 1.2rem;
+        border-radius: 12px;
+        margin-bottom: 1rem;
+        font-size: 0.92rem;
+        display: none;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .error-message {
+        background: #fee2e2;
+        color: #991b1b;
+        border: 1px solid #fecaca;
+    }
+
+    .success-message {
+        background: #dcfce7;
+        color: #166534;
+        border: 1px solid #bbf7d0;
+    }
+
+    .validation-message {
+        font-size: 0.85rem;
+        margin-top: 0.5rem;
+        padding: 0.6rem;
+        border-radius: 8px;
+        display: none;
+        border-left: 4px solid;
+    }
+
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 9999;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(8px);
+        animation: fadeIn 0.3s;
+    }
+
+    .modal-content {
+        background: white;
+        margin: 5% auto;
+        border-radius: var(--radius);
+        width: 90%;
+        max-width: 700px;
+        max-height: 85vh;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+        animation: slideDown 0.4s ease-out;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        to {
+            opacity: 1;
+        }
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-50px);
         }
 
-        body {
-            font-family: 'Vazir', 'Tahoma', sans-serif;
-            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1rem;
-            direction: rtl;
-            transition: background 0.3s ease;
+        to {
+            opacity: 1;
+            transform: translateY(0);
         }
+    }
 
-        .auth-container {
-            width: 100%;
-            max-width: 450px;
-            background: var(--card);
-            border-radius: 24px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            overflow: hidden;
-            position: relative;
+    .modal-header {
+        background: linear-gradient(135deg, var(--secondary), var(--primary));
+        color: white;
+        padding: 1.5rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modal-header h2 {
+        margin: 0;
+        font-size: 1.6rem;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+    }
+
+    .modal-close {
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: white;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        font-size: 1.6rem;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .modal-close:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: rotate(90deg);
+    }
+
+    .modal-body {
+        padding: 2rem;
+        overflow-y: auto;
+        max-height: 60vh;
+        line-height: 1.8;
+        color: #444;
+    }
+
+    .modal-body h3 {
+        color: var(--primary);
+        margin: 1.8rem 0 1rem;
+        font-size: 1.3rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .modal-body ul {
+        padding-right: 2rem;
+        margin: 1rem 0;
+    }
+
+    .modal-body li {
+        margin-bottom: 0.7rem;
+    }
+
+    @media (max-width:480px) {
+        .form-row {
+            grid-template-columns: 1fr;
         }
 
         .auth-header {
-            background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
-            padding: 2rem;
-            text-align: center;
-            color: white;
-            position: relative;
-        }
-
-        .auth-header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/><circle cx="10" cy="60" r="0.5" fill="white" opacity="0.1"/><circle cx="90" cy="40" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
-            opacity: 0.3;
-        }
-
-        .logo-section {
-            position: relative;
-            z-index: 1;
-        }
-
-        .logo-icon {
-            width: 60px;
-            height: 60px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 1rem;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .logo-icon i {
-            font-size: 1.5rem;
-            color: white;
-        }
-
-        .logo-text {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-
-        .logo-subtitle {
-            font-size: 0.875rem;
-            opacity: 0.9;
+            padding: 2.5rem 1.5rem 2rem;
         }
 
         .auth-form {
-            padding: 2rem;
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-label {
-            display: block;
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: var(--foreground);
-            margin-bottom: 0.5rem;
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            border: 2px solid var(--border);
-            border-radius: 12px;
-            font-size: 0.875rem;
-            transition: all 0.2s ease;
-            background: var(--background);
-            color: var(--foreground);
-        }
-
-        .form-input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(62, 166, 107, 0.1);
-        }
-
-        .form-input.error {
-            border-color: var(--error);
-        }
-
-        .form-input.success {
-            border-color: var(--success);
-        }
-
-        .input-group {
-            position: relative;
-        }
-
-        .input-icon {
-            position: absolute;
-            left: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--muted-foreground);
-            font-size: 0.875rem;
-            z-index: 1;
-        }
-
-        .input-group .form-input {
-            padding-left: 2.5rem;
-            padding-right: 3rem; /* فضا برای دکمه نمایش پسورد */
-        }
-
-        .password-toggle {
-            position: absolute;
-            left: auto;
-            right: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            color: var(--muted-foreground);
-            cursor: pointer;
-            font-size: 1rem;
-            transition: all 0.2s ease;
-            padding: 0.25rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 2;
-            width: 32px;
-            height: 32px;
-            border-radius: 6px;
-        }
-
-        .password-toggle:hover {
-            color: var(--primary);
-            background: rgba(62, 166, 107, 0.1);
-        }
-
-        .password-toggle:active {
-            transform: translateY(-50%) scale(0.95);
-        }
-
-        /* Responsive */
-        @media (max-width: 480px) {
-            .input-group .form-input {
-                padding-right: 2.5rem;
-            }
-            
-            .password-toggle {
-                right: 0.75rem;
-                width: 28px;
-                height: 28px;
-                font-size: 0.875rem;
-            }
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-
-        .form-options {
-            display: flex;
-            align-items: flex-start;
-            gap: 0.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .checkbox {
-            width: 16px;
-            height: 16px;
-            border: 2px solid var(--border);
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            margin-top: 0.125rem;
-        }
-
-        .checkbox:checked {
-            background: var(--primary);
-            border-color: var(--primary);
-        }
-
-        .checkbox-label {
-            font-size: 0.875rem;
-            color: var(--muted-foreground);
-            cursor: pointer;
-            line-height: 1.4;
-        }
-
-        .checkbox-label a {
-            color: var(--primary);
-            text-decoration: none;
-            transition: color 0.2s ease;
-        }
-
-        .checkbox-label a:hover {
-            color: var(--primary-dark);
-        }
-
-        .submit-btn {
-            width: 100%;
-            background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
-            color: white;
-            border: none;
-            padding: 0.875rem 1rem;
-            border-radius: 12px;
-            font-size: 0.875rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(75, 106, 157, 0.3);
-        }
-
-        .submit-btn:active {
-            transform: translateY(0);
-        }
-
-        .submit-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .submit-btn.loading {
-            color: transparent;
-        }
-
-        .submit-btn.loading::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 20px;
-            height: 20px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-top: 2px solid white;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: translate(-50%, -50%) rotate(0deg); }
-            100% { transform: translate(-50%, -50%) rotate(360deg); }
-        }
-
-
-        .auth-footer {
-            text-align: center;
-            padding: 1rem 2rem 2rem;
-            color: var(--muted-foreground);
-            font-size: 0.875rem;
-        }
-
-        .auth-footer a {
-            color: var(--primary);
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.2s ease;
-        }
-
-        .auth-footer a:hover {
-            color: var(--primary-dark);
-        }
-
-        .dark-mode-toggle {
-            position: fixed;
-            top: 1rem;
-            left: 1rem;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
-            padding: 8px 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            color: white;
-            backdrop-filter: blur(10px);
-            z-index: 1000;
-        }
-
-        .dark-mode-toggle:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: scale(1.05);
-        }
-
-        .light-icon {
-            display: block;
-            color: #fbbf24;
-        }
-
-        .dark-icon {
-            display: none;
-            color: #f59e0b;
-        }
-
-        .dark .light-icon {
-            display: none;
-        }
-
-        .dark .dark-icon {
-            display: block;
-        }
-
-        .error-message {
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.2);
-            color: var(--error);
-            padding: 0.75rem 1rem;
-            border-radius: 12px;
-            font-size: 0.875rem;
-            margin-bottom: 1rem;
-            display: none;
-        }
-
-        .success-message {
-            background: rgba(34, 197, 94, 0.1);
-            border: 1px solid rgba(34, 197, 94, 0.2);
-            color: var(--success);
-            padding: 0.75rem 1rem;
-            border-radius: 12px;
-            font-size: 0.875rem;
-            margin-bottom: 1rem;
-            display: none;
-        }
-
-        .password-strength {
-            margin-top: 0.5rem;
-        }
-
-        .strength-bar {
-            height: 4px;
-            background: var(--border);
-            border-radius: 2px;
-            overflow: hidden;
-            margin-bottom: 0.25rem;
-        }
-
-        .strength-fill {
-            height: 100%;
-            width: 0%;
-            transition: all 0.3s ease;
-            border-radius: 2px;
-        }
-
-        .strength-fill.weak {
-            background: var(--error);
-            width: 25%;
-        }
-
-        .strength-fill.fair {
-            background: #f59e0b;
-            width: 50%;
-        }
-
-        .strength-fill.good {
-            background: #3b82f6;
-            width: 75%;
-        }
-
-        .strength-fill.strong {
-            background: var(--success);
-            width: 100%;
-        }
-
-        .strength-text {
-            font-size: 0.75rem;
-            color: var(--muted-foreground);
-        }
-
-        /* Responsive */
-        @media (max-width: 480px) {
-            .auth-container {
-                margin: 0.5rem;
-                max-width: 100%;
-            }
-            
-            .auth-header {
-                padding: 1.5rem;
-            }
-            
-            .auth-form {
-                padding: 1.5rem;
-            }
-            
-            .logo-icon {
-                width: 50px;
-                height: 50px;
-            }
-            
-            .logo-text {
-                font-size: 1.25rem;
-            }
-            
-            .form-row {
-                grid-template-columns: 1fr;
-                gap: 0;
-            }
-        }
-
-        /* Animation */
-        .auth-container {
-            animation: slideUp 0.6s ease-out;
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Modal Styles */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 9999;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(5px);
-            animation: fadeIn 0.3s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
+            padding: 1.8rem 1.5rem;
         }
 
         .modal-content {
-            background: var(--card);
-            margin: 5% auto;
-            padding: 0;
-            border-radius: 20px;
-            width: 90%;
-            max-width: 700px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            animation: slideDown 0.4s ease-out;
-            max-height: 80vh;
-            display: flex;
-            flex-direction: column;
+            width: 95%;
+            margin: 8% auto;
         }
+    }
+</style>
+{% endblock %}
 
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .modal-header {
-            background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
-            color: white;
-            padding: 1.5rem 2rem;
-            border-radius: 20px 20px 0 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .modal-header h2 {
-            margin: 0;
-            font-size: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .modal-close {
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            color: white;
-            font-size: 1.5rem;
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-close:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: rotate(90deg);
-        }
-
-        .modal-body {
-            padding: 2rem;
-            overflow-y: auto;
-            flex: 1;
-            color: var(--foreground);
-            line-height: 1.8;
-        }
-
-        .modal-body h3 {
-            color: var(--primary);
-            margin-top: 1.5rem;
-            margin-bottom: 1rem;
-            font-size: 1.25rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .modal-body h3:first-child {
-            margin-top: 0;
-        }
-
-        .modal-body p {
-            margin-bottom: 1rem;
-            color: var(--muted-foreground);
-        }
-
-        .modal-body ul {
-            margin: 1rem 0;
-            padding-right: 2rem;
-        }
-
-        .modal-body li {
-            margin-bottom: 0.75rem;
-            color: var(--muted-foreground);
-        }
-
-        .modal-body strong {
-            color: var(--foreground);
-        }
-
-        /* Scrollbar Styles */
-        .modal-body::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .modal-body::-webkit-scrollbar-track {
-            background: var(--background);
-            border-radius: 10px;
-        }
-
-        .modal-body::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 10px;
-        }
-
-        .modal-body::-webkit-scrollbar-thumb:hover {
-            background: var(--primary-dark);
-        }
-
-        @media (max-width: 768px) {
-            .modal-content {
-                width: 95%;
-                margin: 2% auto;
-                max-height: 90vh;
-            }
-
-            .modal-header {
-                padding: 1rem 1.5rem;
-            }
-
-            .modal-header h2 {
-                font-size: 1.25rem;
-            }
-
-            .modal-body {
-                padding: 1.5rem;
-            }
-        }
-
-        /* ==================== Additional Responsive Design ==================== */
-        
-        /* Tablet */
-        @media (max-width: 768px) {
-            .auth-container {
-                max-width: 90%;
-                margin: 1rem auto;
-            }
-
-            .auth-header {
-                padding: 1.5rem;
-            }
-
-            .logo-text {
-                font-size: 1.5rem;
-            }
-
-            .form-row {
-                grid-template-columns: 1fr !important;
-            }
-        }
-
-        /* Mobile */
-        @media (max-width: 480px) {
-            body {
-                padding: 0.5rem;
-            }
-
-            .auth-container {
-                max-width: 100%;
-                margin: 0.5rem auto;
-            }
-
-            .auth-header {
-                padding: 1.25rem 1rem;
-            }
-
-            .logo-text {
-                font-size: 1.25rem;
-            }
-
-            .logo-subtitle {
-                font-size: 0.7rem;
-            }
-
-            .auth-form {
-                padding: 1.25rem 1rem;
-            }
-
-            .form-group {
-                margin-bottom: 1rem;
-            }
-
-            .form-label {
-                font-size: 0.75rem;
-            }
-
-            .form-input {
-                font-size: 0.8rem;
-            }
-
-            .password-strength {
-                font-size: 0.7rem;
-            }
-
-            .checkbox-label {
-                font-size: 0.75rem;
-            }
-        }
-
-        /* Extra Small */
-        @media (max-width: 360px) {
-            .form-input {
-                font-size: 0.75rem;
-            }
-
-            .submit-btn {
-                font-size: 0.75rem;
-            }
-        }
-    </style>
-</head>
-<body>
-    <!-- Dark Mode Toggle -->
-    <button id="dark-mode-toggle" class="dark-mode-toggle" title="تغییر حالت تاریک/روشن">
-        <i class="fas fa-moon light-icon"></i>
-        <i class="fas fa-sun dark-icon"></i>
-    </button>
-    
-    <div class="auth-container">
-        <!-- Header -->
-        <div class="auth-header">
-            <div class="logo-section">
-                <div class="logo-icon">
-                    <i class="fas fa-user-plus"></i>
-                </div>
-                <div class="logo-text">ثبت نام</div>
-                <div class="logo-subtitle">حساب کاربری جدید ایجاد کنید</div>
-            </div>
-        </div>
-
-        <!-- Form -->
-        <div class="auth-form">
-            <div class="error-message" id="errorMessage">
-                <i class="fas fa-exclamation-circle"></i>
-                <span id="errorText"></span>
-            </div>
-
-            <div class="success-message" id="successMessage">
-                <i class="fas fa-check-circle"></i>
-                <span id="successText"></span>
-            </div>
-
-            <form id="registerForm" method="post">
-                {% csrf_token %}
-                
-                {% if messages %}
-                    {% for message in messages %}
-                        <div class="error-message" style="display: block;">
-                            <i class="fas fa-exclamation-circle"></i>
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                {% endif %}
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label" for="first_name">نام</label>
-                        <div class="input-group">
-                            <i class="fas fa-user input-icon"></i>
-                            <input type="text" id="first_name" name="first_name" class="form-input" placeholder="نام خود را وارد کنید" value="{{ first_name|default:'' }}" required>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label" for="last_name">نام خانوادگی</label>
-                        <div class="input-group">
-                            <i class="fas fa-user input-icon"></i>
-                            <input type="text" id="last_name" name="last_name" class="form-input" placeholder="نام خانوادگی خود را وارد کنید" value="{{ last_name|default:'' }}" required>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label" for="phone_number">شماره تلفن</label>
-                    <div class="input-group">
-                        <i class="fas fa-phone input-icon"></i>
-                        <input type="tel" id="phone_number" name="phone_number" class="form-input" placeholder="شماره تلفن خود را وارد کنید" value="{{ phone_number|default:'' }}" required>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label" for="username">نام کاربری</label>
-                    <div class="input-group">
-                        <i class="fas fa-at input-icon"></i>
-                        <input type="text" id="username" name="username" class="form-input" placeholder="نام کاربری خود را انتخاب کنید" value="{{ username|default:'' }}" required>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label" for="password">رمز عبور</label>
-                    <div class="input-group">
-                        <i class="fas fa-lock input-icon"></i>
-                        <input type="password" id="password" name="password" class="form-input" placeholder="رمز عبور قوی انتخاب کنید" required>
-                        <button type="button" class="password-toggle" onclick="togglePassword('password')">
-                            <i class="fas fa-eye" id="passwordToggleIcon"></i>
-                        </button>
-                    </div>
-                    <div class="password-strength">
-                        <div class="strength-bar">
-                            <div class="strength-fill" id="strengthFill"></div>
-                        </div>
-                        <div class="strength-text" id="strengthText">رمز عبور خود را وارد کنید</div>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label" for="confirm_password">تکرار رمز عبور</label>
-                    <div class="input-group">
-                        <i class="fas fa-lock input-icon"></i>
-                        <input type="password" id="confirm_password" name="confirm_password" class="form-input" placeholder="رمز عبور را مجدداً وارد کنید" required>
-                        <button type="button" class="password-toggle" onclick="togglePassword('confirm_password')">
-                            <i class="fas fa-eye" id="confirmPasswordToggleIcon"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="form-options">
-                    <input type="checkbox" id="terms" name="terms" class="checkbox" required>
-                    <label for="terms" class="checkbox-label">
-                        با <a href="#" id="termsLink">شرایط و قوانین</a> و <a href="#" id="privacyLink">حریم خصوصی</a> موافقم
-                    </label>
-                </div>
-
-                <button type="submit" class="submit-btn" id="submitBtn">
-                    <i class="fas fa-user-plus"></i>
-                    ایجاد حساب کاربری
-                </button>
-            </form>
-
-        </div>
-
-        <!-- Footer -->
-        <div class="auth-footer">
-            قبلاً حساب کاربری دارید؟ 
-            <a href="/login/">وارد شوید</a>
-        </div>
+{% block content %}
+<div class="auth-container">
+    <div class="auth-header">
+        <div class="logo-icon"><i class="fas fa-user-plus"></i></div>
+        <div class="logo-text">ثبت نام</div>
+        <div class="logo-subtitle">حساب کاربری جدید ایجاد کنید</div>
     </div>
 
-    <script>
-        // Password toggle
-        function togglePassword(inputId) {
-            const passwordInput = document.getElementById(inputId);
-            const toggleIcon = document.getElementById(inputId + 'ToggleIcon');
-            
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                toggleIcon.classList.remove('fa-eye');
-                toggleIcon.classList.add('fa-eye-slash');
-            } else {
-                passwordInput.type = 'password';
-                toggleIcon.classList.remove('fa-eye-slash');
-                toggleIcon.classList.add('fa-eye');
-            }
-        }
+    <div class="auth-form">
+        <div class="error-message" id="errorMessage"><i class="fas fa-exclamation-circle"></i> <span
+                id="errorText"></span></div>
+        <div class="success-message" id="successMessage"><i class="fas fa-check-circle"></i> <span
+                id="successText"></span></div>
 
-        // Password strength checker
-        document.getElementById('password').addEventListener('input', function() {
-            const password = this.value;
-            const strengthFill = document.getElementById('strengthFill');
-            const strengthText = document.getElementById('strengthText');
-            
-            let strength = 0;
-            let strengthLabel = '';
-            
-            if (password.length >= 8) strength++;
-            if (/[a-z]/.test(password)) strength++;
-            if (/[A-Z]/.test(password)) strength++;
-            if (/[0-9]/.test(password)) strength++;
-            if (/[^A-Za-z0-9]/.test(password)) strength++;
-            
-            strengthFill.className = 'strength-fill';
-            
-            if (strength <= 1) {
-                strengthFill.classList.add('weak');
-                strengthLabel = 'ضعیف';
-            } else if (strength <= 2) {
-                strengthFill.classList.add('fair');
-                strengthLabel = 'متوسط';
-            } else if (strength <= 3) {
-                strengthFill.classList.add('good');
-                strengthLabel = 'خوب';
-            } else {
-                strengthFill.classList.add('strong');
-                strengthLabel = 'قوی';
-            }
-            
-            strengthText.textContent = password ? `قدرت رمز عبور: ${strengthLabel}` : 'رمز عبور خود را وارد کنید';
-        });
+        <form id="registerForm" method="post">
+            {% csrf_token %}
 
-        // Form submission
-        document.getElementById('registerForm').addEventListener('submit', function(e) {
-            // e.preventDefault(); // Removed to allow real form submission
-            
-            const submitBtn = document.getElementById('submitBtn');
-            const errorMessage = document.getElementById('errorMessage');
-            const successMessage = document.getElementById('successMessage');
-            
-            // Validate passwords match
-            const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirm_password').value;
-            
-            if (password !== confirmPassword) {
-                e.preventDefault(); // Prevent submission if passwords don't match
-                showError('رمزهای عبور مطابقت ندارند');
-                return;
-            }
-            
-            // Show loading state
-            submitBtn.classList.add('loading');
-            submitBtn.disabled = true;
-            
-            // Hide previous messages
-            errorMessage.style.display = 'none';
-            successMessage.style.display = 'none';
-            
-            // Let the form submit naturally to Django backend
-        });
-
-        // Input validation
-        document.querySelectorAll('.form-input').forEach(input => {
-            input.addEventListener('blur', function() {
-                validateInput(this);
-            });
-            
-            input.addEventListener('input', function() {
-                this.classList.remove('error', 'success');
-            });
-        });
-
-        function validateInput(input) {
-            const value = input.value.trim();
-            
-            if (!value) {
-                input.classList.add('error');
-                return false;
-            }
-            
-            if (input.type === 'email') {
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if (!emailRegex.test(value)) {
-                    input.classList.add('error');
-                    return false;
-                }
-            }
-            
-            if (input.name === 'username') {
-                if (value.length < 3) {
-                    input.classList.add('error');
-                    return false;
-                }
-            }
-            
-            if (input.type === 'password') {
-                if (value.length < 6) {
-                    input.classList.add('error');
-                    return false;
-                }
-            }
-            
-            input.classList.add('success');
-            return true;
-        }
-
-        function showError(message) {
-            const errorMessage = document.getElementById('errorMessage');
-            document.getElementById('errorText').textContent = message;
-            errorMessage.style.display = 'block';
-        }
-
-        // Auto-focus first input
-        document.getElementById('first_name').focus();
-    </script>
-    
-    <script>
-        // Dark mode functionality
-        const darkModeToggle = document.getElementById('dark-mode-toggle');
-        const body = document.body;
-
-        // Check for saved theme preference or default to light mode
-        const currentTheme = localStorage.getItem('theme') || 'light';
-        if (currentTheme === 'dark') {
-            body.classList.add('dark');
-        }
-
-        // Toggle dark mode
-        darkModeToggle.addEventListener('click', () => {
-            body.classList.toggle('dark');
-            const isDark = body.classList.contains('dark');
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
-        });
-    </script>
-    
-    <!-- Terms and Conditions Modal -->
-    <div id="termsModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2><i class="fas fa-file-contract"></i> شرایط و قوانین استفاده</h2>
-                <button class="modal-close" onclick="closeModal('termsModal')">&times;</button>
+            {% if messages %}
+            {% for message in messages %}
+            <div class="error-message" style="display:flex"><i class="fas fa-exclamation-circle"></i> {{ message }}
             </div>
-            <div class="modal-body">
-                <h3><i class="fas fa-check-circle"></i> پذیرش قوانین</h3>
-                <p>با ثبت‌نام در این پلتفرم، شما تمامی شرایط و قوانین زیر را می‌پذیرید و متعهد می‌شوید که به آنها پایبند باشید.</p>
-                
-                <h3><i class="fas fa-user-shield"></i> حساب کاربری</h3>
-                <ul>
-                    <li>اطلاعات وارد شده باید صحیح و واقعی باشد</li>
-                    <li>حفظ امنیت رمز عبور به عهده شما است</li>
-                    <li>استفاده از حساب کاربری توسط اشخاص ثالث ممنوع است</li>
-                    <li>در صورت سوء استفاده، حساب کاربری شما مسدود خواهد شد</li>
-                </ul>
+            {% endfor %}
+            {% endif %}
 
-                <h3><i class="fas fa-book-medical"></i> استفاده از محتوا</h3>
-                <ul>
-                    <li>محتوای آموزشی فقط برای مقاصد علمی و آموزشی است</li>
-                    <li>کپی‌برداری و انتشار محتوا بدون اجازه ممنوع است</li>
-                    <li>مسئولیت استفاده از اطلاعات به عهده کاربر است</li>
-                    <li>این پلتفرم جایگزین مشاوره پزشکی نیست</li>
-                </ul>
-
-                <h3><i class="fas fa-balance-scale"></i> مسئولیت‌ها</h3>
-                <ul>
-                    <li>رعایت قوانین و مقررات جمهوری اسلامی ایران الزامی است</li>
-                    <li>انتشار محتوای نامناسب، توهین‌آمیز یا خلاف قانون ممنوع است</li>
-                    <li>هرگونه تخلف منجر به حذف حساب کاربری خواهد شد</li>
-                    <li>پلتفرم مسئولیتی در قبال خسارات احتمالی ندارد</li>
-                </ul>
-
-                <h3><i class="fas fa-coins"></i> پرداخت و اشتراک</h3>
-                <ul>
-                    <li>استفاده از برخی امکانات نیاز به اشتراک دارد</li>
-                    <li>پرداخت‌ها از طریق درگاه‌های معتبر انجام می‌شود</li>
-                    <li>استرداد وجه طبق قوانین مشخص شده انجام می‌پذیرد</li>
-                    <li>تغییر قیمت‌ها با اطلاع‌رسانی قبلی انجام خواهد شد</li>
-                </ul>
-
-                <h3><i class="fas fa-edit"></i> تغییرات قوانین</h3>
-                <p>مدیریت پلتفرم حق دارد در هر زمان این قوانین را به‌روزرسانی کند. ادامه استفاده از پلتفرم به منزله پذیرش تغییرات است.</p>
-
-                <h3><i class="fas fa-envelope"></i> تماس با ما</h3>
-                <p>در صورت هرگونه سوال یا ابهام، می‌توانید از طریق بخش تماس با ما، با پشتیبانی در ارتباط باشید.</p>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="first_name">نام</label>
+                    <div class="input-group">
+                        <i class="fas fa-user input-icon"></i>
+                        <input type="text" id="first_name" name="first_name" class="form-input" placeholder="نام"
+                            value="{{ first_name|default:'' }}" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="last_name">نام خانوادگی</label>
+                    <div class="input-group">
+                        <i class="fas fa-user input-icon"></i>
+                        <input type="text" id="last_name" name="last_name" class="form-input" placeholder="نام خانوادگی"
+                            value="{{ last_name|default:'' }}" required>
+                    </div>
+                </div>
             </div>
-        </div>
+
+            <div class="form-group">
+                <label class="form-label" for="phone_number">شماره تلفن</label>
+                <div class="input-group">
+                    <i class="fas fa-phone input-icon"></i>
+                    <input type="tel" id="phone_number" name="phone_number" class="form-input" placeholder="09123456789"
+                        value="{{ phone_number|default:'' }}" required>
+                </div>
+                <div class="validation-message" id="phoneMessage"></div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="username">نام کاربری</label>
+                <div class="input-group">
+                    <i class="fas fa-at input-icon"></i>
+                    <input type="text" id="username" name="username" class="form-input" placeholder="نام کاربری دلخواه"
+                        value="{{ username|default:'' }}" required>
+                </div>
+                <div class="validation-message" id="usernameMessage"></div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="password">رمز عبور</label>
+                <div class="input-group">
+                    <button type="button" class="password-toggle" onclick="togglePassword('password')">
+                        <i class="fas fa-eye" id="passwordToggleIcon"></i>
+                    </button>
+                    <input type="password" id="password" name="password" class="form-input" placeholder="رمز عبور قوی"
+                        required>
+                </div>
+                <div class="password-strength">
+                    <div class="strength-bar">
+                        <div class="strength-fill" id="strengthFill"></div>
+                    </div>
+                    <div class="strength-text" id="strengthText">رمز عبور خود را وارد کنید</div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="confirm_password">تکرار رمز عبور</label>
+                <div class="input-group">
+                    <button type="button" class="password-toggle" onclick="togglePassword('confirm_password')">
+                        <i class="fas fa-eye" id="confirmPasswordToggleIcon"></i>
+                    </button>
+                    <input type="password" id="confirm_password" name="confirm_password" class="form-input"
+                        placeholder="تکرار رمز عبور" required>
+                </div>
+            </div>
+
+            <div style="margin:2rem 0;">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="terms" name="terms" required
+                        style="width:18px;height:18px;cursor:pointer;">
+                    با <a href="#" id="termsLink">شرایط و قوانین</a> و <a href="#" id="privacyLink">حریم خصوصی</a>
+                    موافقم
+                </label>
+            </div>
+
+            <button type="submit" class="submit-btn" id="submitBtn">
+                <i class="fas fa-user-plus"></i> ایجاد حساب کاربری
+            </button>
+        </form>
     </div>
 
-    <!-- Privacy Policy Modal -->
-    <div id="privacyModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2><i class="fas fa-user-lock"></i> سیاست حریم خصوصی</h2>
-                <button class="modal-close" onclick="closeModal('privacyModal')">&times;</button>
-            </div>
-            <div class="modal-body">
-                <h3><i class="fas fa-database"></i> جمع‌آوری اطلاعات</h3>
-                <p>ما اطلاعات زیر را از شما جمع‌آوری می‌کنیم:</p>
-                <ul>
-                    <li><strong>اطلاعات هویتی:</strong> نام، نام خانوادگی، شماره تلفن</li>
-                    <li><strong>اطلاعات حساب:</strong> نام کاربری، رمز عبور (رمزنگاری شده)</li>
-                    <li><strong>اطلاعات استفاده:</strong> پیشرفت آموزشی، نمرات، بازخوردها</li>
-                    <li><strong>اطلاعات فنی:</strong> IP آدرس، مرورگر، دستگاه (برای امنیت)</li>
-                </ul>
+    <div class="auth-footer">
+        قبلاً حساب دارید؟ <a href="/login/">وارد شوید</a>
+    </div>
+</div>
 
-                <h3><i class="fas fa-bullseye"></i> استفاده از اطلاعات</h3>
-                <p>اطلاعات جمع‌آوری شده برای موارد زیر استفاده می‌شود:</p>
-                <ul>
-                    <li>ارائه خدمات آموزشی و پشتیبانی</li>
-                    <li>بهبود کیفیت محتوا و تجربه کاربری</li>
-                    <li>ارسال اطلاعیه‌های مهم و به‌روزرسانی‌ها</li>
-                    <li>جلوگیری از سوء استفاده و تقلب</li>
-                    <li>تحلیل آماری و گزارش‌گیری</li>
-                </ul>
-
-                <h3><i class="fas fa-shield-alt"></i> حفاظت از اطلاعات</h3>
-                <p>ما از روش‌های امنیتی پیشرفته برای حفاظت از اطلاعات شما استفاده می‌کنیم:</p>
-                <ul>
-                    <li>رمزنگاری رمز عبور با الگوریتم‌های پیشرفته</li>
-                    <li>استفاده از پروتکل‌های امن (HTTPS/SSL)</li>
-                    <li>محدودیت دسترسی به اطلاعات حساس</li>
-                    <li>پشتیبان‌گیری منظم از پایگاه داده</li>
-                    <li>نظارت مستمر بر امنیت سیستم</li>
-                </ul>
-
-                <h3><i class="fas fa-share-alt"></i> اشتراک‌گذاری اطلاعات</h3>
-                <p><strong>ما هرگز اطلاعات شخصی شما را بدون اجازه به اشخاص ثالث نمی‌فروشیم یا ارائه نمی‌دهیم.</strong></p>
-                <p>استثناها:</p>
-                <ul>
-                    <li>در صورت الزام قانونی (دستور قضایی)</li>
-                    <li>برای محافظت از حقوق و امنیت پلتفرم و کاربران</li>
-                    <li>با ارائه‌دهندگان خدمات (با قرارداد محرمانگی)</li>
-                </ul>
-
-                <h3><i class="fas fa-cookie"></i> کوکی‌ها</h3>
-                <p>ما از کوکی‌ها برای بهبود تجربه کاربری استفاده می‌کنیم:</p>
-                <ul>
-                    <li>کوکی‌های ضروری برای عملکرد سایت</li>
-                    <li>کوکی‌های تحلیلی برای بهبود خدمات</li>
-                    <li>کوکی‌های شخصی‌سازی برای تنظیمات کاربر</li>
-                </ul>
-
-                <h3><i class="fas fa-user-times"></i> حقوق شما</h3>
-                <p>شما حق دارید:</p>
-                <ul>
-                    <li>به اطلاعات شخصی خود دسترسی داشته باشید</li>
-                    <li>اطلاعات نادرست را اصلاح کنید</li>
-                    <li>درخواست حذف حساب کاربری کنید</li>
-                    <li>از دریافت ایمیل‌های تبلیغاتی انصراف دهید</li>
-                    <li>نسخه‌ای از اطلاعات خود را دریافت کنید</li>
-                </ul>
-
-                <h3><i class="fas fa-child"></i> کاربران زیر 18 سال</h3>
-                <p>استفاده از این پلتفرم برای افراد زیر 18 سال نیازمند رضایت والدین یا سرپرست قانونی است.</p>
-
-                <h3><i class="fas fa-sync-alt"></i> به‌روزرسانی سیاست</h3>
-                <p>این سیاست حریم خصوصی ممکن است به‌روزرسانی شود. تغییرات مهم از طریق ایمیل یا اعلان در پلتفرم به اطلاع شما خواهد رسید.</p>
-
-                <p style="margin-top: 2rem; padding-top: 1rem; border-top: 2px solid var(--border);">
-                    <strong>آخرین به‌روزرسانی:</strong> اکتبر 2025<br>
-                    <strong>تماس با ما:</strong> برای سوالات مربوط به حریم خصوصی، با پشتیبانی تماس بگیرید.
-                </p>
-            </div>
+<!-- مودال شرایط و قوانین -->
+<div id="termsModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>شرایط و قوانین استفاده</h2>
+            <button class="modal-close" onclick="closeModal('termsModal')">×</button>
+        </div>
+        <div class="modal-body">
+            <h3>پذیرش قوانین</h3>
+            <p>با ثبت‌نام در این پلتفرم، شما تمامی شرایط و قوانین زیر را می‌پذیرید و متعهد می‌شوید که به آنها پایبند
+                باشید.</p>
+            <h3>حساب کاربری</h3>
+            <ul>
+                <li>اطلاعات وارد شده باید صحیح و واقعی باشد</li>
+                <li>حفظ امنیت رمز عبور به عهده شما است</li>
+                <li>استفاده از حساب توسط اشخاص ثالث ممنوع است</li>
+                <li>در صورت سوءاستفاده، حساب مسدود خواهد شد</li>
+            </ul>
+            <h3>استفاده از محتوا</h3>
+            <ul>
+                <li>محتوای آموزشی فقط برای مقاصد علمی است</li>
+                <li>کپی‌برداری و انتشار محتوا ممنوع است</li>
+                <li>پلتفرم جایگزین مشاوره پزشکی نیست</li>
+            </ul>
+            <h3>پرداخت و اشتراک</h3>
+            <ul>
+                <li>استفاده از برخی امکانات نیازمند اشتراک است</li>
+                <li>استرداد وجه طبق قوانین انجام می‌شود</li>
+            </ul>
+            <p style="margin-top:2rem; color:#666;">آخرین به‌روزرسانی: آبان ۱۴۰۴</p>
         </div>
     </div>
+</div>
 
-    <script>
-        // Modal Functions
-        function openModal(modalId) {
-            document.getElementById(modalId).style.display = 'block';
-            document.body.style.overflow = 'hidden';
+<!-- مودال حریم خصوصی -->
+<div id="privacyModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>سیاست حریم خصوصی</h2>
+            <button class="modal-close" onclick="closeModal('privacyModal')">×</button>
+        </div>
+        <div class="modal-body">
+            <h3>جمع‌آوری اطلاعات</h3>
+            <p>ما فقط اطلاعات ضروری را جمع‌آوری می‌کنیم:</p>
+            <ul>
+                <li>نام، نام خانوادگی، شماره تلفن</li>
+                <li>نام کاربری و رمز عبور (رمزنگاری شده)</li>
+                <li>اطلاعات فنی برای امنیت</li>
+            </ul>
+            <h3>حفاظت از اطلاعات</h3>
+            <ul>
+                <li>رمزنگاری پیشرفته</li>
+                <li>پروتکل HTTPS/SSL</li>
+                <li>محدودیت دسترسی</li>
+            </ul>
+            <h3>حقوق شما</h3>
+            <ul>
+                <li>دسترسی، اصلاح و حذف اطلاعات</li>
+                <li>انصراف از دریافت ایمیل</li>
+            </ul>
+            <p style="margin-top:2rem; color:#666;">آخرین به‌روزرسانی: آبان ۱۴۰۴</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function togglePassword(id) {
+        const input = document.getElementById(id);
+        const icon = document.getElementById(id + 'ToggleIcon');
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.replace('fa-eye', 'fa-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.replace('fa-eye-slash', 'fa-eye');
         }
+    }
 
-        function closeModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
-            document.body.style.overflow = 'auto';
-        }
+    document.getElementById('password').addEventListener('input', function () {
+        const pw = this.value;
+        const fill = document.getElementById('strengthFill');
+        const text = document.getElementById('strengthText');
+        let score = 0;
+        if (pw.length >= 8) score++;
+        if (/[a-z]/.test(pw)) score++;
+        if (/[A-Z]/.test(pw)) score++;
+        if (/[0-9]/.test(pw)) score++;
+        if (/[^A-Za-z0-9]/.test(pw)) score++;
 
-        // Event Listeners for Terms and Privacy Links
-        document.getElementById('termsLink').addEventListener('click', function(e) {
+        fill.className = 'strength-fill';
+        if (score <= 1) fill.classList.add('weak');
+        else if (score <= 2) fill.classList.add('fair');
+        else if (score <= 3) fill.classList.add('good');
+        else fill.classList.add('strong');
+
+        const labels = ['رمز عبور خود را وارد کنید', 'ضعیف', 'متوسط', 'خوب', 'قوی'];
+        text.textContent = pw ? `قدرت رمز: ${labels[score] || 'قوی'}` : labels[0];
+    });
+
+    document.getElementById('registerForm').addEventListener('submit', function (e) {
+        const p1 = document.getElementById('password').value;
+        const p2 = document.getElementById('confirm_password').value;
+        if (p1 !== p2) {
             e.preventDefault();
-            openModal('termsModal');
-        });
+            document.getElementById('errorText').textContent = 'رمزهای عبور مطابقت ندارند';
+            document.getElementById('errorMessage').style.display = 'flex';
+            return;
+        }
+        document.getElementById('submitBtn').classList.add('loading');
+    });
 
-        document.getElementById('privacyLink').addEventListener('click', function(e) {
-            e.preventDefault();
-            openModal('privacyModal');
-        });
+    function openModal(id) {
+        document.getElementById(id).style.display = 'block';
+        document.body.style.overflow = 'hidden';
+    }
+    function closeModal(id) {
+        document.getElementById(id).style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+    document.getElementById('termsLink').addEventListener('click', e => { e.preventDefault(); openModal('termsModal'); });
+    document.getElementById('privacyLink').addEventListener('click', e => { e.preventDefault(); openModal('privacyModal'); });
+    window.addEventListener('click', e => {
+        if (e.target.classList.contains('modal')) closeModal(e.target.id);
+    });
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') {
+            document.querySelectorAll('.modal').forEach(m => m.style.display === 'block' && closeModal(m.id));
+        }
+    });
 
-        // Close modal when clicking outside
-        window.addEventListener('click', function(e) {
-            if (e.target.classList.contains('modal')) {
-                e.target.style.display = 'none';
-                document.body.style.overflow = 'auto';
-            }
-        });
+    let usernameTimeout, phoneTimeout;
 
-        // Close modal with Escape key
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                const modals = document.querySelectorAll('.modal');
-                modals.forEach(modal => {
-                    if (modal.style.display === 'block') {
-                        modal.style.display = 'none';
-                        document.body.style.overflow = 'auto';
-                    }
-                });
-            }
-        });
-    </script>
+    const usernameInput = document.getElementById('username');
+    const phoneInput = document.getElementById('phone_number');
+    const usernameMessage = document.getElementById('usernameMessage');
+    const phoneMessage = document.getElementById('phoneMessage');
 
-    <script src="{% static 'dadash/network-protection.js' %}"></script>
-</body>
-</html>
+    usernameInput.addEventListener('input', function () {
+        clearTimeout(usernameTimeout);
+        const val = this.value.trim();
+        if (!val) { usernameMessage.style.display = 'none'; return; }
+        usernameTimeout = setTimeout(async () => {
+            try {
+                const res = await fetch('/api/check-username/', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: val }) });
+                const data = await res.json();
+                usernameMessage.innerHTML = data.available
+                    ? `<i class="fas fa-check-circle"></i> ${data.message || 'در دسترس'}`
+                    : `<i class="fas fa-times-circle"></i> ${data.message}`;
+                usernameMessage.style.display = 'block';
+                usernameMessage.style.backgroundColor = data.available ? '#d4edda' : '#f8d7da';
+                usernameMessage.style.color = data.available ? '#155724' : '#721c24';
+                usernameMessage.style.borderLeftColor = data.available ? '#28a745' : '#dc3545';
+            } catch (e) { console.error(e); }
+        }, 600);
+    });
+
+    phoneInput.addEventListener('input', function () {
+        clearTimeout(phoneTimeout);
+        const val = this.value.trim();
+        if (!val) { phoneMessage.style.display = 'none'; return; }
+        phoneTimeout = setTimeout(async () => {
+            try {
+                const res = await fetch('/api/check-phone/', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone_number: val }) });
+                const data = await res.json();
+                phoneMessage.innerHTML = data.available
+                    ? `<i class="fas fa-check-circle"></i> ${data.message || 'در دسترس'}`
+                    : `<i class="fas fa-times-circle"></i> ${data.message}`;
+                phoneMessage.style.display = 'block';
+                phoneMessage.style.backgroundColor = data.available ? '#d4edda' : '#f8d7da';
+                phoneMessage.style.color = data.available ? '#155724' : '#721c24';
+                phoneMessage.style.borderLeftColor = data.available ? '#28a745' : '#dc3545';
+            } catch (e) { console.error(e); }
+        }, 600);
+    });
+</script>
+{% endblock %}

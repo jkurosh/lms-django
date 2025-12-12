@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard-header.css' %}">
+{% block dashboard_css %}{% endblock %}
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Header -->
+    {% include 'includes/dashboard_header.html' %}
+
+    <!-- Main Content -->
+    <main class="main-content">
+        {% block dashboard_content %}{% endblock %}
+    </main>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{% block dashboard_js %}{% endblock %}
+{% endblock %}

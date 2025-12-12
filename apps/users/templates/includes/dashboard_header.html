@@ -1,0 +1,66 @@
+<nav class="navbar">
+    <div class="navbar-container">
+        <div class="navbar-left">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-paw"></i>
+                </div>
+                <span class="logo-text">HeyVoonak</span>
+            </div>
+        </div>
+        
+         <div class="navbar-right">
+             <a href="{% url 'users:view_cart' %}" class="nav-btn cart-nav-btn" title="سبد خرید">
+                 <i class="fas fa-shopping-cart"></i>
+                 {% if cart.items_count > 0 %}
+                 <span class="cart-count">{{ cart.items_count }}</span>
+                 {% endif %}
+             </a>
+             <div class="user-dropdown">
+                <button class="user-avatar dropdown-toggle" onclick="toggleUserDropdown()">
+                    <i class="fas fa-user"></i>
+                </button>
+                <div class="dropdown-menu" id="userDropdown">
+                    <div class="dropdown-header">
+                        <div class="user-info">
+                            <div class="user-name">{{ user.first_name|default:user.username }}</div>
+                            <div class="user-email">{{ user.phone_number|default:user.email }}</div>
+                        </div>
+                    </div>
+                    <div class="dropdown-divider"></div>
+                    <a href="/profile/" class="dropdown-item">
+                        <i class="fas fa-user-cog"></i>
+                        پروفایل
+                    </a>
+                    <a href="/settings/" class="dropdown-item">
+                        <i class="fas fa-cog"></i>
+                        تنظیمات
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a href="/logout/" class="dropdown-item logout">
+                        <i class="fas fa-sign-out-alt"></i>
+                        خروج
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<script>
+    // User dropdown functionality
+    function toggleUserDropdown() {
+        const dropdown = document.getElementById('userDropdown');
+        dropdown.classList.toggle('show');
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+        const dropdown = document.getElementById('userDropdown');
+        const dropdownToggle = document.querySelector('.dropdown-toggle');
+        
+        if (dropdown && dropdownToggle && !dropdown.contains(event.target) && !dropdownToggle.contains(event.target)) {
+            dropdown.classList.remove('show');
+        }
+    });
+</script>

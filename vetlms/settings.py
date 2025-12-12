@@ -28,7 +28,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-=&rrzi6gyf7eu&j69y$@6$tydpl$h+fqv&oiimhab#f(p$4cd4')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'True').lower() == 'true'
+DEBUG = False
+
+SECURE_SSL_REDIRECT = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://vettest.ir",
+    "https://www.vettest.ir",
+]
 
 # Vercel deployment settings
 ALLOWED_HOSTS = [
@@ -37,11 +47,13 @@ ALLOWED_HOSTS = [
     '::1',
     'testserver',
     '.vercel.app',
-    '185.79.156.98',  # VPS IP
+    '130.185.77.50',  # VPS IP
     '.now.sh',
     '.onrender.com',  # Render.com domains
     'heyvoonak-project.vercel.app',  # Your specific domain
     'vetlms.onrender.com',  # Render domain
+    'vettest.ir',
+    'www.vettest.ir',
 ]
 
 # در DEBUG=False همه host ها را مجاز کن (فقط برای تست - در production خطرناک است)
@@ -111,15 +123,15 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',  # WhiteNoise for serving static files
-    'apps.users.middleware.XSSProtectionMiddleware',  # XSS Protection
-    'apps.users.middleware.NoCacheMiddleware',  # Prevent excessive caching
-    'apps.users.middleware.RequestPrivacyMiddleware',  # Privacy middleware
-    'apps.users.middleware.LightNetworkSecurityMiddleware',  # Security middleware
+   # 'apps.users.middleware.XSSProtectionMiddleware',  # XSS Protection
+    #'apps.users.middleware.NoCacheMiddleware',  # Prevent excessive caching
+    #'apps.users.middleware.RequestPrivacyMiddleware',  # Privacy middleware
+    #'apps.users.middleware.LightNetworkSecurityMiddleware',  # Security middleware
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'apps.users.middleware.RateLimitMiddleware',  # Rate Limiting - DDoS Protection (after auth)
+    #'apps.users.middleware.RateLimitMiddleware',  # Rate Limiting - DDoS Protection (after auth)
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -159,11 +171,11 @@ if DB_ENGINE == 'django.db.backends.postgresql':
      DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'postgres',
-            'USER': 'postgres.nbqolrbepqcesypulsea',
-            'PASSWORD': 'DOHqCHoTRQMIPIOm',
-            'HOST': 'aws-1-us-east-2.pooler.supabase.com',
-            'PORT': '6543',
+            'NAME': os.environ.get('POSTGRES_DB_NAME', 'postgres'),
+            'USER': os.environ.get('POSTGRES_DB_USER', 'your_user'),
+            'PASSWORD': os.environ.get('POSTGRES_DB_PASSWORD', 'your_password'),
+            'HOST': os.environ.get('POSTGRES_DB_HOST', 'localhost'),
+            'PORT': os.environ.get('POSTGRES_DB_PORT', '5432'),
             'OPTIONS': {
                 'sslmode': 'require',
             },
@@ -471,8 +483,8 @@ SIMPLE_JWT = {
 }
 
 # Faraz SMS API Settings
-FARAZ_SMS_API_KEY = os.environ.get('FARAZ_SMS_API_KEY', 'YTAxYjQxMTYtNWYyZC00ZDkzLTg4ZjAtNjk1NTMxYWVhM2NkNzZlNDY4MDQwNzllNWZlY2QxYzM2NGI5ZWQ4OWYxZmE=')
-FARAZ_SMS_SENDER_NUMBER = os.environ.get('FARAZ_SMS_SENDER_NUMBER', '3000505')
+FARAZ_SMS_API_KEY = os.environ.get('FARAZ_SMS_API_KEY', '')
+FARAZ_SMS_SENDER_NUMBER = os.environ.get('FARAZ_SMS_SENDER_NUMBER', '')
 
 # کدهای پترن فراز اس‌ام‌اس (از پنل خود دریافت کنید)
 FARAZ_PATTERN_VERIFICATION = os.environ.get('FARAZ_PATTERN_VERIFICATION', '')  # پترن کد تایید
@@ -483,9 +495,10 @@ FARAZ_PATTERN_LOGIN = os.environ.get('FARAZ_PATTERN_LOGIN', '')  # پترن ور
 # ==================================
 # تنظیمات زرین‌پال (Zarinpal SDK)
 # ==================================
-ZARINPAL_MERCHANT_ID = os.environ.get('ZARINPAL_MERCHANT_ID', '3809dbea-74a8-44e0-abf9-b0c954226326')
-ZARINPAL_ACCESS_TOKEN = os.environ.get('ZARINPAL_ACCESS_TOKEN', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiMTliNGU3MTk5NzJjYWQzZDVjMWMyNTQ0MzMzODY0ZGE4NmY3MzJiZmNiMTYyNDA5ZGI1MTYxNDRkZTA0ZmFlM2JkN2NhYWFlZGY2Yzc0YmMiLCJpYXQiOjE3NjA2MTUxOTkuMTY2ODMsIm5iZiI6MTc2MDYxNTE5OS4xNjY4NDUsImV4cCI6MTkxODM4MTU5OS4xMDgwMDksInN1YiI6Ijc4MjAwNCIsInNjb3BlcyI6W119.iHH-MQPd5brjyvLqfhetGGOUhOXQjH8bSKaCVcWs1-lQ1o_3Qh5CFosanjVfIzFiNjyBnMTLdGwa8TRQZEnoDEKrZupLqKvsbGo-Fc8I1TAJW75V2Emw05ETP9y82vQCgO5FunXTizHOtMaAUJoxSmy73XsDasP11ITqj5KUUZ3W_7BQfUqyWpFzz9K-eU33IKYdwuvMo0SqLa692Z4E5Mz1Aagt7H3BMUphfmyMqTqsivFQ7eC4QhtNloCNdjeshJ6ob4MBvpDfq7Xz9QoojFgleOGDwAdFOpEmMwQQucksOaDmerzwzQKDb_7L_-ZtLzB_XOsE14CjDPm1kx8Lwe0Zc2O7edvNKKHwERRLPMxLLs9hXcobB3_tCYklTSB0sRuJWkFta2DFUCPn7pgXN_0U69kwBJ_2QbsWS5PV_xU128OFNNNs6QUK9zFqVPmSTuLSustmzptYYk5-6l6AXMlvtRzrZJ1IzXTO_rLBFOgWA9LpajZACcIaXCzrkZZDP9WaVz27pWQxgVpY6FaTcTF96Y3_WS-8Wrxbt_m2_-ZbZaYNFzJv4TRXDWPZDYkxOhLmkCLm-TC9cNkMvVyk4yikShcARYry5CUMOOalEwgPOmMI76Djx_ZXL3RuqWVQ_rM6HJEMmYmKQ3rqEaDW8OsCS9UTiIJ_Pfxv3ytH8u4')
-ZARINPAL_SANDBOX = os.environ.get('ZARINPAL_SANDBOX', 'False').lower() == 'true'  # True برای تست، False برای واقعی
+ZARINPAL_MERCHANT_ID = os.environ.get('ZARINPAL_MERCHANT_ID', 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX')
+ZARINPAL_ACCESS_TOKEN = os.environ.get('ZARINPAL_ACCESS_TOKEN', '')
+ZARINPAL_SANDBOX = os.environ.get('ZARINPAL_SANDBOX', 'True').lower() == 'true'  # True برای تست، False برای واقعی
+ZARINPAL_CALLBACK_URL = os.environ.get('ZARINPAL_CALLBACK_URL', 'http://127.0.0.1:8000/payment/callback/')
 
 # ==========================================
 # تنظیمات بهینه‌سازی برای سبک‌سازی سایت
@@ -516,7 +529,7 @@ if not DEBUG:
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
 # غیرفعال کردن برخی features برای سبک‌تری
-DATA_UPLOAD_MAX_MEMORY_SIZE = 2621440  # 2.5 MB (کاهش از 10 MB)
+DATA_UPLOAD_MAX_MEMORY_SIZE = 260  # 2.5 MB (کاهش از 10 MB)
 FILE_UPLOAD_MAX_MEMORY_SIZE = 2621440  # 2.5 MB
 
 # تنظیمات Email (اگر استفاده می‌شود)
@@ -550,29 +563,27 @@ STATICFILES_IGNORE_PATTERNS = [
 
 # Settings loaded successfully - removed print for Windows compatibility
 
-# =====================================
-# ZARINPAL PAYMENT GATEWAY SETTINGS
-# =====================================
-ZARINPAL_MERCHANT_ID = os.environ.get('ZARINPAL_MERCHANT_ID', 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX')
-ZARINPAL_ACCESS_TOKEN = os.environ.get('ZARINPAL_ACCESS_TOKEN', '')  # برای refund و transactions
-ZARINPAL_SANDBOX = os.environ.get('ZARINPAL_SANDBOX', 'True').lower() == 'true'
-ZARINPAL_CALLBACK_URL = os.environ.get('ZARINPAL_CALLBACK_URL', 'http://127.0.0.1:8000/payment/callback/')
+# (تنظیمات Zarinpal در بالا تعریف شده است)
 
 # =====================================
-# KAVENEGAR SMS SETTINGS
+# KAVENEGAR SMS SETTINGS (جایگزین)
 # =====================================
-KAVENEGAR_API_KEY = os.environ.get('KAVENEGAR_API_KEY', 'your-api-key')
-KAVENEGAR_SENDER_NUMBER = os.environ.get('KAVENEGAR_SENDER_NUMBER', '10004346')
+KAVENEGAR_API_KEY = os.environ.get('KAVENEGAR_API_KEY', '')
+KAVENEGAR_SENDER_NUMBER = os.environ.get('KAVENEGAR_SENDER_NUMBER', '')
 KAVENEGAR_OTP_TEMPLATE = os.environ.get('KAVENEGAR_OTP_TEMPLATE', 'verify')
 KAVENEGAR_WELCOME_MESSAGE = 'سلام {username} عزیز! به هی‌ونک خوش آمدید.'
 KAVENEGAR_PAYMENT_SUCCESS_MESSAGE = 'پرداخت شما با موفقیت انجام شد. مبلغ: {amount} تومان - کد پیگیری: {ref_id}'
 KAVENEGAR_SUBSCRIPTION_RENEWAL_MESSAGE = 'اشتراک {subscription_type} شما تا تاریخ {end_date} تمدید شد.'
 
 # =====================================
-# RATE LIMITING SETTINGS (DDoS Protection)
+# RATE LIMITING SETTINGS 
 # =====================================
 RATE_LIMIT_ENABLED = True
 RATE_LIMIT_MAX_REQUESTS = 500  # حداکثر 500 درخواست عمومی
 RATE_LIMIT_WINDOW_SECONDS = 60  # در هر 60 ثانیه
 RATE_LIMIT_BLOCK_DURATION = 300  # مسدود کردن برای 5 دقیقه (300 ثانیه)
 
+# اینا رو دقیقاً همینجوری کپی کن تو settings.py
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760   # 10 مگابایت (به جای پیش‌فرض 2.5 مگ)
+FILE_UPLOAD_MAX_MEMORY_SIZE = 10485760   # 10 مگابایت
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 1000     # جلوگیری از حمله با ۱۰۰۰۰ تا فیلد

@@ -4,7 +4,8 @@
 {% block title %}وضعیت اشتراک{% endblock %}
 
 {% block content %}
-<div class="subscription-status-page">
+{% include 'cases/includes/header_navigation.html' %}
+<div class="subscription-status-page" style="margin-top: 80px;">
     {% if user.is_authenticated %}
         {% if subscription %}
             <!-- Active Subscription Status -->
@@ -217,7 +218,7 @@
                 </div>
                 
 <style>
-/* CSS Variables for Dark Mode */
+/* CSS Variables */
 :root {
     --sub-bg: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
     --sub-card-bg: rgba(255, 255, 255, 0.7);
@@ -226,14 +227,21 @@
     --sub-text-secondary: #6b7280;
     --sub-border: rgba(0, 0, 0, 0.1);
 }
-
-.dark {
-    --sub-bg: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-    --sub-card-bg: rgba(30, 41, 59, 0.7);
-    --sub-card-border: rgba(255, 255, 255, 0.1);
-    --sub-text-primary: #f8fafc;
-    --sub-text-secondary: #cbd5e1;
-    --sub-border: rgba(255, 255, 255, 0.1);
+@font-face {
+    font-family: 'Bon Pro';
+    src: url('bon-Regular.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+body {
+    font-family: 'Bon Pro', 'Bon Pro Numerals';
+    background-color: var(--background);
+    color: var(--foreground);
+    margin: 0;
+    padding: 0;
+    direction: rtl;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .subscription-status-page {
@@ -289,12 +297,6 @@
     transition: color 0.3s ease;
 }
 
-.dark .status-title {
-    background: linear-gradient(135deg, #f8fafc 0%, #3EA66B 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
 
 .status-subtitle {
     font-size: 1.1rem;
@@ -311,9 +313,6 @@
     transition: all 0.3s ease;
 }
 
-.dark .glass-card {
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-}
 
 .subscription-card {
     margin-bottom: 2rem;
@@ -360,9 +359,6 @@
     transition: all 0.3s ease;
 }
 
-.dark .info-item {
-    background: rgba(255, 255, 255, 0.05);
-}
 
 .info-label {
     font-weight: 600;
@@ -400,10 +396,6 @@
     border: 1px solid rgba(16, 185, 129, 0.5);
 }
 
-.dark .status-badge.active {
-    background: rgba(16, 185, 129, 0.15);
-    color: #34d399;
-}
 
 .status-badge.inactive {
     background: rgba(239, 68, 68, 0.2);
@@ -411,10 +403,6 @@
     border: 1px solid rgba(239, 68, 68, 0.5);
 }
 
-.dark .status-badge.inactive {
-    background: rgba(239, 68, 68, 0.15);
-    color: #f87171;
-}
 
 .info-alert {
     display: flex;
@@ -840,11 +828,6 @@
 
     <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Dark mode sync
-    const currentTheme = localStorage.getItem('theme') || 'light';
-    if (currentTheme === 'dark') {
-        document.body.classList.add('dark');
-    }
 
     // Animate cards on scroll
     const observerOptions = {

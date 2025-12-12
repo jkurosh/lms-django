@@ -36,6 +36,8 @@ urlpatterns = [
             # Authentication URLs
             path('login/', views.CustomLoginView.as_view(), name='login'),
             path('register/', views.register_view, name='register'),
+            path('api/check-username/', views.check_username_availability, name='check_username'),
+            path('api/check-phone/', views.check_phone_availability, name='check_phone'),
             path('logout/', views.logout_view, name='logout'),
             path('password-reset/', views.password_reset_view, name='password_reset'),
             path('password-reset/verify-phone/', views.verify_phone_api, name='verify_phone_api'),

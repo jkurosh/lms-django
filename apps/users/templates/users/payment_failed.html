@@ -206,7 +206,8 @@
 {% endblock %}
 
 {% block content %}
-<div class="failed-page">
+{% include 'cases/includes/header_navigation.html' %}
+<div class="failed-page" style="margin-top: 80px;">
     <div class="failed-card glass-card">
         <div class="failed-icon">
             <i class="fas fa-times"></i>

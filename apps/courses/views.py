@@ -300,7 +300,6 @@ def register_view(request):
 @login_required
 def logout_view(request):
     logout(request)
-    messages.success(request, 'با موفقیت خارج شدید.')
     return redirect('cases:case_list')
 
 @login_required

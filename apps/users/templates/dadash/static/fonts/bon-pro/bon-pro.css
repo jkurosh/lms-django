@@ -1,0 +1,172 @@
+/**
+ * فونت Bon Pro برای کل سایت
+ * شامل فونت‌های اصلی و اعداد فارسی
+ */
+
+/* ==================== فونت‌های اصلی Bon Pro ==================== */
+
+/* Bon Pro Regular */
+@font-face {
+    font-family: 'Bon Pro';
+    src: url('bon-Regular.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* Bon Pro Light */
+@font-face {
+    font-family: 'Bon Pro';
+    src: url('bon-Light.woff2') format('woff2');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* Bon Pro Medium */
+@font-face {
+    font-family: 'Bon Pro';
+    src: url('bon-Medium.woff2') format('woff2');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* Bon Pro SemiBold */
+@font-face {
+    font-family: 'Bon Pro';
+    src: url('bon-SemiBold.woff2') format('woff2');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* Bon Pro Bold */
+@font-face {
+    font-family: 'Bon Pro';
+    src: url('bon-Bold.woff2') format('woff2');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* ==================== فونت‌های اعداد فارسی ==================== */
+
+/* Bon Pro Numerals Regular */
+@font-face {
+    font-family: 'Bon Pro Numerals';
+    src: url('bon-Numerals-Regular.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+    unicode-range: U+06F0-06F9; /* اعداد فارسی */
+}
+
+/* Bon Pro Numerals Medium */
+@font-face {
+    font-family: 'Bon Pro Numerals';
+    src: url('bon-Numerals-Medium.woff2') format('woff2');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+    unicode-range: U+06F0-06F9;
+}
+
+/* Bon Pro Numerals Bold */
+@font-face {
+    font-family: 'Bon Pro Numerals';
+    src: url('bon-Numerals-Bold.woff2') format('woff2');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+    unicode-range: U+06F0-06F9;
+}
+
+/* ==================== اعمال فونت به کل سایت ==================== */
+
+/* تنظیمات پایه برای تمام المنت‌ها */
+* {
+    font-family: 'Bon Pro', 'Bon Pro Numerals', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+/* اطمینان از استفاده از اعداد فارسی */
+body {
+    font-family: 'Bon Pro', 'Bon Pro Numerals', sans-serif;
+    font-variant-numeric: tabular-nums;
+    direction: rtl;
+}
+
+/* تنظیمات ویژه برای اعداد */
+.numbers,
+.price,
+.count,
+[class*="number"],
+[class*="digit"] {
+    font-family: 'Bon Pro Numerals', 'Bon Pro', sans-serif;
+    font-variant-numeric: tabular-nums;
+}
+
+/* هدینگ‌ها */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Bon Pro', 'Bon Pro Numerals', sans-serif;
+    font-weight: 700;
+}
+
+/* متن‌های عادی */
+p, span, div, a, button, input, textarea, select {
+    font-family: 'Bon Pro', 'Bon Pro Numerals', sans-serif;
+}
+
+/* دکمه‌ها */
+button, .btn, input[type="button"], input[type="submit"] {
+    font-family: 'Bon Pro', 'Bon Pro Numerals', sans-serif;
+    font-weight: 500;
+}
+
+/* اینپوت‌ها و تکست‌اریاها */
+input, textarea, select {
+    font-family: 'Bon Pro', 'Bon Pro Numerals', sans-serif;
+}
+
+/* لیبل‌ها */
+label {
+    font-family: 'Bon Pro', 'Bon Pro Numerals', sans-serif;
+    font-weight: 500;
+}
+
+/* جداول */
+table, th, td {
+    font-family: 'Bon Pro', 'Bon Pro Numerals', sans-serif;
+}
+
+/* لینک‌ها */
+a {
+    font-family: 'Bon Pro', 'Bon Pro Numerals', sans-serif;
+}
+
+/* لیست‌ها */
+ul, ol, li {
+    font-family: 'Bon Pro', 'Bon Pro Numerals', sans-serif;
+}
+
+/* پاراگراف‌ها با وزن خاص */
+.text-light {
+    font-weight: 300;
+}
+
+.text-regular {
+    font-weight: 400;
+}
+
+.text-medium {
+    font-weight: 500;
+}
+
+.text-semibold {
+    font-weight: 600;
+}
+
+.text-bold {
+    font-weight: 700;
+}
+

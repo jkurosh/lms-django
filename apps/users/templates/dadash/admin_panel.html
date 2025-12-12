@@ -3,7 +3,7 @@
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     {% csrf_token %}
     <title>پنل ادمین - HeyVoonak</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -26,18 +26,6 @@
             --warning: #f59e0b;
             --error: #ef4444;
             --info: #3b82f6;
-        }
-
-        .dark {
-            --background: #0f172a;
-            --foreground: #f8fafc;
-            --muted: #1e293b;
-            --muted-foreground: #94a3b8;
-            --border: #334155;
-            --card: #1e293b;
-            --card-foreground: #f8fafc;
-            --sidebar-bg: #1e293b;
-            --sidebar-border: #334155;
         }
 
         * {
@@ -761,60 +749,6 @@
             margin-top: 1rem;
         }
 
-        .dark-mode-toggle {
-            background: var(--muted);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 8px 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-left: 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 40px;
-            height: 40px;
-        }
-
-        .dark-mode-toggle:hover {
-            background: var(--primary);
-            color: white;
-            transform: scale(1.05);
-        }
-
-        .dark-mode-toggle i {
-            font-size: 16px;
-        }
-
-        .light-icon {
-            display: block;
-            color: #f59e0b;
-        }
-
-        .dark-icon {
-            display: none;
-            color: #fbbf24;
-        }
-
-        .dark .light-icon {
-            display: none;
-        }
-
-        .dark .dark-icon {
-            display: block;
-        }
-
-        .dark-mode {
-            --background: #0f172a;
-            --foreground: #f8fafc;
-            --muted: #1e293b;
-            --muted-foreground: #94a3b8;
-            --border: #334155;
-            --card: #1e293b;
-            --card-foreground: #f8fafc;
-            --sidebar-bg: #1e293b;
-            --sidebar-border: #334155;
-        }
     </style>
 </head>
 <body>
@@ -953,10 +887,6 @@
                     <a href="/adlog/" class="header-btn" title="پنل Django Admin" style="text-decoration: none; color: var(--muted-foreground);">
                         <i class="fas fa-cog"></i>
                     </a>
-                    <button id="dark-mode-toggle" class="dark-mode-toggle" onclick="toggleDarkMode()" title="تغییر حالت تاریک/روشن">
-                        <i class="fas fa-moon light-icon"></i>
-                        <i class="fas fa-sun dark-icon"></i>
-                    </button>
                     <button class="header-btn" title="اعلان‌ها">
                         <i class="fas fa-bell"></i>
                         <span class="notification-badge">{{ completed_cases|default:"0" }}</span>
@@ -1294,18 +1224,6 @@
             mainContent.classList.toggle('sidebar-collapsed');
         }
 
-        // Dark mode toggle
-        function toggleDarkMode() {
-            document.body.classList.toggle('dark');
-            const isDark = document.body.classList.contains('dark');
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
-        }
-
-        // Initialize dark mode from localStorage
-        const currentTheme = localStorage.getItem('theme') || 'light';
-        if (currentTheme === 'dark') {
-            document.body.classList.add('dark');
-        }
 
         // Navigation
         function showSection(section) {

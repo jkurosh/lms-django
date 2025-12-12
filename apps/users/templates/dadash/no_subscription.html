@@ -2,7 +2,7 @@
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>اشتراک مورد نیاز - HeyVoonak</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -21,28 +21,22 @@
             --card: #ffffff;
             --card-foreground: #0f172a;
         }
-
-        .dark {
-            --background: #0f172a;
-            --foreground: #f8fafc;
-            --muted: #1e293b;
-            --muted-foreground: #94a3b8;
-            --border: #334155;
-            --card: #1e293b;
-            --card-foreground: #f8fafc;
-        }
-
-        body {
-            font-family: 'Vazir', 'Tahoma', sans-serif;
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-            color: var(--foreground);
-            direction: rtl;
-            transition: background 0.3s ease, color 0.3s ease;
-        }
-
-        .dark body {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-        }
+@font-face {
+    font-family: 'Bon Pro';
+    src: url('bon-Regular.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+body {
+    font-family: 'Bon Pro', 'Bon Pro Numerals';
+    background-color: var(--background);
+    color: var(--foreground);
+    margin: 0;
+    padding: 0;
+    direction: rtl;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
 
         .btn {
             display: inline-flex;
@@ -121,52 +115,9 @@
             background-clip: text;
         }
 
-        .dark-mode-toggle {
-            position: fixed;
-            top: 5rem;
-            left: 1rem;
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 8px 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            z-index: 1000;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .dark-mode-toggle:hover {
-            background: var(--primary);
-            color: white;
-            transform: scale(1.05);
-        }
-
-        .light-icon {
-            display: block;
-            color: #f59e0b;
-        }
-
-        .dark-icon {
-            display: none;
-            color: #fbbf24;
-        }
-
-        .dark .light-icon {
-            display: none;
-        }
-
-        .dark .dark-icon {
-            display: block;
-        }
     </style>
 </head>
 <body class="min-h-screen">
-    <!-- Dark Mode Toggle -->
-    <button id="dark-mode-toggle" class="dark-mode-toggle" title="تغییر حالت تاریک/روشن">
-        <i class="fas fa-moon light-icon"></i>
-        <i class="fas fa-sun dark-icon"></i>
-    </button>
-    
     <!-- Navigation -->
     <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-gray-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -316,22 +267,6 @@
             });
         });
 
-        // Dark mode functionality
-        const darkModeToggle = document.getElementById('dark-mode-toggle');
-        const body = document.body;
-
-        // Check for saved theme preference or default to light mode
-        const currentTheme = localStorage.getItem('theme') || 'light';
-        if (currentTheme === 'dark') {
-            body.classList.add('dark');
-        }
-
-        // Toggle dark mode
-        darkModeToggle.addEventListener('click', () => {
-            body.classList.toggle('dark');
-            const isDark = body.classList.contains('dark');
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
-        });
     </script>
 </body>
 </html>

@@ -72,6 +72,7 @@ MORPHO_DEFAULT_OPTIONS = [
 TEST_TYPES = [
     ('CBC', 'CBC'),
     ('CHEM', 'Clinical Chemistry'),
+    ('MORPHO', 'Morphological Changes'),
     ('OTHER', 'Other Tests'),
     ('SLIDE', 'Slides')
 ]
@@ -225,13 +226,8 @@ class Slide(models.Model):
     def __str__(self):
         return f"Slide for {self.case.title}"
 
-# Test model حذف شد چون با LabTest تداخل داشت
 
-# TestOption model حذف شد چون به Test وابسته بود
-
-# Signal حذف شد چون Test model حذف شد
-
-# مدل‌های جدید برای پیگیری عملکرد کاربران - بر اساس اسکیما دیتابیس
+# مدل‌های جدید برای پیگیری عملکرد کاربران
 class UserProgress(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='case_progress', db_column='user_id')
     case = models.ForeignKey(Case, on_delete=models.CASCADE, related_name='user_progress', db_column='case_study_id')
@@ -277,8 +273,6 @@ class Test(models.Model):
 
     def __str__(self):
         return f"{self.case.title} - {self.get_title_display()}"
-
-# TestOption model حذف شد چون با UserObservation تداخل داشت
 
 class UserObservation(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='user_observations')
