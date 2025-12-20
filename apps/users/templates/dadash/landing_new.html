@@ -1,0 +1,241 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>HeyVoonak - سیستم مدیریت کلینیک دامپزشکی</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'dadash/style.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'dadash/media.css' %}">
+    <link rel="icon" href="{% static 'dadash/pawprint.png' %}" sizes="196x196" />
+    <style>
+        /* Inline styles for images in templates folder */
+        .landing-img {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <aside>
+            <img src="{% static 'dadash/pawprint.png' %}" alt="HeyVoonak Logo">
+            <h1 class="heyvoonak">HeyVoonak</h1>
+            <section>
+                        <nav>
+                            <ul>
+                                <li><a href="{% url 'users:dadash_home' %}">خانه</a> </li>
+                            </ul>
+                        </nav>
+                    </section>
+        </aside>
+        <section class="login">
+            {% if user.is_authenticated %}
+            <div class="user-dropdown">
+                <img src="{% static 'dadash/prof.jpg' %}" class="avatar" alt="avatar">
+                <div class="dropdown-content">
+                    <a href="{% url 'users:dashboard' %}">پروفایل</a>
+                    <a href="{% url 'users:profile_settings' %}">تنظیمات</a>
+                    <a href="{% url 'users:logout' %}">خروج</a>
+                </div>
+            </div>
+            {% else %}
+            <a href="{% url 'users:login' %}" class="button">ورود</a>
+            {% endif %}
+
+        </section>
+    </header>
+
+    <div class="under-header">
+        <aside class="under-header-text">
+            <h2>
+                مدیریت کلینیک دامپزشکی با 
+                <span class="gradient-text">HeyVoonak</span>
+                آسانتر از همیشه
+            </h2>
+            <h3>سیستم جامع مدیریت کلینیک دامپزشکی که به شما کمک می‌کند تا بیماران، قرار ملاقات‌ها، پرونده‌های پزشکی و مطالعات موردی را به راحتی مدیریت کنید.</h3>
+        </aside>
+        <aside class="under-header-img">
+            <img src="{% static 'dadash/unhead.png' %}" alt="HeyVoonak" class="landing-img">
+        </aside>
+    </div>
+
+
+    <section class="w">
+
+        <article>
+            <img src="{% static 'dadash/w.png' %}" alt="Features" class="landing-img">            
+        </article>
+        
+        <aside>
+            <section>
+                <img src="{% static 'dadash/w1.png' %}" alt="Patient Management" class="landing-img">
+                <div>
+                    <h4>مدیریت بیماران</h4>
+                    <span>ثبت و مدیریت اطلاعات بیماران، تاریخچه پزشکی و پرونده‌های درمانی به صورت کامل و منظم.</span>
+                </div>
+            </section>
+            <section>
+                <img src="{% static 'dadash/w2.png' %}" alt="Appointment Scheduling" class="landing-img">
+                <div>
+                    <h4>برنامه ریزی قرار ملاقات</h4>
+                    <span>سیستم پیشرفته برنامه‌ریزی قرار ملاقات‌ها با قابلیت یادآوری و مدیریت زمان‌بندی کلینیک.</span>
+                </div>
+            </section>
+            <section>
+                <img src="{% static 'dadash/w3.png' %}" alt="Case Studies" class="landing-img">
+                <div>
+                    <h4>مطالعات موردی</h4>
+                    <span>دسترسی به مجموعه گسترده مطالعات موردی دامپزشکی برای یادگیری و بهبود مهارت‌های تشخیصی.</span>
+                </div>
+            </section>
+            <section>
+                <img src="{% static 'dadash/w4.png' %}" alt="Advanced Features" class="landing-img">
+                <div>
+                    <h4>ویژگی‌های پیشرفته</h4>
+                    <span>گزارش‌گیری پیشرفته، تحلیل داده‌ها و ابزارهای مدیریتی حرفه‌ای برای کلینیک شما.</span>
+                </div>
+            </section>
+        </aside>
+
+    </section>
+
+
+
+
+    <!--Subscription Pannel-->
+
+    <section class="wh-line">
+
+    <div class="wh-line-text">
+        <h3>پلن اشتراک خود را انتخاب کنید</h3>
+        <span>            پلن&zwnj;های اشتراک انعطاف&zwnj;پذیر طراحی شده برای کلینیک&zwnj;های دامپزشکی با اندازه&zwnj;های مختلف.<br>
+            همه پلن&zwnj;ها شامل پشتیبانی کامل و به&zwnj;روزرسانی&zwnj;های منظم هستند.</span>
+    </div>
+    <div class="wh-line-panels">
+
+        <aside class="wh-line-pannel">
+            <div><img src="{% static 'dadash/number-3.png' %}" alt="3 Months" class="landing-img"></div>
+            <h4>پلن شروع</h4>
+            <h5>مناسب کلینیک های کوچک</h5>
+            <h4>۲.۹۹ میلیون تومان</h4>
+            <h6>تعهد ۳ ماهه</h6>
+            <pre>
+تا ۱۰۰ بیمار
+پشتیبانی پایه
+دسترسی به مطالعات موردی
+پشتیبانی ایمیل
+            </pre>
+        </aside>
+
+        <aside class="wh-line-pannel , proplan">
+            <div><img src="{% static 'dadash/number-9.png' %}" alt="9 Months" class="landing-img"></div>
+            <h4>پلن حرفه ای</h4>
+            <h5>بهترین برای کلینیک های درحال رشد</h5>
+            <h4>۷.۹۹ میلیون تومان</h4>
+            <h6>تعهد ۹ ماهه</h6>
+            <pre>
+تا ۵۰۰ بیمار
+پشتیبانی اولویت‌دار
+دسترسی کامل به مطالعات موردی
+پشتیبانی تلفنی و ایمیل
+گزارش‌گیری پیشرفته
+            </pre>
+        </aside>
+
+        <aside class="wh-line-pannel">
+            <div><img src="{% static 'dadash/number-6.png' %}" alt="6 Months" class="landing-img"></div>
+            <h4>پلن سازمانی</h4>
+            <h5>حداکثر ارزش برای کلینیک‌های بزرگ</h5>
+            <h4>۵.۴۹ میلیون تومان</h4>
+            <h6>تعهد ۶ ماهه</h6>
+            <pre>
+نامحدود بیمار
+پشتیبانی اختصاصی
+دسترسی کامل به همه ویژگی‌ها
+پشتیبانی ۲۴/۷
+مشاوره اختصاصی
+یکپارچه‌سازی با سیستم‌های دیگر
+</pre>
+        </aside>
+
+        </div>
+
+    </section>
+        
+
+    <section class="login-pannel">
+        <h3>آماده شروع هستید؟</h3>
+        <span>امروز همین حالا به هزاران کلینیک دامپزشکی موفق بپیوندید که با سیستم مدیریت HeyVoonak خدمات بهتری به بیماران ارائه می‌دهند.<br> تیم متخصص ما آماده است تا کلینیک شما را به سطح بعدی برساند.</span>
+        <div>
+            {% if user.is_authenticated %}
+                <a href="{% url 'users:dashboard' %}">ورود به داشبورد</a>
+            {% else %}
+                <a href="{% url 'users:login' %}">ورود / ثبت نام</a>
+            {% endif %}
+        </div>
+        <h4>مشاوره رایگان </h4>
+        <h4>پاسخ کمتر از ۲۴ ساعت</h4>
+    </section>
+
+    <!-- End of Subscription Pannel-->
+
+
+
+    <footer>
+        
+        <div>
+            <aside>
+                <img src="{% static 'dadash/pawprint.png' %}" class="footer-icon" alt="HeyVoonak Logo">
+                <h2>HeyVoonak</h2>
+                <span>سیستم جامع مدیریت کلینیک دامپزشکی که به شما کمک می‌کند تا خدمات بهتری به بیماران ارائه دهید<br> و کلینیک خود را به صورت حرفه‌ای مدیریت کنید.</span>
+                <nav>
+                    <ul>
+                        <li><a href="#" target="_blank"><img src="{% static 'dadash/insta.png' %}" alt="Instagram" class="landing-img"></a></li>
+                        <li><a href="#" target="_blank"><img src="{% static 'dadash/telegram.png' %}" alt="Telegram" class="landing-img"></a></li>
+                        <li><a href="#" target="_blank"><img src="{% static 'dadash/linkedin.png' %}" alt="LinkedIn" class="landing-img"></a></li>
+                    </ul>
+                </nav>
+            </aside>
+            <section>
+                <h4>خدمات</h4>
+                <nav>
+                    <ul>
+                        <li><a href="{% url 'users:categories_page' %}">دسته‌بندی‌ها</a></li>
+                        <li><a href="{% url 'users:subscription_plans' %}">پلن‌های اشتراک</a></li>
+                        <li><a href="{% url 'users:dashboard' %}">داشبورد</a></li>
+                        <li><a href="{% url 'users:dadash_home' %}">صفحه اصلی</a></li>
+                    </ul>
+                </nav>
+            </section>
+            <section>
+                <h4>شرکت</h4>
+                <nav>
+                    <ul>
+                        <li><a href="{% url 'users:dadash_home' %}">درباره ما</a></li>
+                        <li><a href="{% url 'users:dadash_home' %}">تیم ما</a></li>
+                        <li><a href="{% url 'users:dadash_home' %}">فرصت های شغلی</a></li>
+                        <li><a href="{% url 'users:dadash_home' %}">وبلاگ</a></li>
+                    </ul>
+                </nav>
+            </section>
+            <section class="info">
+                <h4>تماس</h4>
+                <nav>
+                    <ul>
+                        <li><img src="{% static 'dadash/mail.png' %}" alt="Email" class="landing-img"><a href="mailto:hello@bbros.com">hello@bbros.com</a></li>
+                        <li><img src="{% static 'dadash/phone.png' %}" alt="Phone" class="landing-img"><a href="tel:+982112345678">+98 21 1234 5678</a></li>
+                        <li><img src="{% static 'dadash/address.png' %}" alt="Address" class="landing-img"><span>تهران، خیابان ولیعصربرج میلاد، طبقه ۱۵ </span></li>
+                    </ul>
+                </nav>
+            </section>
+        </div>
+
+        <article>
+            <span>Copyright © 2025 HeyVoonak All rights reserved</span>
+        </article>
+    </footer>
+
+</body>
+</html>
