@@ -1,0 +1,242 @@
+{% load static %}
+<header>
+    <aside>
+        <a href="{% url 'users:dadash_home' %}">
+            <img src="{% static 'dadash/pawprint.png' %}" alt="HeyVoonak Logo">
+        </a>
+        <h1 class="heyvoonak">
+            <a href="{% url 'users:dadash_home' %}" style="text-decoration: none; color: inherit;">HeyVoonak</a>
+        </h1>
+        <section>
+            <nav>
+                <ul>
+                    <li><a href="{% url 'users:dadash_home' %}">خانه</a></li>
+                    <li><a href="{% url 'users:categories_page' %}">مطالعات موردی</a></li>
+                    {% if user.is_authenticated %}
+                    <li><a href="{% url 'users:dashboard' %}">داشبورد</a></li>
+                    <li><a href="{% url 'users:my_cases' %}">کیس‌های من</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </section>
+    </aside>
+    <section class="login">
+        {% if user.is_authenticated %}
+        <div class="user-dropdown">
+            <img src="{% static 'dadash/prof.jpg' %}" class="avatar" alt="avatar">
+            <div class="dropdown-content">
+                <a href="{% url 'users:dashboard' %}">پروفایل</a>
+                <a href="{% url 'users:profile_settings' %}">تنظیمات</a>
+                <a href="{% url 'users:my_cases' %}">کیس‌های من</a>
+                <a href="{% url 'users:logout' %}">خروج</a>
+            </div>
+        </div>
+        {% else %}
+        <a href="{% url 'users:login' %}" class="button">ورود</a>
+        <a href="{% url 'users:register' %}" class="button" style="background-color: #4B6A9D; margin-right: 10px;">ثبت نام</a>
+        {% endif %}
+    </section>
+</header>
+
+<style>
+    *{
+        margin: 0;
+        padding: 0;
+    }
+    :root {
+        --primary: #3EA66B;
+        --primary-dark: #2d8a54;
+        --secondary: #4B6A9D;
+        --background: #ffffff;
+        --foreground: #0f172a;
+        --muted: #f1f5f9;
+        --muted-foreground: #64748b;
+        --border: #e2e8f0;
+        --card: #ffffff;
+        --card-foreground: #0f172a;
+    }
+    header{
+        background-color: #fff;
+        padding-top: 10px;
+        z-index: 1000;
+        width: 100%;
+        display: flex;
+        justify-content: space-around;
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+        box-shadow: 0px 1px 20px 1px #d1d1d1;
+        position: sticky;
+        top: 0;
+    }
+    header aside {
+        display: flex;
+        justify-content: flex-start;
+        flex-wrap: nowrap;
+        align-items: center;
+        align-content: center;
+        flex-direction: row;
+    }
+    header .login{
+        display: flex;
+        flex-direction: row-reverse;
+        flex-wrap: nowrap;
+        align-content: center;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 10px;
+    }
+    header img{
+        width: 60px;
+        height: 60px;
+        margin: 0 10px 0 0;
+        object-fit: contain;
+    }
+    .heyvoonak {
+        margin: 0 2% 0 0;
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--primary);
+    }
+    header nav{
+        margin-right: 2rem;
+    }
+    header nav ul{
+        display: flex;
+        list-style: none;
+        gap: 0;
+    }
+    header nav ul li{
+        margin: 0 15px 0 0;
+        font-size: 18px;
+        list-style: none;
+        font-weight: 500;
+    }
+    header nav ul li a {
+        text-decoration: none;
+        color: #000;
+        border-radius: .5rem;
+        padding: .5rem 1rem;
+        transition: all 0.3s ease;
+    }
+    header nav ul li a:hover{
+        background-color: rgba(62, 166, 107, 0.1);
+        color: #3ea66b;
+    }
+    .button{
+        display: inline-flex;
+        font-size: 16px;
+        font-family: 'Vazir', 'Tahoma', sans-serif;
+        text-decoration: none;
+        font-weight: bold;
+        border: 0;
+        border-radius: .5rem;
+        padding: .6rem 1.2rem;
+        background-color: #3ea66b;
+        color: #fff;
+        transition: all 0.3s ease;
+        align-items: center;
+        justify-content: center;
+    }
+    .button:hover {
+        background-color: #2d8a54;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(62, 166, 107, 0.3);
+    }
+    .user-dropdown {
+        position: relative;
+        display: inline-block;
+    }
+    .user-dropdown .avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        cursor: pointer;
+        object-fit: cover;
+        transition: transform 0.2s ease;
+        border: 2px solid var(--primary);
+    }
+    .user-dropdown .avatar:hover {
+        transform: scale(1.05);
+    }
+    .user-dropdown .dropdown-content {
+        display: none;
+        position: absolute;
+        right: 0;
+        top: 100%;
+        margin-top: 10px;
+        background-color: #fff;
+        min-width: 180px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        border-radius: 8px;
+        z-index: 1000;
+        overflow: hidden;
+    }
+    .user-dropdown .dropdown-content a {
+        display: block;
+        padding: 12px 15px;
+        text-decoration: none;
+        color: #0f172a;
+        font-weight: 500;
+        transition: background 0.2s ease;
+        border-bottom: 1px solid #f1f5f9;
+    }
+    .user-dropdown .dropdown-content a:last-child {
+        border-bottom: none;
+    }
+    .user-dropdown .dropdown-content a:hover {
+        background-color: #f1f5f9;
+        color: var(--primary);
+    }
+    .user-dropdown:hover .dropdown-content {
+        display: block;
+    }
+    
+    @media (max-width: 768px) {
+        header {
+            flex-wrap: wrap;
+            padding: 0.75rem 1rem;
+        }
+        header aside {
+            flex: 1;
+            min-width: 100%;
+            margin-bottom: 0.5rem;
+        }
+        header aside img {
+            width: 40px;
+            height: 40px;
+        }
+        .heyvoonak{
+            font-size: 1.2rem;
+            margin: 0 5px 0 0;
+        }
+        header nav {
+            display: none;
+        }
+        header .login {
+            flex: 1;
+            justify-content: flex-end;
+        }
+        .button {
+            font-size: 14px;
+            padding: 0.5rem 1rem;
+        }
+        .user-dropdown .dropdown-content {
+            position: fixed !important;
+            left: 0 !important;
+            right: 0 !important;
+            width: 100% !important;
+            min-width: unset !important;
+            border-radius: 0 !important;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.12) !important;
+            background-color: #fff !important;
+            z-index: 2000 !important;
+            padding-top: 0.25rem;
+            padding-bottom: 0.5rem;
+            top: 70px !important;
+            text-align: right;
+        }
+        .user-dropdown {
+            position: static !important;
+        }
+    }
+</style>

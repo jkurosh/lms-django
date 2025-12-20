@@ -18,34 +18,7 @@
 </head>
 <body>
 
-    <header>
-        <aside>
-            <img src="{% static 'dadash/pawprint.png' %}" alt="HeyVoonak Logo">
-            <h1 class="heyvoonak">HeyVoonak</h1>
-            <section>
-                        <nav>
-                            <ul>
-                                <li><a href="{% url 'users:dadash_home' %}">خانه</a> </li>
-                            </ul>
-                        </nav>
-                    </section>
-        </aside>
-        <section class="login">
-            {% if user.is_authenticated %}
-            <div class="user-dropdown">
-                <img src="{% static 'dadash/prof.jpg' %}" class="avatar" alt="avatar">
-                <div class="dropdown-content">
-                    <a href="{% url 'users:dashboard' %}">پروفایل</a>
-                    <a href="{% url 'users:profile_settings' %}">تنظیمات</a>
-                    <a href="{% url 'users:logout' %}">خروج</a>
-                </div>
-            </div>
-            {% else %}
-            <a href="{% url 'users:login' %}" class="button">ورود</a>
-            {% endif %}
-
-        </section>
-    </header>
+    {% include 'dadash/includes/header.html' %}
 
     <div class="under-header">
         <aside class="under-header-text">

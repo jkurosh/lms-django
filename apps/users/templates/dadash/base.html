@@ -794,13 +794,16 @@ body {
 </head>
 <body>
     <!-- Header -->
+    {% include 'dadash/includes/header.html' %}
+    
+    <!-- Old Header (commented out for reference) -->
+    <!--
     <header class="header">
         <div class="container">
             <div class="header-content">
                 <div class="logo">
                     <i class="fas fa-paw"></i>
                     <h1>HeyVoonak</h1>
-                    <!-- Dark Mode Toggle -->
                 </div>
                 <nav class="nav">
                     <ul>
@@ -809,60 +812,20 @@ body {
                     </ul>
                 </nav>
                 
-                <!-- User Profile Section -->
                 <div class="user-profile">
                     {% if user.is_authenticated %}
-                        <!-- Cart Icon -->
                         <a href="{% url 'users:view_cart' %}" class="cart-icon" title="سبد خرید">
                             <i class="fas fa-shopping-cart"></i>
                             {% if cart_count > 0 %}
                             <span class="cart-badge">{{ cart_count }}</span>
                             {% endif %}
                         </a>
-                        
-                        <div class="user-dropdown">
-                            <div class="user-profile-header" id="profileBtn">
-                                <div class="user-avatar">
-                                    <i class="fas fa-user"></i>
-                                </div>
-                                <div class="user-info">
-                                    <div class="user-name">{{ user.first_name|default:user.username }}</div>
-                                    <div class="user-role">دانشجوی دامپزشکی</div>
-                                </div>
-                            </div>
-                            <div class="dropdown-menu" id="userMenu">
-                                <div class="dropdown-header">
-                                    <div class="user-info">
-                                        <div class="user-name">{{ user.first_name|default:user.username }}</div>
-                                        <div class="user-email">{{ user.phone_number|default:user.email }}</div>
-                                    </div>
-                                </div>
-                                <div class="dropdown-divider"></div>
-                                <a href="{% url 'users:profile' %}" class="dropdown-item">
-                                    <i class="fas fa-user-cog"></i>
-                                    پروفایل
-                                </a>
-                                <a href="{% url 'users:my_cases' %}" class="dropdown-item">
-                                    <i class="fas fa-book"></i>
-                                    مطالعات من
-                                </a>
-                                <div class="dropdown-divider"></div>
-                                <a href="{% url 'users:logout' %}" class="dropdown-item logout">
-                                    <i class="fas fa-sign-out-alt"></i>
-                                    خروج
-                                </a>
-                            </div>
-                        </div>
-                    {% else %}
-                        <div class="auth-buttons">
-                            <a href="{% url 'users:login' %}" class="btn btn-outline">ورود</a>
-                            <a href="{% url 'users:register' %}" class="btn btn-primary">ثبت نام</a>
-                        </div>
                     {% endif %}
                 </div>
             </div>
         </div>
     </header>
+    -->
 
     <!-- Main Content -->
     <main class="main">

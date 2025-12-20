@@ -4,7 +4,7 @@
 {% block title %}وضعیت اشتراک{% endblock %}
 
 {% block content %}
-{% include 'cases/includes/header_navigation.html' %}
+{% include 'dadash/includes/header.html' %}
 <div class="subscription-status-page" style="margin-top: 80px;">
     {% if user.is_authenticated %}
         {% if subscription %}
