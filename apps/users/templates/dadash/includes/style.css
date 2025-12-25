@@ -1,0 +1,431 @@
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        :root {
+            --primary: #3EA66B;
+            --primary-dark: #2d8a54;
+            --secondary: #4B6A9D;
+            --background: #ffffff;
+            --foreground: #0f172a;
+            --muted: #f1f5f9;
+            --muted-foreground: #64748b;
+            --border: #e2e8f0;
+            --card: #ffffff;
+            --card-foreground: #0f172a;
+        }
+        @font-face {
+            font-family: 'Bon Pro';
+            src: url('/static/fonts/bon-Medium.woff2') format('woff2'),
+                 url('/static/fonts/bon-Medium.woff') format('woff');
+            font-weight: 400;
+            font-style: normal;
+            font-display: swap;
+        }
+        body{
+            direction: rtl;
+            font-family: system-ui;
+            background-color: var(--background);
+            color: var(--foreground);
+        }
+        pre{
+            font-family: system-ui;
+        }
+        header{
+            background-color: ;
+            padding-top: 10px;
+            z-index: 1;
+            width: ;
+            display: flex;
+            justify-content: space-around;
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+            box-shadow: 0px 1px 20px 1px #d1d1d1;
+        }
+        header aside {
+            display: flex;
+            justify-content: flex-start;
+            flex-wrap: nowrap;
+            align-items: center;
+            align-content: center;
+            flex-direction: row;
+        }
+        header .login{
+            display: flex;
+            flex-direction: row-reverse;
+            flex-wrap: nowrap;
+            align-content: center;
+            justify-content: flex-start;
+            align-items: center;
+            padding-bottom: ;
+            box-shadow: ;
+        }
+        header img{
+            width: 6%;
+            margin: 0 0 0 0;
+
+        }
+        .heyvoonak {
+            margin: 1% 2% 0 0;
+        }
+        header nav{
+
+        }
+        header nav ul{
+
+        }
+        header nav ul li{
+            margin: 1% 30px 0 0;
+            font-size: 22px;
+            list-style: none;
+            font-weight: bold;
+        }
+        header nav ul li:hover{
+            
+        }
+        header nav ul li a {
+            text-decoration: none;
+            color: #000;
+            border-radius: .5rem;
+            padding: .5rem 1rem;
+
+        }
+        header nav ul li a:hover{
+            background-color: rgba(0, 0, 0, 0.05);
+            color: #3ea66b;
+        }
+        header .login {
+        }
+        .button{
+            display: flex;
+            font-size: 20px;
+            font-family: 'Vazir', 'Tahoma', sans-serif;
+            text-decoration: none;
+            font-weight: bold;
+            margin-left: 10px;
+            border: 0;
+            border-radius: .5rem;
+            padding: .5rem 1rem;
+            background-color: #3ea66b;
+            color: #fff;
+        }
+        .user-dropdown .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: #fff;
+            min-width: 160px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-radius: 8px;
+            z-index: 100;
+            overflow: hidden;
+        }
+        .user-dropdown {
+            margin-top: ;
+            position: relative;
+            display: inline-block;
+        }
+        .user-dropdown .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            object-fit: cover;
+            transition: transform 0.2s ease;
+        }
+
+        .user-dropdown .avatar:hover {
+            transform: scale(1.05);
+        }
+        .user-dropdown .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0; 
+            background-color: #fff;
+            min-width: 160px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-radius: 8px;
+            z-index: 100;
+            overflow: hidden;
+        }
+        .user-dropdown .dropdown-content a {
+            display: block;
+            padding: 12px 15px;
+            text-decoration: none;
+            color: #0f172a;
+            font-weight: 500;
+            transition: background 0.2s ease;
+        }
+
+        .user-dropdown .dropdown-content a:hover {
+            background-color: #f1f5f9;
+        }
+
+        .user-dropdown:hover .dropdown-content {
+            display: block;
+        }
+        /* end of header */
+
+        /* under header */
+        .under-header{
+            display: flex;
+            flex-direction: ro0w;
+            align-items: center;
+            justify-content: space-between;
+            gap: 4rem;
+            padding: 2rem;
+        }
+        .under-header-text {
+            flex: 1;
+            text-align: center;
+        }
+        .under-header-text h2 , h3{
+            display: ;
+        }
+        .under-header-text h2{
+            font-size: 5rem;
+        }
+        .under-header-text h3{
+
+        }
+        .gradient-text {
+            background: linear-gradient(90deg, #3ea66b, #498ab6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: bold;
+        }
+        .under-header-img {
+
+        }
+        .under-header-img img{
+            width: 100%;
+            max-width: 50rem;
+        }
+        /* end of under header */
+
+        /* why HeyVoonak */
+
+        .w {
+            margin-top: 7rem;
+            display: flex;
+            flex-direction: row;
+            gap: 5rem;
+            justify-content: space-evenly;
+            align-items: stretch;
+            align-content: center;
+        }
+        .w article {
+
+
+        }
+        .w article img {
+            margin-left: 5rem;
+            border: 3px dashed #3ea66b;
+            border-radius: 6.5rem;
+            padding: 1rem;
+            width: 100%;
+            max-width: 30rem;
+        }
+        .w aside {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: flex-start;
+            align-content: flex-end;
+        }
+        .w aside section {
+            display: flex;
+            flex-direction: row;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .w aside section img {
+            width: 100%;
+            max-width: 5rem;
+        }
+        .w aside section div {
+            display: flex;
+            flex-direction: column;
+            align-items: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+        .w aside section div span {
+            text-align: right ;
+        }
+        /* End of Why HeyVoonak */
+
+        /* Sub pannel */
+        .wh-line{
+            margin-top: 7rem;
+            display: flex;
+            flex-direction: column;
+        }
+        .wh-line {
+            width: 100%;
+            padding: 40px 0;
+        }
+
+        .wh-line-text {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .wh-line-text h3 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .wh-line-text span {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #555;
+        }
+        .wh-line-panels {
+            display: flex;
+            justify-content: center;
+            gap: 100px;
+        }
+        .wh-line-pannel {
+            width: 280px;
+            padding: 25px;
+            text-align: center;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+        }
+
+        .wh-line-pannel div img {
+            width: 70px;
+            margin-bottom: 15px;
+        }
+
+        .wh-line-pannel h4 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        .wh-line-pannel h5 {
+            font-size: 1.25rem;
+            font-weight: normal ;
+        }
+        .wh-line-pannel h6 {
+            font-size: 1.25rem;
+        }
+        .wh-line-pannel pre {
+            margin-top: 3rem;
+            font-size: 1rem;
+            font-weight: bold;
+            color: #555;
+            line-height: 1.7;
+        }
+        .wh-line-pannel {
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .wh-line-pannel:hover {
+            transform: translateY(-6px) scale(1.03);
+            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.12);
+        }
+        .proplan {
+            background-color: #3ea66b33;
+        }
+
+
+        .login-pannel {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            padding: 6rem 0;
+            text-align: center;
+            color: white;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+        .login-pannel h3 {
+            font-size: 2.25rem;
+        }
+        .login-pannel span {
+            font-size: 1.25rem;
+        }
+        .login-pannel div a{
+            border-radius: .5rem;
+            display: inline-block;
+            padding: 1rem;
+            box-shadow: 0 0 6px rgba(0,0,0,0.12);
+            background-color: white;
+            transition: transform 0.5s ease;
+            text-decoration: none;
+            color: #000000c2;
+        }
+        .login-pannel div a:hover {
+            transform: scale(1.05);
+        }
+
+
+        /* Footer */
+        footer {
+
+        }
+        footer div{
+            display: flex;
+            padding: 4rem;
+            gap: 4rem;
+        }
+        footer li , a {
+            list-style: none;
+            text-decoration: none;
+            color: #4b5563;
+        }
+        .footer-icon {
+            width: 4rem;
+        }
+        footer div aside nav ul {
+            margin-top: 1rem;
+            display: flex;
+            gap: 1rem ;
+        }
+        footer div aside nav ul li{
+            padding: .5rem;
+            border-radius: 30%;
+            background-color: ;
+        }
+        footer div aside nav ul li:hover {
+            box-shadow: 0 0 4px #787878;
+        }
+        footer div aside nav ul li a img{
+            width: 2rem;
+        }
+        footer div aside {
+            width: 30rem;
+        }
+        footer div section {
+            margin-top: 1rem;
+        }
+        footer div section nav{
+            margin-top: 1rem;
+
+        }
+        footer div section nav ul li {
+            margin: .5rem 0;
+            display: flex;
+            gap: 1rem;
+        }
+        footer div section nav ul li img {
+            width: 2rem;
+            height: 2rem;
+        }
+
+        footer article {
+            text-align: left;
+            margin: 2rem 0;
+            padding: 1rem 0 0 3rem;
+            border-top: 1px solid #d1d1d1;
+        }
+        footer article span {
+            font-weight: bold;
+            color: #555555;
+        }
+        
+
+

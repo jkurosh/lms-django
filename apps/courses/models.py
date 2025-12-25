@@ -171,6 +171,10 @@ class SubCategory(models.Model):
         verbose_name_plural = "زیردسته‌بندی‌ها"
         ordering = ['name']
         db_table = 'courses_subcategory'
+        indexes = [
+            models.Index(fields=['category']),  # برای فیلتر بر اساس category
+            models.Index(fields=['name']),  # برای جستجو
+        ]
 
     def __str__(self):
         return self.name
@@ -194,6 +198,12 @@ class Case(models.Model):
     class Meta:
         ordering = ['id']
         db_table = 'courses_case'
+        indexes = [
+            models.Index(fields=['is_published', 'created_at']),  # برای فیلتر و مرتب‌سازی
+            models.Index(fields=['category']),  # برای فیلتر بر اساس category
+            models.Index(fields=['sub_category']),  # برای فیلتر بر اساس subcategory
+            models.Index(fields=['created_at']),  # برای مرتب‌سازی بر اساس تاریخ
+        ]
 
 class LabTest(models.Model):
     case = models.ForeignKey(Case, on_delete=models.CASCADE, related_name='lab_tests', db_column='case_study_id')
@@ -222,6 +232,10 @@ class Slide(models.Model):
 
     class Meta:
         db_table = 'courses_slide'
+        indexes = [
+            models.Index(fields=['case']),  # برای فیلتر بر اساس case
+            models.Index(fields=['case', 'order_index']),  # برای مرتب‌سازی
+        ]
 
     def __str__(self):
         return f"Slide for {self.case.title}"
@@ -242,6 +256,14 @@ class UserProgress(models.Model):
 
     class Meta:
         db_table = 'user_progress'
+        indexes = [
+            models.Index(fields=['user']),  # برای فیلتر بر اساس user
+            models.Index(fields=['case']),  # برای فیلتر بر اساس case
+            models.Index(fields=['completed']),  # برای فیلتر بر اساس وضعیت تکمیل
+            models.Index(fields=['user', 'completed']),  # ترکیبی برای dashboard
+            models.Index(fields=['completed_at']),  # برای فیلتر بر اساس تاریخ تکمیل
+            models.Index(fields=['user', 'case']),  # ترکیبی برای بررسی پیشرفت
+        ]
 
     def __str__(self):
         return f"{self.user.username} - {self.case.title}"
@@ -363,6 +385,11 @@ class Bookmark(models.Model):
         verbose_name = 'Bookmark'
         verbose_name_plural = 'Bookmarks'
         db_table = 'courses_bookmark'
+        indexes = [
+            models.Index(fields=['user']),  # برای فیلتر بر اساس user
+            models.Index(fields=['case']),  # برای فیلتر بر اساس case
+            models.Index(fields=['user', 'created_at']),  # برای مرتب‌سازی bookmarks کاربر
+        ]
     
     def __str__(self):
         return f"{self.user.username} bookmarked {self.case.title}"

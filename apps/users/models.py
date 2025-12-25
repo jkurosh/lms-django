@@ -506,6 +506,10 @@ class CartItem(models.Model):
         verbose_name = 'آیتم سبد خرید'
         verbose_name_plural = 'آیتم‌های سبد خرید'
         unique_together = ('cart', 'plan')
+        indexes = [
+            models.Index(fields=['cart']),  # برای فیلتر بر اساس cart
+            models.Index(fields=['plan']),  # برای فیلتر بر اساس plan
+        ]
     
     def __str__(self):
         return f"{self.plan.name} - {self.quantity}x"

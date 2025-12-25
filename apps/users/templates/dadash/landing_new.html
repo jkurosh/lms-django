@@ -9,6 +9,20 @@
     <link rel="stylesheet" type="text/css" href="{% static 'dadash/media.css' %}">
     <link rel="icon" href="{% static 'dadash/pawprint.png' %}" sizes="196x196" />
     <style>
+        @font-face {
+            font-family: 'Bon Pro';
+            src: url('{% static "fonts/bon-Medium.woff2" %}') format('woff2'),
+                 url('{% static "fonts/bon-Medium.woff" %}') format('woff');
+            font-weight: 400;
+            font-style: normal;
+            font-display: swap;
+        }
+        
+        /* Apply font to body */
+        body {
+            font-family: 'Bon Pro', 'Vazir', 'Tahoma', sans-serif;
+        }
+        
         /* Inline styles for images in templates folder */
         .landing-img {
             max-width: 100%;
@@ -143,7 +157,7 @@
         <span>امروز همین حالا به هزاران کلینیک دامپزشکی موفق بپیوندید که با سیستم مدیریت HeyVoonak خدمات بهتری به بیماران ارائه می‌دهند.<br> تیم متخصص ما آماده است تا کلینیک شما را به سطح بعدی برساند.</span>
         <div>
             {% if user.is_authenticated %}
-                <a href="{% url 'users:dashboard' %}">ورود به داشبورد</a>
+                <a href="{% url 'users:designali_dashboard' %}">ورود به داشبورد</a>
             {% else %}
                 <a href="{% url 'users:login' %}">ورود / ثبت نام</a>
             {% endif %}
@@ -177,7 +191,7 @@
                     <ul>
                         <li><a href="{% url 'users:categories_page' %}">دسته‌بندی‌ها</a></li>
                         <li><a href="{% url 'users:subscription_plans' %}">پلن‌های اشتراک</a></li>
-                        <li><a href="{% url 'users:dashboard' %}">داشبورد</a></li>
+                        <li><a href="{% url 'users:designali_dashboard' %}">داشبورد</a></li>
                         <li><a href="{% url 'users:dadash_home' %}">صفحه اصلی</a></li>
                     </ul>
                 </nav>
@@ -197,7 +211,7 @@
                 <h4>تماس</h4>
                 <nav>
                     <ul>
-                        <li><img src="{% static 'dadash/mail.png' %}" alt="Email" class="landing-img"><a href="mailto:hello@bbros.com">hello@bbros.com</a></li>
+                        <li><img src="{% static 'dadash/mail.png' %}" alt="Email" class="landing-img"><a href="mailto:support@example.com">support@example.com</a></li>
                         <li><img src="{% static 'dadash/phone.png' %}" alt="Phone" class="landing-img"><a href="tel:+982112345678">+98 21 1234 5678</a></li>
                         <li><img src="{% static 'dadash/address.png' %}" alt="Address" class="landing-img"><span>تهران، خیابان ولیعصربرج میلاد، طبقه ۱۵ </span></li>
                     </ul>

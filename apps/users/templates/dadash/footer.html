@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>HeyVoonak - سیستم مدیریت کلینیک دامپزشکی</title>
+    <link rel="icon" href="pawprint.png" sizes="196x196" />
+
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        :root {
+            --primary: #3EA66B;
+            --primary-dark: #2d8a54;
+            --secondary: #4B6A9D;
+            --background: #ffffff;
+            --foreground: #0f172a;
+            --muted: #f1f5f9;
+            --muted-foreground: #64748b;
+            --border: #e2e8f0;
+            --card: #ffffff;
+            --card-foreground: #0f172a;
+        }
+        @font-face {
+            font-family: 'Bon Pro';
+            src: url('/static/fonts/bon-Medium.woff2') format('woff2'),
+                 url('/static/fonts/bon-Medium.woff') format('woff');
+            font-weight: 400;
+            font-style: normal;
+            font-display: swap;
+        }
+        body{
+            direction: rtl;
+            font-family: system-ui;
+            background-color: var(--background);
+            color: var(--foreground);
+        }
+        /* Footer */
+        footer {
+
+        }
+        footer div{
+            display: flex;
+            padding: 4rem;
+            gap: 4rem;
+        }
+        footer li , a {
+            list-style: none;
+            text-decoration: none;
+            color: #4b5563;
+        }
+        .footer-icon {
+            width: 4rem;
+        }
+        footer div aside nav ul {
+            margin-top: 1rem;
+            display: flex;
+            gap: 1rem ;
+        }
+        footer div aside nav ul li{
+            padding: .5rem;
+            border-radius: 30%;
+            background-color: ;
+        }
+        footer div aside nav ul li:hover {
+            box-shadow: 0 0 4px #787878;
+        }
+        footer div aside nav ul li a img{
+            width: 2rem;
+        }
+        footer div aside {
+            width: 30rem;
+        }
+        footer div section {
+            margin-top: 1rem;
+        }
+        footer div section nav{
+            margin-top: 1rem;
+
+        }
+        footer div section nav ul li {
+            margin: .5rem 0;
+            display: flex;
+            gap: 1rem;
+        }
+        footer div section nav ul li img {
+            width: 2rem;
+            height: 2rem;
+        }
+
+        footer article {
+            text-align: left;
+            margin: 2rem 0;
+            padding: 1rem 0 0 3rem;
+            border-top: 1px solid #d1d1d1;
+        }
+        footer article span {
+            font-weight: bold;
+            color: #555555;
+        }
+        @media (max-width: 768px) {
+            footer div{
+                display: flex;
+                flex-direction: column;
+            }
+            footer div aside {
+                width: auto;
+                text-align: center;
+            }
+            footer div section {
+                text-align: center;
+            }
+            footer div aside nav ul {
+                justify-content: center;
+            }
+            footer div section nav ul li {
+                justify-content: center;
+            }
+            .info nav ul li img{
+                justify-content: left;
+                
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <footer>
+        
+        <div>
+            <aside>
+                <img src="pawprint.png" class="footer-icon">
+                <h2>HeyVoonak</h2>
+                <span>سیستم جامع مدیریت کلینیک دامپزشکی که به شما کمک می‌کند تا خدمات بهتری به بیماران ارائه دهید<br> و کلینیک خود را به صورت حرفه‌ای مدیریت کنید.</span>
+                <nav>
+                    <ul>
+                        <li><a href=""><img src="insta.png"></a></li>
+                        <li><a href=""><img src="telegram.png"></a></li>
+                        <li><a href=""><img src="linkedin.png"></a></li>
+                    </ul>
+                </nav>
+            </aside>
+            <section>
+                <h4>خدمات</h4>
+                <nav>
+                    <ul>
+                        <li><a href="">مدیریت بیماران</a></li>
+                        <li><a href="">برنامه ریزی قرار ملاقات</a></li>
+                        <li><a href="">گزارش گیری</a></li>
+                        <li><a href="">پشتیبانی ۲۴/۷</a></li>
+                    </ul>
+                </nav>
+            </section>
+            <section>
+                <h4>شرکت</h4>
+                <nav>
+                    <ul>
+                        <li><a href="">درباره ما</a></li>
+                        <li><a href="">تیم ما</a></li>
+                        <li><a href="">فرصت های شغلی</a></li>
+                        <li><a href="">وبلاگ</a></li>
+                    </ul>
+                </nav>
+            </section>
+            <section class="info">
+                <h4>تماس</h4>
+                <nav>
+                    <ul>
+                        <li><img src="mail.png"><a href="">support@example.com</a></li>
+                        <li><img src="phone.png"><a href="">+98 21 1234 5678</a></li>
+                        <li><img src="address.png"><span>تهران، خیابان ولیعصربرج میلاد، طبقه ۱۵ </span></li>
+                    </ul>
+                </nav>
+            </section>
+        </div>
+
+        <article>
+            <span>Copyright © 2025 HeyVoonak All rights reserved</span>
+        </article>
+    </footer>
+</body>
+</html>

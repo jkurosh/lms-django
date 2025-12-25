@@ -25,7 +25,8 @@ from .models import (
 def case_list(request, category_slug=None):
     categories = CaseCategory.objects.all()
     selected_category = None
-    cases = Case.objects.filter(is_published=True)
+    # بهینه‌سازی: استفاده از select_related برای category
+    cases = Case.objects.filter(is_published=True).select_related('category', 'subcategory')
     
     # فیلتر بر اساس دسته‌بندی
     category_id = request.GET.get('category')
@@ -60,24 +61,21 @@ def case_list(request, category_slug=None):
 
 @subscription_required_or_admin
 def case_detail(request, case_id):
-    case = get_object_or_404(Case, id=case_id)
+    # بهینه‌سازی: استفاده از select_related و prefetch_related
+    case = get_object_or_404(
+        Case.objects.select_related('category', 'subcategory').prefetch_related('slides', 'lab_tests'),
+        id=case_id
+    )
     
-    # محاسبه ID کیس بعدی و قبلی
-    all_cases = Case.objects.order_by('id')
-    current_index = list(all_cases.values_list('id', flat=True)).index(case_id)
+    # محاسبه ID کیس بعدی و قبلی - بهینه‌سازی شده (بدون لود کردن همه cases)
+    next_case = Case.objects.filter(id__gt=case_id).order_by('id').first()
+    prev_case = Case.objects.filter(id__lt=case_id).order_by('-id').first()
     
-    next_case_id = None
-    prev_case_id = None
+    next_case_id = next_case.id if next_case else None
+    prev_case_id = prev_case.id if prev_case else None
     
-    if current_index < len(all_cases) - 1:
-        next_case_id = all_cases[current_index + 1].id
-    if current_index > 0:
-        prev_case_id = all_cases[current_index - 1].id
-    
-    # دریافت تست‌های آزمایشگاهی
+    # دریافت تست‌های آزمایشگاهی و اسلایدها - از prefetch_related استفاده شده
     lab_tests = case.lab_tests.all()
-    
-    # دریافت اسلایدها
     slides = case.slides.all()
     
     # دریافت مشاهدات (LabTest model)

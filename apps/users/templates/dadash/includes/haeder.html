@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>HeyVoonak - سیستم مدیریت کلینیک دامپزشکی</title>
+    <link rel="icon" href="pawprint.png" sizes="196x196" />
+
+    <style>
+    	*{
+            margin: 0;
+            padding: 0;
+        }
+        :root {
+            --primary: #3EA66B;
+            --primary-dark: #2d8a54;
+            --secondary: #4B6A9D;
+            --background: #ffffff;
+            --foreground: #0f172a;
+            --muted: #f1f5f9;
+            --muted-foreground: #64748b;
+            --border: #e2e8f0;
+            --card: #ffffff;
+            --card-foreground: #0f172a;
+        }
+        @font-face {
+            font-family: 'Bon Pro';
+            src: url('/static/fonts/bon-Medium.woff2') format('woff2'),
+                 url('/static/fonts/bon-Medium.woff') format('woff');
+            font-weight: 400;
+            font-style: normal;
+            font-display: swap;
+        }
+        body{
+            direction: rtl;
+            font-family: system-ui;
+            background-color: var(--background);
+            color: var(--foreground);
+        }
+        pre{
+            font-family: system-ui;
+        }
+        header{
+            background-color: ;
+            padding-top: 10px;
+            z-index: 1;
+            width: ;
+            display: flex;
+            justify-content: space-around;
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+            box-shadow: 0px 1px 20px 1px #d1d1d1;
+        }
+        header aside {
+            display: flex;
+            justify-content: flex-start;
+            flex-wrap: nowrap;
+            align-items: center;
+            align-content: center;
+            flex-direction: row;
+        }
+        header .login{
+            display: flex;
+            flex-direction: row-reverse;
+            flex-wrap: nowrap;
+            align-content: center;
+            justify-content: flex-start;
+            align-items: center;
+            padding-bottom: ;
+            box-shadow: ;
+        }
+        header img{
+            width: 6%;
+            margin: 0 0 0 0;
+
+        }
+        .heyvoonak {
+            margin: 1% 2% 0 0;
+        }
+        header nav{
+
+        }
+        header nav ul{
+
+        }
+        header nav ul li{
+            margin: 1% 30px 0 0;
+            font-size: 22px;
+            list-style: none;
+            font-weight: bold;
+        }
+        header nav ul li:hover{
+            
+        }
+        header nav ul li a {
+            text-decoration: none;
+            color: #000;
+            border-radius: .5rem;
+            padding: .5rem 1rem;
+
+        }
+        header nav ul li a:hover{
+            background-color: rgba(0, 0, 0, 0.05);
+            color: #3ea66b;
+        }
+        header .login {
+        }
+        .button{
+            display: flex;
+            font-size: 20px;
+            font-family: 'Vazir', 'Tahoma', sans-serif;
+            text-decoration: none;
+            font-weight: bold;
+            margin-left: 10px;
+            border: 0;
+            border-radius: .5rem;
+            padding: .5rem 1rem;
+            background-color: #3ea66b;
+            color: #fff;
+        }
+        .user-dropdown .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: #fff;
+            min-width: 160px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-radius: 8px;
+            z-index: 100;
+            overflow: hidden;
+        }
+        .user-dropdown {
+            margin-top: ;
+            position: relative;
+            display: inline-block;
+        }
+        .user-dropdown .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            object-fit: cover;
+            transition: transform 0.2s ease;
+        }
+
+        .user-dropdown .avatar:hover {
+            transform: scale(1.05);
+        }
+        .user-dropdown .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0; 
+            background-color: #fff;
+            min-width: 160px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-radius: 8px;
+            z-index: 100;
+            overflow: hidden;
+        }
+        .user-dropdown .dropdown-content a {
+            display: block;
+            padding: 12px 15px;
+            text-decoration: none;
+            color: #0f172a;
+            font-weight: 500;
+            transition: background 0.2s ease;
+        }
+
+        .user-dropdown .dropdown-content a:hover {
+            background-color: #f1f5f9;
+        }
+
+        .user-dropdown:hover .dropdown-content {
+            display: block;
+        }
+        @media (max-width: 768px) {
+		    header aside img {
+		        width: 2rem;
+		    }
+		    .heyvoonak{
+		        font-size: 1rem;
+		    }
+		    .login a , header a {
+		        font-size: 1rem;
+		    }
+		    .user-dropdown .dropdown-content {
+		        position: fixed !important;
+		        left: 0 !important;
+		        right: 0 !important;
+		        width: 100% !important;
+		        min-width: unset !important;
+		        border-radius: 0 !important;
+		        box-shadow: 0 6px 18px rgba(0,0,0,0.12) !important;
+		        background-color: #fff !important;
+		        z-index: 2000 !important;
+		        padding-top: 0.25rem;
+		        padding-bottom: 0.5rem;
+		        top: 64px !important;
+		        text-align: left;
+		    }
+		    .user-dropdown {
+		        position: static !important;
+
+		    }
+		}
+    </style>
+</head>
+<body>
+
+	<header>
+        <aside>
+            <img src="pawprint.png">
+            <h1 class="heyvoonak">HeyVoonak</h1>
+            <section>
+                        <nav>
+                            <ul>
+                                <li><a href="">خانه</a> </li>
+                            </ul>
+                        </nav>
+                    </section>
+        </aside>
+        <section class="login">
+            <div class="user-dropdown">
+                <img src="prof.jpg" class="avatar" alt="avatar">
+                <div class="dropdown-content">
+                    <a href="#">پروفایل</a>
+                    <a href="#">تنظیمات</a>
+                    <a href="#">خروج</a>
+                </div>
+            </div>
+            <a href="" class="button">ورود</a>
+
+        </section>
+    </header>
+
+</body>
+</html>

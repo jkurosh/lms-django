@@ -1,0 +1,133 @@
+/* for mobile */
+@media (max-width: 768px) {
+    header aside img {
+        width: 2rem;
+    }
+    .heyvoonak{
+        font-size: 1rem;
+    }
+    .login a , header a {
+        font-size: 1rem;
+    }
+    .user-dropdown .dropdown-content {
+        position: fixed !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        min-width: unset !important;
+        border-radius: 0 !important;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.12) !important;
+        background-color: #fff !important;
+        z-index: 2000 !important;
+        padding-top: 0.25rem;
+        padding-bottom: 0.5rem;
+        top: 64px !important;
+        text-align: left;
+    }
+    .user-dropdown {
+        position: static !important;
+
+    }
+    .under-header {
+        flex-direction: column;
+        text-align: center;
+    }
+    .under-header-text h2{
+        font-size: 3rem;
+    }
+    .under-header-text h3{
+        font-size: 1rem;
+    }
+    .under-header-img img {
+        max-width: 100%;
+    }
+    .w {
+        flex-direction: column;
+    }
+    .w article {
+        width: 100%;
+        display: flex;
+        flex-direction: column; /* <-- اصلاح: column */
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 0.8rem;
+    }
+    .w article img {
+        width: 80%;
+        max-width: 350px;
+        height: auto;
+        display: block;
+        margin: 0 auto;
+    }
+    .w aside {
+        display: flex;
+        flex-direction: column;
+        gap: 0.9rem;
+    }
+    .w aside section {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 0.9rem;
+        padding: 0.6rem;
+        border-radius: 10px;
+        direction: ltr;
+        background: transparent;
+    }
+    .w aside section img {
+        width: 56px;
+        height: 56px;
+        object-fit: contain;
+        flex: 0 0 56px;
+        order: 0;
+        margin: 0; 
+    }
+    .w aside section div {
+        order: 1;
+        text-align: left;
+        direction: rtl;
+        min-width: 0;
+    }
+    .w aside section div h4 {
+        margin: 0 0 0.15rem 0;
+        font-size: 1rem;
+        line-height: 1.2;
+    }
+    .w aside section div span {
+        display: block;
+        font-size: 0.88rem;
+        line-height: 1.5;
+        color: #555;
+    }
+    .wh-line-panels {
+        flex-direction: column;
+        gap: 25px;
+        align-items: center;
+    }
+
+    .wh-line-pannel {
+        width: 75%;
+    }
+    footer div{
+        display: flex;
+        flex-direction: column;
+    }
+    footer div aside {
+        width: auto;
+        text-align: center;
+    }
+    footer div section {
+        text-align: center;
+    }
+    footer div aside nav ul {
+        justify-content: center;
+    }
+    footer div section nav ul li {
+        justify-content: center;
+    }
+    .info nav ul li img{
+        justify-content: left;
+        
+    }
+
+}

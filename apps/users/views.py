@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.views import LoginView
 from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 from .models import CustomUser, Notification, Subscription, Cart
 from .decorators import require_authentication, require_staff, rate_limit, secure_headers, subscription_required_or_admin
 from django.contrib import messages
@@ -46,12 +47,19 @@ def get_search_engine(request):
 
 # Create your views here.
 
+@method_decorator(rate_limit(max_requests=5, window_seconds=60), name='dispatch')
 class CustomLoginView(LoginView):
     template_name = 'dadash/login.html'
     redirect_authenticated_user = True
 
     def get_success_url(self):
         return '/designali/'
+    
+    def get_redirect_url(self):
+        """Redirect authenticated users to designali instead of dashboard"""
+        if self.request.user.is_authenticated:
+            return '/designali/'
+        return super().get_redirect_url()
     
     def form_valid(self, form):
         """ثبت ورود موفق"""
@@ -119,37 +127,41 @@ def admin_panel(request):
         # آمار پیشرفت کاربران
         recent_progress = UserProgress.objects.select_related('user', 'case').order_by('-completed_at')[:10]
         
-        # آمار دسته‌بندی‌ها با جزئیات بیشتر
+        # آمار دسته‌بندی‌ها با جزئیات بیشتر - بهینه‌سازی شده با annotate
+        from django.db.models import Count, Q
         category_stats = []
-        for category in CaseCategory.objects.all()[:5]:
-            category_cases = category.cases.count()
-            category_completed = UserProgress.objects.filter(
-                case__category=category,
-                completed=True
-            ).count()
+        categories = CaseCategory.objects.annotate(
+            case_count=Count('cases'),
+            completed_count=Count('cases', filter=Q(cases__userprogress__completed=True), distinct=True)
+        )[:5]
+        
+        for category in categories:
+            completion_rate = round((category.completed_count / category.case_count * 100) if category.case_count > 0 else 0, 1)
             category_stats.append({
                 'name': category.name,
-                'case_count': category_cases,
-                'completed_count': category_completed,
-                'completion_rate': round((category_completed / category_cases * 100) if category_cases > 0 else 0, 1)
+                'case_count': category.case_count,
+                'completed_count': category.completed_count,
+                'completion_rate': completion_rate
             })
         
-        # آمار کاربران فعال با جزئیات بیشتر
+        # آمار کاربران فعال با جزئیات بیشتر - بهینه‌سازی شده با annotate
         user_stats = []
-        for user in User.objects.filter(case_progress__isnull=False).distinct()[:5]:
-            progress_count = UserProgress.objects.filter(user=user).count()
-            completed_count = UserProgress.objects.filter(user=user, completed=True).count()
+        users = User.objects.filter(case_progress__isnull=False).annotate(
+            progress_count=Count('case_progress'),
+            completed_count=Count('case_progress', filter=Q(case_progress__completed=True))
+        ).select_related('profile').distinct()[:5]
+        
+        for user in users:
             try:
-                profile = user.profile
-                accuracy = profile.overall_accuracy
+                accuracy = user.profile.overall_accuracy if hasattr(user, 'profile') and user.profile else 0
             except:
-                accuracy = round((completed_count / progress_count * 100) if progress_count > 0 else 0, 1)
+                accuracy = round((user.completed_count / user.progress_count * 100) if user.progress_count > 0 else 0, 1)
             
             user_stats.append({
                 'name': user.get_full_name() or user.username,
                 'username': user.username,
-                'total_cases': progress_count,
-                'completed_cases': completed_count,
+                'total_cases': user.progress_count,
+                'completed_cases': user.completed_count,
                 'accuracy': accuracy,
                 'last_login': user.last_login,
                 'date_joined': user.date_joined
@@ -456,15 +468,31 @@ def logout_view(request):
 
 def dadash_home(request):
     """صفحه اصلی heyvoonak - لندینگ پیج"""
-    return render(request, 'dadash/landing.html', {'is_landing_page': True})
+    return render(request, 'dadash/landing_new.html', {'is_landing_page': True})
 
 def categories_home(request):
-    """صفحه اصلی کتگوری‌ها"""
-    categories = CaseCategory.objects.annotate(case_count=Count('cases'))
+    """صفحه اصلی کتگوری‌ها - بهینه‌سازی شده"""
+    from django.core.cache import cache
+    
+    # Cache کردن categories برای 10 دقیقه
+    cache_key_categories = 'categories_home_list'
+    categories = cache.get(cache_key_categories)
+    
+    if categories is None:
+        categories = list(CaseCategory.objects.annotate(case_count=Count('cases')))
+        cache.set(cache_key_categories, categories, 600)  # 10 دقیقه
+    
+    # Cache کردن total_cases برای 5 دقیقه
+    cache_key_total = 'total_cases_count'
+    total_cases = cache.get(cache_key_total)
+    
+    if total_cases is None:
+        total_cases = Case.objects.count()
+        cache.set(cache_key_total, total_cases, 300)  # 5 دقیقه
     
     context = {
         'categories': categories,
-        'total_cases': Case.objects.count(),
+        'total_cases': total_cases,
     }
     return render(request, 'dadash/index.html', context)
 
@@ -530,7 +558,7 @@ def cardiology(request):
 
 def landing_page(request):
     """لندینگ پیج جدید BBros"""
-    return render(request, 'dadash/landing.html', {'is_landing_page': True})
+    return render(request, 'dadash/landing_new.html', {'is_landing_page': True})
 
 def get_subcategories_api(request, category_id):
     """API برای دریافت subcategories یک دسته‌بندی"""
@@ -813,20 +841,39 @@ def designali_dashboard(request):
     if user.is_authenticated:
         user_bookmarks = Bookmark.objects.filter(user=user).select_related('case', 'case__category').order_by('-created_at')[:5]
     
-    # دریافت آخرین مطالعات موردی از دیتابیس
-    recent_cases = Case.objects.select_related('category').order_by('-created_at')[:5]
+    # دریافت آخرین مطالعات موردی از دیتابیس - بهینه‌سازی شده
+    recent_cases = Case.objects.select_related('category', 'subcategory').order_by('-created_at')[:5]
     
-    # محاسبه آمار واقعی
-    total_cases = Case.objects.count()
-    completed_cases = UserProgress.objects.filter(completed=True).count()
-    in_progress_cases = UserProgress.objects.filter(completed=False).count()
+    # محاسبه آمار واقعی - استفاده از cache برای کاهش query
+    from django.core.cache import cache
+    cache_key_stats = 'dashboard_stats'
+    stats = cache.get(cache_key_stats)
     
-    # محاسبه درصد تکمیل
-    completion_percentage = 0
-    if total_cases > 0:
-        completion_percentage = round((completed_cases / total_cases) * 100, 1)
+    if stats is None:
+        total_cases = Case.objects.count()
+        completed_cases = UserProgress.objects.filter(completed=True).count()
+        in_progress_cases = UserProgress.objects.filter(completed=False).count()
+        
+        # محاسبه درصد تکمیل
+        completion_percentage = 0
+        if total_cases > 0:
+            completion_percentage = round((completed_cases / total_cases) * 100, 1)
+        
+        stats = {
+            'total_cases': total_cases,
+            'completed_cases': completed_cases,
+            'in_progress_cases': in_progress_cases,
+            'completion_percentage': completion_percentage
+        }
+        # Cache برای 5 دقیقه
+        cache.set(cache_key_stats, stats, 300)
+    else:
+        total_cases = stats['total_cases']
+        completed_cases = stats['completed_cases']
+        in_progress_cases = stats['in_progress_cases']
+        completion_percentage = stats['completion_percentage']
     
-    # دریافت محبوب‌ترین دسته‌بندی‌ها
+    # دریافت محبوب‌ترین دسته‌بندی‌ها - بهینه‌سازی شده
     from django.db.models import Count
     popular_categories = CaseCategory.objects.annotate(
         case_count=Count('cases')
@@ -853,61 +900,8 @@ def designali_dashboard(request):
 
 @login_required
 def dashboard(request):
-    """داشبورد اصلی کاربر"""
-    user = request.user
-    
-    # دریافت یا ایجاد پروفایل کاربر
-    profile, created = UserProfile.objects.get_or_create(user=user)
-    
-    # دریافت یا ایجاد سبد خرید کاربر
-    cart, created = Cart.objects.get_or_create(user=user)
-    
-    # آمار کلی
-    total_cases = Case.objects.count()
-    completed_cases = UserProgress.objects.filter(user=user, completed=True).count()
-    in_progress_cases = UserProgress.objects.filter(user=user, completed=False).count()
-    
-    # آمار اخیر
-    recent_progress = UserProgress.objects.filter(user=user).order_by('-updated_at')[:5]
-    
-    # کیس‌های اخیر
-    recent_cases = Case.objects.filter(is_published=True).order_by('-created_at')[:6]
-    
-    # دسته‌بندی‌های محبوب
-    popular_categories = CaseCategory.objects.annotate(
-        case_count=Count('cases'),
-        user_progress_count=Count('cases__user_progress', filter=Q(cases__user_progress__user=user))
-    ).order_by('-case_count')[:6]
-    
-    # آمار هفتگی
-    week_ago = timezone.now() - timedelta(days=7)
-    weekly_progress = UserProgress.objects.filter(
-        user=user,
-        updated_at__gte=week_ago
-    ).count()
-    
-    # آمار ماهانه
-    month_ago = timezone.now() - timedelta(days=30)
-    monthly_progress = UserProgress.objects.filter(
-        user=user,
-        updated_at__gte=month_ago
-    ).count()
-    
-    context = {
-        'profile': profile,
-        'cart': cart,
-        'total_cases': total_cases,
-        'completed_cases': completed_cases,
-        'in_progress_cases': in_progress_cases,
-        'recent_progress': recent_progress,
-        'recent_cases': recent_cases,
-        'popular_categories': popular_categories,
-        'weekly_progress': weekly_progress,
-        'monthly_progress': monthly_progress,
-        'completion_percentage': round((completed_cases / total_cases * 100) if total_cases > 0 else 0, 1),
-    }
-    
-    return render(request, 'dadash/dashboard.html', context)
+    """داشبورد اصلی کاربر - redirect به designali"""
+    return redirect('users:designali_dashboard')
 
 @login_required
 def my_cases(request):
@@ -1368,7 +1362,7 @@ def password_reset_view(request):
     """صفحه بازیابی رمز عبور"""
     return render(request, 'dadash/password_reset.html')
 
-@csrf_exempt  # 🔥 FIX: غیرفعال کردن CSRF برای API
+@csrf_exempt  #  غیرفعال کردن CSRF برای API
 def verify_phone_api(request):
     """API برای تایید شماره تلفن و ارسال کد OTP"""
     if request.method != 'POST':
@@ -1376,7 +1370,7 @@ def verify_phone_api(request):
     
     try:
         import json
-        from apps.users.services.sms_service import sms_service  # 🔥 FIX: استفاده از instance موجود
+        from apps.users.services.sms_service import sms_service  #  استفاده از instance موجود
         from apps.users.models import OTPVerification
         
         data = json.loads(request.body)
@@ -1441,7 +1435,7 @@ def verify_phone_api(request):
             'message': 'خطا در پردازش درخواست'
         }, status=500)
 
-@csrf_exempt  # 🔥 FIX: غیرفعال کردن CSRF برای API
+@csrf_exempt  #  غیرفعال کردن CSRF برای API
 def verify_otp_api(request):
     """API برای تایید کد OTP"""
     if request.method != 'POST':
@@ -1504,7 +1498,7 @@ def verify_otp_api(request):
             'message': 'خطا در بررسی کد تایید'
         }, status=500)
 
-@csrf_exempt  # 🔥 FIX: غیرفعال کردن CSRF برای API
+@csrf_exempt  #  غیرفعال کردن CSRF برای API
 def change_password_api(request):
     """API برای تغییر رمز عبور بعد از تایید OTP"""
     if request.method != 'POST':

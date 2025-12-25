@@ -92,7 +92,7 @@ class FarazSMSService:
         
         Example:
             send_pattern(
-                "09123456789",
+                "09XXXXXXXXX",
                 "abc123xyz",
                 {"verification-code": "123456"}
             )

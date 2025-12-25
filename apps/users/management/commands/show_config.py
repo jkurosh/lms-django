@@ -98,7 +98,7 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS('✅ DEBUG=False - آماده برای production'))
         
         # بررسی SECRET_KEY
-        if settings.SECRET_KEY == 'django-insecure-=&rrzi6gyf7eu&j69y$@6$tydpl$h+fqv&oiimhab#f(p$4cd4':
+        if settings.SECRET_KEY == 'django-insecure-REPLACED-FOR-SECURITY':
             self.stdout.write(self.style.ERROR('❌ SECRET_KEY پیش‌فرض است - حتماً تغییر دهید!'))
         else:
             self.stdout.write(self.style.SUCCESS('✅ SECRET_KEY سفارشی است'))
