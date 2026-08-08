@@ -1,4 +1,4 @@
-# 🐾 VetLMS - Veterinary Learning Management System
+#  VetLMS - Veterinary Learning Management System
 
 <div align="center">
 
@@ -16,52 +16,52 @@
 
 ---
 
-## 📖 About
+##  About
 
 **VetLMS** is a specialized Learning Management System (LMS) for veterinary education that enables students and professionals to learn through real-world case studies, interactive tests, and advanced diagnostic tools.
 
 Built with Django and modern web technologies, this platform provides an interactive and effective learning experience with a scalable architecture.
 
-## ✨ Features
+##  Features
 
-### 📚 Interactive Case Studies
+###  Interactive Case Studies
 - **Comprehensive Case Library**: Extensive collection of real veterinary case studies
 - **Laboratory Test Analysis**: Interactive analysis of CBC, clinical chemistry, and morphological changes
 - **Diagnostic Tools**: Advanced system for analyzing and interpreting laboratory results
 - **Smart Categorization**: Organized case studies by different categories and specialties
 - **Progress Tracking**: Track your learning progress and completion status
 
-### 👥 User Management
+###  User Management
 - **Complete Authentication**: Registration, login, and password recovery system
 - **User Profiles**: Comprehensive user profile management
 - **Bookmarking**: Save favorite case studies for later review
 - **Achievement System**: Track achievements and milestones
 
-### 💳 Payment Integration
+###  Payment Integration
 - **Payment Gateway**: Integrated payment gateway support
 - **Subscription Plans**: Flexible subscription plan management
 - **Shopping Cart**: Complete shopping cart functionality
 - **Transaction History**: Full transaction tracking and history
 
-### 📊 Admin Dashboard
+###  Admin Dashboard
 - **Comprehensive Analytics**: Detailed statistics and reports
 - **Case Management**: Add, edit, and manage case studies
 - **User Management**: Complete user and access management
 - **Reporting**: Detailed activity and usage reports
 
-### 🔒 Security
+###  Security
 - **Content Security Policy (CSP)**: Protection against XSS attacks
 - **Rate Limiting**: Request throttling to prevent abuse
 - **CSRF Protection**: Built-in CSRF protection for all forms
 - **Secure Authentication**: Secure password hashing and storage
 - **XSS Protection**: Protection against script injection attacks
 
-### 🌐 Internationalization
+###  Internationalization
 - **Persian Language Support**: Full RTL support for Persian/Farsi
 - **Jalali Date Support**: Persian calendar integration using jdatetime
 - **SMS Integration**: SMS notification support for local services
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 ### Backend
 - **Django 5.2**: High-level Python web framework
@@ -87,7 +87,7 @@ Built with Django and modern web technologies, this platform provides an interac
 - **SMS Services**: SMS notification services
 - **Email Services**: Email notification support
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### Prerequisites
 
@@ -106,8 +106,8 @@ Built with Django and modern web technologies, this platform provides an interac
 
 2. **Setup environment variables**
    ```bash
-   cp env.docker.example .env
-   # Edit .env file with your configuration
+   cp env.docker.example.env
+   # Edit.env file with your configuration
    ```
 
 3. **Build and start containers**
@@ -167,7 +167,7 @@ Built with Django and modern web technologies, this platform provides an interac
    python manage.py runserver
    ```
 
-## 📁 Project Structure
+##  Project Structure
 
 ```
 vetlms/
@@ -187,7 +187,7 @@ vetlms/
 │   └── core/             # Shared utilities
 │
 ├── vetlms/               # Django project settings
-│   ├── settings.py       # Settings (requires .env)
+│   ├── settings.py       # Settings (requires.env)
 │   ├── urls.py           # URL routing
 │   └── wsgi.py           # WSGI configuration
 │
@@ -202,13 +202,13 @@ vetlms/
 └── Makefile              # Development commands
 ```
 
-## 🎯 Available Commands
+##  Available Commands
 
 Using the `Makefile`, you can run the following commands:
 
 ```bash
 make help              # Show all available commands
-make setup             # Initial setup (copy .env file)
+make setup             # Initial setup (copy.env file)
 make build             # Build Docker images
 make up                # Start all services
 make down              # Stop all services
@@ -222,7 +222,7 @@ make backup-db          # Backup database
 make collectstatic      # Collect static files
 ```
 
-## 📚 API Documentation
+##  API Documentation
 
 The project uses Django REST Framework for API endpoints:
 
@@ -242,20 +242,20 @@ curl -X POST http://localhost/api/v1/auth/login/ \
   -d '{"username": "user", "password": "pass"}'
 ```
 
-## 🔐 Security Best Practices
+##  Security Best Practices
 
 This project implements several security measures:
 
-- ✅ **SECRET_KEY** stored in environment variables
-- ✅ **Rate Limiting** to prevent brute force attacks
-- ✅ **CSP Headers** for XSS protection
-- ✅ **CSRF Protection** in all forms
-- ✅ **SQL Injection Protection** using Django ORM
-- ✅ **Password Hashing** using PBKDF2 algorithm
-- ✅ **Secure Cookies** with HttpOnly and Secure flags
-- ✅ **HTTPS Enforcement** in production
+-  **SECRET_KEY** stored in environment variables
+-  **Rate Limiting** to prevent brute force attacks
+-  **CSP Headers** for XSS protection
+-  **CSRF Protection** in all forms
+-  **SQL Injection Protection** using Django ORM
+-  **Password Hashing** using PBKDF2 algorithm
+-  **Secure Cookies** with HttpOnly and Secure flags
+-  **HTTPS Enforcement** in production
 
-## 🧪 Testing
+##  Testing
 
 Run tests using:
 
@@ -267,7 +267,7 @@ make test
 python manage.py test
 ```
 
-## 📝 Environment Variables
+##  Environment Variables
 
 Create a `.env` file with the following variables:
 
@@ -294,7 +294,7 @@ FARAZ_SMS_API_KEY=your-api-key
 FARAZ_SMS_SENDER_NUMBER=your-sender-number
 ```
 
-## 🌱 Development
+##  Development
 
 ### Setting up Development Environment
 
@@ -312,11 +312,11 @@ FARAZ_SMS_SENDER_NUMBER=your-sender-number
 - Add docstrings to functions and classes
 - Write tests for new features
 
-## 📄 License
+##  License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-## 🤝 Contributing
+##  Contributing
 
 Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/jkurosh/vetlms/issues).
 
@@ -328,13 +328,13 @@ Contributions, issues, and feature requests are welcome! Feel free to check the 
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-## 🙏 Acknowledgments
+##  Acknowledgments
 
 - Django community for the excellent framework
 - All contributors who have helped improve this project
 - The veterinary education community for inspiration
 
-## 📞 Support
+##  Support
 
 For support, please open an issue in the GitHub repository.
 
@@ -342,7 +342,7 @@ For support, please open an issue in the GitHub repository.
 
 <div align="center">
 
-**Made with ❤️ for the Veterinary Education Community**
+**Made with  for the Veterinary Education Community**
 
 ⭐ If you find this project useful, please give it a star!
 
